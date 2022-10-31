@@ -1,0 +1,103 @@
+import styles from './SideBar.module.scss';
+import classNames from 'classnames/bind';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PersonIcon from '@mui/icons-material/Person';
+import AddBusinessIcon from '@mui/icons-material/AddBusiness';
+import SummarizeIcon from '@mui/icons-material/Summarize';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import HubIcon from '@mui/icons-material/Hub';
+import SettingsIcon from '@mui/icons-material/Settings';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import LogoutIcon from '@mui/icons-material/Logout';
+import config from '~/config';
+
+import { Link } from 'react-router-dom';
+const cx = classNames.bind(styles);
+function SideBar() {
+    return (
+        <>
+            <div className={cx('SideBar')}>
+                <div className={cx('top')}>
+                    <Link to={config.routes.dashboard}>
+                        <span className={cx('logo')}>Dental Admin</span>
+                    </Link>
+                </div>
+                <hr />
+                <div className={cx('center')}>
+                    <ul>
+                        <p className={cx('title')}>MAIN</p>
+                        <Link to={config.routes.dashboard}>
+                            <li>
+                                <DashboardIcon className={cx('icon')} />
+                                <span>Dashboard</span>
+                            </li>
+                        </Link>
+
+                        <p className={cx('title')}>LISTS</p>
+                        <Link to={config.routes.users}>
+                            <li>
+                                <PersonIcon className={cx('icon')} />
+                                <span>User</span>
+                            </li>
+                        </Link>
+                        <li>
+                            <AddBusinessIcon className={cx('icon')} />
+                            <span>Products</span>
+                        </li>
+                        <li>
+                            <SummarizeIcon className={cx('icon')} />
+                            <span>Orders</span>
+                        </li>
+                        <p className={cx('title')}>USEFUL</p>
+
+                        <li>
+                            <QueryStatsIcon className={cx('icon')} />
+                            <span>Stats</span>
+                        </li>
+                        <li>
+                            <LocalShippingIcon className={cx('icon')} />
+                            <span>Delivery</span>
+                        </li>
+                        <li>
+                            <CircleNotificationsIcon className={cx('icon')} />
+                            <span>Notifications</span>
+                        </li>
+                        <p className={cx('title')}>SERVICE</p>
+
+                        <li>
+                            <MedicalInformationIcon className={cx('icon')} />
+                            <span>System Health</span>
+                        </li>
+                        <li>
+                            <HubIcon className={cx('icon')} />
+                            <span>Logs</span>
+                        </li>
+                        <li>
+                            <SettingsIcon className={cx('icon')} />
+                            <span>Settings</span>
+                        </li>
+                        <p className={cx('title')}>USER</p>
+
+                        <li>
+                            <AccountBoxIcon className={cx('icon')} />
+                            <span>Profile</span>
+                        </li>
+                        <li>
+                            <LogoutIcon className={cx('icon')} />
+                            <span>Logout</span>
+                        </li>
+                    </ul>
+                </div>
+                <div className={cx('bottom')}>
+                    <div className={cx('colorOption')}></div>
+                    <div className={cx('colorOption')}></div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default SideBar;
