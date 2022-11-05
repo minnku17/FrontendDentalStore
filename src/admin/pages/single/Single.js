@@ -13,20 +13,47 @@ import jwt_decode from 'jwt-decode';
 import { refreshToken } from '~/services';
 import { loginSuccess } from '~/redux/authSlice';
 import { Link } from 'react-router-dom';
+import ModalUser from '~/admin/components/modalUser/ModalUser';
 
 const cx = classNames.bind(styles);
 function Single() {
     const { id } = useParams();
     const userRedux = useSelector((state) => state.user.userInfo?.user);
     const user = useSelector((state) => state.auth.login?.currentUser);
+
+    let [isOpen, setIsOpen] = useState(false);
+    let [closeModal, setCloseModal] = useState(false);
+
+    let [detailUser, setDetailUser] = useState({
+        image: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phonenumber: '',
+        positionId: '',
+        address: '',
+    });
+
+    useEffect(() => {
+        if (userRedux) {
+            setDetailUser({
+                image: userRedux?.image,
+                firstName: userRedux.firstName,
+                lastName: userRedux.lastName,
+                email: userRedux.email,
+                phonenumber: userRedux.phonenumber,
+                positionId: userRedux.positionId,
+                address: userRedux.address,
+            });
+        }
+    }, [userRedux]);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     let axiosJWT = axios.create({
         baseURL: process.env.REACT_APP_BACKEND_URL,
     });
-
-    console.log(userRedux?.image);
 
     axiosJWT.interceptors.request.use(
         async (config) => {
@@ -58,31 +85,43 @@ function Single() {
         fetch();
     }, [user]);
 
+    const OpenModal = () => {
+        setIsOpen(true);
+    };
+    const toggleModal = () => {
+        setIsOpen(!isOpen);
+    };
     return (
         <>
             <div className={cx('top')}>
                 <div className={cx('left')}>
-                    <div className={cx('edit-button')}>Edit</div>
+                    <div className={cx('edit-button')} onClick={() => OpenModal()}>
+                        Edit
+                    </div>
                     <h1 className={cx('title')}>Information</h1>
                     <div className={cx('item')}>
                         <img
-                            src={userRedux?.image ? userRedux?.image : images.noImage}
+                            src={detailUser?.image ? detailUser?.image : images.noImage}
                             alt=""
                             className={cx('item-img')}
                         />
                         <div className={cx('details')}>
-                            <h1 className={cx('item-title')}>{`${userRedux?.firstName} ${userRedux?.lastName}`}</h1>
+                            <h1 className={cx('item-title')}>{`${detailUser?.firstName} ${detailUser?.lastName}`}</h1>
                             <div className={cx('details-item')}>
                                 <span className={cx('item-key')}>Email:</span>
-                                <span className={cx('item-value')}>{userRedux?.email}</span>
+                                <span className={cx('item-value')}>{detailUser?.email}</span>
                             </div>
                             <div className={cx('details-item')}>
                                 <span className={cx('item-key')}>Phone:</span>
-                                <span className={cx('item-value')}>{userRedux?.phonenumber}</span>
+                                <span className={cx('item-value')}>{detailUser?.phonenumber}</span>
+                            </div>
+                            <div className={cx('details-item')}>
+                                <span className={cx('item-key')}>PositionId:</span>
+                                <span className={cx('item-value')}>{detailUser?.positionId}</span>
                             </div>
                             <div className={cx('details-item')}>
                                 <span className={cx('item-key')}>Address:</span>
-                                <span className={cx('item-value')}>{userRedux?.address}</span>
+                                <span className={cx('item-value')}>{detailUser?.address}</span>
                             </div>
                             <div className={cx('details-item')}>
                                 <span className={cx('item-key')}>City:</span>
@@ -90,6 +129,7 @@ function Single() {
                             </div>
                         </div>
                     </div>
+                    <ModalUser isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
                 </div>
                 <div className={cx('right')}></div>
             </div>

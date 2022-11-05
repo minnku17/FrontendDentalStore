@@ -13,10 +13,52 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import config from '~/config';
-
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import jwt_decode from 'jwt-decode';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { refreshToken } from '~/services';
+import { loginSuccess } from '~/redux/authSlice';
+import { logoutUser } from '~/redux/apiReques';
 const cx = classNames.bind(styles);
 function SideBar() {
+    const user = useSelector((state) => state.auth.login?.currentUser);
+
+    const idUser = user?.user.id;
+
+    let axiosJWT = axios.create({
+        baseURL: process.env.REACT_APP_BACKEND_URL,
+    });
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    axiosJWT.interceptors.request.use(
+        async (config) => {
+            let date = new Date();
+            const decodeToken = jwt_decode(user?.accessToken);
+            if (decodeToken.exp < date.getTime() / 1000) {
+                const data = await refreshToken();
+                const refreshUser = {
+                    ...user,
+                    accessToken: data.accessToken,
+                };
+                dispatch(loginSuccess(refreshUser));
+                config.headers['token'] = 'Bearer ' + data.accessToken;
+            }
+            return config;
+        },
+        (err) => {
+            return Promise.reject(err);
+        },
+    );
+
+    const handleLogout = async () => {
+        console.log(idUser);
+
+        if (idUser) {
+            await logoutUser(idUser, axiosJWT, user?.accessToken, navigate);
+        }
+    };
     return (
         <>
             <div className={cx('SideBar')}>
@@ -85,7 +127,8 @@ function SideBar() {
                             <AccountBoxIcon className={cx('icon')} />
                             <span>Profile</span>
                         </li>
-                        <li>
+
+                        <li onClick={() => handleLogout()}>
                             <LogoutIcon className={cx('icon')} />
                             <span>Logout</span>
                         </li>

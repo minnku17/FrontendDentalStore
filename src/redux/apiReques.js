@@ -14,6 +14,9 @@ import {
     createUserStart,
     createUserSuccess,
     createUserFail,
+    editUserStart,
+    editUserSuccess,
+    editUserUserFail,
 } from './userSlice';
 
 export const loginUser = async (email, password, dispatch, navigate) => {
@@ -24,12 +27,31 @@ export const loginUser = async (email, password, dispatch, navigate) => {
         if (res.errCode === 0) {
             navigate(config.routes.dashboard);
         }
+
+        return res;
     } catch (e) {
         dispatch(loginFail);
     }
 };
 
-export const getAllUsersRedux = async (accessToken, dispatch, axiosJWT) => {
+export const logoutUser = async (id, axiosJWT, accessToken, navigate) => {
+    try {
+        const res = await axiosJWT.post(`/api/logout?id=${id}`, { headers: { token: `Bearer ${accessToken}` } });
+
+        console.log(res);
+
+        if (res.errCode === 0) {
+            navigate(config.routes.loginAdmin);
+        } else {
+            console.log(res);
+        }
+    } catch (e) {
+        console.log(e);
+        // navigate(config.routes.loginAdmin);
+    }
+};
+
+export const getAllUsersRedux = async (accessToken, dispatch, axiosJWT, navigate) => {
     dispatch(getUsersStart());
     try {
         const res = await axiosJWT.get(`/api/getAllUsers`, { headers: { token: `Bearer ${accessToken}` } });
@@ -41,6 +63,7 @@ export const getAllUsersRedux = async (accessToken, dispatch, axiosJWT) => {
         }
     } catch (e) {
         console.log(e);
+        navigate(config.routes.loginAdmin);
         dispatch(getUsersFail());
     }
 };
@@ -57,6 +80,26 @@ export const getDetailUser = async (id, accessToken, dispatch, axiosJWT) => {
     } catch (e) {
         console.log(e);
         dispatch(getUsersInfoFail());
+    }
+};
+
+export const handleEditUser = async (data, accessToken, dispatch, axiosJWT) => {
+    console.log(data);
+    dispatch(editUserStart());
+    try {
+        const res = await axiosJWT.put('/api/editUser', data, { headers: { token: `Bearer ${accessToken}` } });
+
+        if (res.data.errCode === 0) {
+            dispatch(editUserSuccess());
+            dispatch(getUsersInfoSuccess(res.data));
+            return res.data;
+        } else {
+            console.log(res.data);
+            dispatch(editUserUserFail());
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(editUserUserFail());
     }
 };
 

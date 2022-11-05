@@ -11,9 +11,12 @@ import {
 } from '@mui/icons-material';
 
 import images from '~/assets/images';
+import { useSelector } from 'react-redux';
 
 const cx = classNames.bind(styles);
 function NavBar() {
+    const user = useSelector((state) => state.auth.login?.currentUser?.user.image);
+
     return (
         <>
             <div className={cx('navbar')}>
@@ -46,7 +49,7 @@ function NavBar() {
                             <ListOutlined className={cx('icon')} />
                         </div>
                         <div className={cx('item')}>
-                            <img src={images.noImage} alt="" className={cx('avatar')} />
+                            <img src={user ? user : images.noImage} alt="" className={cx('avatar')} />
                         </div>
                     </div>
                 </div>

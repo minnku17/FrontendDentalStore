@@ -11,6 +11,8 @@ function LoginAdmin() {
     let [email, setEmail] = useState('');
     let [password, setPassword] = useState('');
 
+    let [message, setMessage] = useState('');
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -22,10 +24,22 @@ function LoginAdmin() {
             setPassword(e.target.value);
         }
     };
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        loginUser(email, password, dispatch, navigate);
+        let res = await loginUser(email, password, dispatch, navigate);
+
+        if (res && res.errCode === 3) {
+            setMessage(res.errMessage);
+        } else if (res && res.errCode === 1) {
+            setMessage(res.errMessage);
+        }
+
+        if (!res) {
+            setMessage('An error occurred, please try again later!!!');
+        }
+
+        console.log('check res from login:>>>', res);
     };
     return (
         <>
@@ -54,6 +68,13 @@ function LoginAdmin() {
                             <label>Password</label>
                         </div>
                         <div className={cx('pass')}>Forgot Password?</div>
+                        {message ? (
+                            <>
+                                <div className={cx('message')}>{message}</div>
+                            </>
+                        ) : (
+                            ''
+                        )}
                         <input type="submit" onClick={(e) => handleSubmit(e)} value="Login" />
                         <div>Not a member?</div>
                     </form>

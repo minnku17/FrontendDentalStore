@@ -1,6 +1,13 @@
 import styles from './Datatable.module.scss';
 import classNames from 'classnames/bind';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+    DataGrid,
+    GridColDef,
+    GridValueGetterParams,
+    useGridApiContext,
+    useGridApiEventHandler,
+} from '@mui/x-data-grid';
+import { useMovieData } from '@mui/x-data-grid-generator';
 import { useDispatch, useSelector } from 'react-redux';
 import images from '~/assets/images';
 import { Link, useNavigate } from 'react-router-dom';
@@ -19,7 +26,15 @@ function Datatable() {
     const user = useSelector((state) => state.auth.login?.currentUser);
 
     let [rows, setRows] = useState([]);
+    let [checkBoxSelection, setCheckBoxSelection] = useState(false);
 
+    const [idUser, setIdUser] = useState();
+    const data = useMovieData();
+
+    const handleRowClick = (params) => {
+        setIdUser(idUser ? null : params.row.id);
+        setCheckBoxSelection(!checkBoxSelection);
+    };
     useEffect(() => {
         if (allUsers) {
             let allUser = allUsers.map((item) => {
@@ -40,22 +55,6 @@ function Datatable() {
         }
     }, [allUsers]);
 
-    // if (stateAllUser) {
-    //     rows = stateAllUser.map((user) => {
-    //         return {
-    //             id: user.id,
-    //             username: `${user.firstName} ${user.lastName}`,
-    //             status: 'active',
-    //             email: user.email,
-    //             image: user.image,
-    //             gender: user.gender,
-    //             address: user.address,
-    //             role: user.roleId,
-    //             phoneNumber: user.phonenumber,
-    //         };
-    //     });
-    // }
-
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         {
@@ -66,7 +65,11 @@ function Datatable() {
                 return (
                     <>
                         <div className={cx('cellWithImg')}>
-                            <img className={cx('cellImg')} src={images.noImage} alt="avatar" />
+                            <img
+                                className={cx('cellImg')}
+                                src={params.row.image ? params.row.image : images.noImage}
+                                alt="avatar"
+                            />
                             {params.row.username}
                         </div>
                     </>
@@ -166,17 +169,25 @@ function Datatable() {
             <div className={cx('datatable')}>
                 <div className={cx('datatable-title')}>
                     List User
-                    <Link to={config.routes.new} className={cx('link')}>
-                        Add New User
-                    </Link>
+                    {idUser ? (
+                        <Link to={config.routes.new} className={cx('link')}>
+                            Edit User
+                        </Link>
+                    ) : (
+                        <Link to={config.routes.new} className={cx('link')}>
+                            Add New User
+                        </Link>
+                    )}
                 </div>
                 <DataGrid
                     className={cx('customTable')}
+                    onRowClick={handleRowClick}
+                    {...data}
                     rows={rows}
                     columns={columns}
                     pageSize={9}
+                    checkboxSelection={checkBoxSelection}
                     rowsPerPageOptions={[9]}
-                    checkboxSelection
                 />
             </div>
         </>

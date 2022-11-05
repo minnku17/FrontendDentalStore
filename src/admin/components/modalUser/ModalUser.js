@@ -1,25 +1,43 @@
-import styles from './New.module.scss';
+import styles from './ModalUser.module.scss';
 import classNames from 'classnames/bind';
-import SideBar from '~/admin/components/sidebar/SideBar';
-import NavBar from '~/admin/components/navbar/Navbar';
+import Modal from 'react-modal';
+import { useEffect, useState } from 'react';
 import images from '~/assets/images';
 import { DriveFolderUploadOutlined } from '@mui/icons-material';
-import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtlis';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import config from '~/config';
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import { refreshToken } from '~/services';
 import { loginSuccess } from '~/redux/authSlice';
-import { createNewUser } from '~/redux/apiReques';
+import { refreshToken } from '~/services';
+import { handleEditUser } from '~/redux/apiReques';
 import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
-function New() {
+
+const customStyles = {
+    content: {
+        height: '650px',
+        width: '900px',
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+    },
+};
+
+function ModalUser({ isOpen, FuncToggleModal }) {
+    const userRedux = useSelector((state) => state.user.userInfo?.user);
+    const user = useSelector((state) => state.auth.login?.currentUser);
+
     let [state, setState] = useState({
+        id: 0,
         firstName: '',
         lastName: '',
         address: '',
@@ -31,10 +49,6 @@ function New() {
         positionId: 'None',
         roleId: 'Doctor',
     });
-
-    let [reviewAvatar, setReviewAvatar] = useState('');
-
-    const user = useSelector((state) => state.auth.login?.currentUser);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -62,6 +76,28 @@ function New() {
         },
     );
 
+    useEffect(() => {
+        if (userRedux) {
+            setState({
+                id: userRedux.id,
+                firstName: userRedux.firstName,
+                lastName: userRedux.lastName,
+                address: userRedux.address,
+                gender: userRedux.gender,
+                email: userRedux.email,
+                phonenumber: userRedux.phonenumber,
+                avatar: userRedux?.image,
+                positionId: userRedux.positionId,
+                roleId: userRedux.roleId,
+            });
+        }
+    }, [userRedux]);
+
+    let subtitle;
+
+    const afterOpenModal = () => {
+        subtitle.style.color = '#f00';
+    };
     const handleOnchangeImg = async (e) => {
         let data = e.target.files;
         let files = data[0];
@@ -72,12 +108,24 @@ function New() {
                 ...state,
                 avatar: base64,
             });
-            console.log(base64);
-            let objectUrl = URL.createObjectURL(files);
-            setReviewAvatar(objectUrl);
         }
     };
+    const handleSaveUser = async () => {
+        let res = await handleEditUser(state, user?.accessToken, dispatch, axiosJWT);
+
+        console.log(res);
+
+        if (res.errCode === 0) {
+            toast.success(res.errMessage);
+
+            FuncToggleModal();
+        } else {
+            toast.error(res.errMessage);
+        }
+    };
+
     const handleOnchangeInput = (e, id) => {
+        e.preventDefault();
         let copyState = { ...state };
 
         copyState[id] = e.target.value;
@@ -85,31 +133,29 @@ function New() {
         setState(copyState);
     };
 
-    const handleSaveUser = async () => {
-        console.log(state);
-
-        let res = await createNewUser(state, user?.accessToken, dispatch, axiosJWT);
-
-        if (res && res.errCode === 0) {
-            toast.success(res.errMessage);
-            navigate(config.routes.users);
-        } else {
-            toast.error(res.errMessage);
-        }
-    };
-
     return (
         <>
-            <div className={cx('new')}>
-                <SideBar />
-                <div className={cx('new-container')}>
-                    <NavBar />
+            <div>
+                <Modal
+                    isOpen={isOpen}
+                    onAfterOpen={afterOpenModal}
+                    onRequestClose={FuncToggleModal}
+                    style={customStyles}
+                    contentLabel="Example Modal"
+                >
+                    <div className={cx('header')}>
+                        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Edit User</h2>
+                        <button className={cx('close')} onClick={FuncToggleModal}>
+                            close
+                        </button>
+                    </div>
+                    <div>I am a modal</div>
                     <div className={cx('top')}>
                         <h1>Add new user</h1>
                     </div>
                     <div className={cx('bottom')}>
                         <div className={cx('left')}>
-                            <img src={reviewAvatar ? reviewAvatar : images.noImage} alt="" />
+                            <img src={state.avatar ? state.avatar : images.noImage} alt="" />
                         </div>
                         <div className={cx('right')}>
                             <form>
@@ -172,7 +218,8 @@ function New() {
                                 <div className={cx('form-input')}>
                                     <label>Password</label>
                                     <input
-                                        value={state.password}
+                                        disabled="disabled"
+                                        value="1213465466"
                                         onChange={(e) => handleOnchangeInput(e, 'password')}
                                         type="password"
                                     />
@@ -186,14 +233,16 @@ function New() {
                                         placeholder="A16/5 ap 1"
                                     />
                                 </div>
-                                <button onClick={() => handleSaveUser()}>Send</button>
+                                <div className={cx('btnSave')} onClick={(e) => handleSaveUser(e)}>
+                                    Send
+                                </div>
                             </form>
                         </div>
                     </div>
-                </div>
+                </Modal>
             </div>
         </>
     );
 }
 
-export default New;
+export default ModalUser;

@@ -47,7 +47,7 @@ function List() {
             navigate(config.routes.loginAdmin);
         }
         const fetch = async () => {
-            await getAllUsersRedux(user?.accessToken, dispatch, axiosJWT);
+            await getAllUsersRedux(user?.accessToken, dispatch, axiosJWT, navigate);
         };
         fetch();
     }, [user]);

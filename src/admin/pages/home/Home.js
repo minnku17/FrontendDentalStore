@@ -14,8 +14,11 @@ const cx = classNames.bind(styles);
 function Home() {
     const user = useSelector((state) => state.auth.login?.currentUser);
     const navigate = useNavigate();
+    if (!user) {
+        navigate(config.routes.loginAdmin);
+    }
     useEffect(() => {
-        if (!user.accessToken) {
+        if (!user) {
             navigate(config.routes.loginAdmin);
         }
     }, []);

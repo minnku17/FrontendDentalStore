@@ -12,7 +12,6 @@ const persistConfig = {
     whitelist: ['auth'],
     storage,
 };
-
 const rootReducer = combineReducers({ auth: authReducer, user: userReducer });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
