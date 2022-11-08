@@ -7,6 +7,7 @@ import {
     LanguageOutlined,
     ListOutlined,
     NotificationAddOutlined,
+    PeopleAltOutlined,
     SearchOutlined,
 } from '@mui/icons-material';
 
@@ -15,7 +16,7 @@ import { useSelector } from 'react-redux';
 
 const cx = classNames.bind(styles);
 function NavBar() {
-    const user = useSelector((state) => state.auth.login?.currentUser?.user.image);
+    const user = useSelector((state) => state.auth.login?.currentUser?.user);
 
     return (
         <>
@@ -26,6 +27,10 @@ function NavBar() {
                         <SearchOutlined />
                     </div>
                     <div className={cx('items')}>
+                        <div className={cx('item')}>
+                            <PeopleAltOutlined className={cx('icon')} />
+                            <span>Role: {user?.roleId}</span>
+                        </div>
                         <div className={cx('item')}>
                             <LanguageOutlined className={cx('icon')} />
                             English
@@ -49,7 +54,7 @@ function NavBar() {
                             <ListOutlined className={cx('icon')} />
                         </div>
                         <div className={cx('item')}>
-                            <img src={user ? user : images.noImage} alt="" className={cx('avatar')} />
+                            <img src={user?.image ? user.image : images.noImage} alt="" className={cx('avatar')} />
                         </div>
                     </div>
                 </div>

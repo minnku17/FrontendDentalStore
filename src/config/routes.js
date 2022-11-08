@@ -13,6 +13,9 @@ const routes = {
     users: '/users',
     single: 'details/:id',
 
+    //brands
+    brands: '/brands',
+
     product: 'product',
     productId: ':productId',
 };

@@ -1,8 +1,4 @@
-import { Fragment } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { publicRoutes, privateRoutes } from '~/routes';
-import { DefaultLayout } from '~/layouts';
-import bootstrap from 'bootstrap';
 import config from '~/config';
 import Home from './admin/pages/home/Home';
 import LoginAdmin from './auth/adminLogin';
@@ -12,6 +8,7 @@ import New from './admin/pages/new/New';
 import { ToastContainer } from 'react-toastify';
 import { userInputs } from './formSource';
 import LayoutAdmin from './layouts/LayoutAdmin';
+import Brands from './admin/pages/brand/Brands';
 
 function App() {
     return (
@@ -50,8 +47,15 @@ function App() {
                                 element={<New inputs={userInputs} title="Add New User" />}
                             />
                         </Route>
-                        <Route path={config.routes.product}>
-                            <Route index element={<List />} />
+                        <Route path={config.routes.brands}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <Brands />
+                                    </LayoutAdmin>
+                                }
+                            />
                             <Route
                                 path={config.routes.productId}
                                 element={

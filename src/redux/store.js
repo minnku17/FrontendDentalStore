@@ -3,6 +3,7 @@ import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import storage from 'redux-persist/lib/storage';
 import authReducer from './authSlice';
 import userReducer from './userSlice';
+import brandReducer from './brandSlice';
 const customizedMiddleware = getDefaultMiddleware({
     serializableCheck: false,
 });
@@ -12,7 +13,7 @@ const persistConfig = {
     whitelist: ['auth'],
     storage,
 };
-const rootReducer = combineReducers({ auth: authReducer, user: userReducer });
+const rootReducer = combineReducers({ auth: authReducer, user: userReducer, brands: brandReducer });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

@@ -85,8 +85,9 @@ function New() {
         setState(copyState);
     };
 
-    const handleSaveUser = async () => {
+    const handleSaveUser = async (e) => {
         console.log(state);
+        e.preventDefault();
 
         let res = await createNewUser(state, user?.accessToken, dispatch, axiosJWT);
 
@@ -186,7 +187,7 @@ function New() {
                                         placeholder="A16/5 ap 1"
                                     />
                                 </div>
-                                <button onClick={() => handleSaveUser()}>Send</button>
+                                <button onClick={(e) => handleSaveUser(e)}>Send</button>
                             </form>
                         </div>
                     </div>

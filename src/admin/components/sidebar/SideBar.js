@@ -8,6 +8,7 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import HubIcon from '@mui/icons-material/Hub';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
@@ -85,6 +86,13 @@ function SideBar() {
                                 <span>User</span>
                             </li>
                         </Link>
+                        <Link to={config.routes.brands}>
+                            <li>
+                                <StorefrontIcon className={cx('icon')} />
+                                <span>Brands</span>
+                            </li>
+                        </Link>
+
                         <li>
                             <AddBusinessIcon className={cx('icon')} />
                             <span>Products</span>

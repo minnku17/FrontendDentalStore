@@ -1,4 +1,4 @@
-import styles from './Datatable.module.scss';
+import styles from './DatatableUsers.module.scss';
 import classNames from 'classnames/bind';
 import {
     DataGrid,
@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
-function Datatable() {
+function DatatableUser() {
     let allUsers = useSelector((state) => state.user.users.allUsers?.data);
     const user = useSelector((state) => state.auth.login?.currentUser);
 
@@ -155,7 +155,6 @@ function Datatable() {
 
     const handleDeleteUser = async (id) => {
         let res = await deleteUserById(id, user?.accessToken, dispatch, axiosJWT);
-        console.log('check res from handleDeleteUser:>>>', res);
 
         if (res.errCode === 0) {
             toast.success(res.errMessage);
@@ -194,4 +193,4 @@ function Datatable() {
     );
 }
 
-export default Datatable;
+export default DatatableUser;

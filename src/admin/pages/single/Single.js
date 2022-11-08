@@ -13,16 +13,14 @@ import jwt_decode from 'jwt-decode';
 import { refreshToken } from '~/services';
 import { loginSuccess } from '~/redux/authSlice';
 import { Link } from 'react-router-dom';
-import ModalUser from '~/admin/components/modalUser/ModalUser';
+import ModalUser from '~/admin/components/Modal/ModalUser';
 
 const cx = classNames.bind(styles);
 function Single() {
     const { id } = useParams();
     const userRedux = useSelector((state) => state.user.userInfo?.user);
     const user = useSelector((state) => state.auth.login?.currentUser);
-
     let [isOpen, setIsOpen] = useState(false);
-    let [closeModal, setCloseModal] = useState(false);
 
     let [detailUser, setDetailUser] = useState({
         image: '',
@@ -46,7 +44,7 @@ function Single() {
                 address: userRedux.address,
             });
         }
-    }, [userRedux]);
+    }, [isOpen, userRedux]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -83,7 +81,7 @@ function Single() {
             await getDetailUser(id, user?.accessToken, dispatch, axiosJWT);
         };
         fetch();
-    }, [user]);
+    }, [isOpen, user]);
 
     const OpenModal = () => {
         setIsOpen(true);

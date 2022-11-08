@@ -17,9 +17,13 @@ function Home() {
     if (!user) {
         navigate(config.routes.loginAdmin);
     }
+
+    console.log('check res from Home page>>>', user);
     useEffect(() => {
         if (!user) {
             navigate(config.routes.loginAdmin);
+        } else if (user.user.roleId !== 'Admin') {
+            navigate(config.routes.profile);
         }
     }, []);
     return (

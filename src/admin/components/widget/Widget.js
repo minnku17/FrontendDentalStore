@@ -19,7 +19,7 @@ function Widget({ type }) {
         case 'user':
             data = {
                 title: 'USERS',
-                isMoney: false,
+                isMoney: true,
                 link: 'See all users',
                 icon: (
                     <PersonOutlineOutlined

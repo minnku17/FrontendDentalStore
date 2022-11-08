@@ -1,10 +1,7 @@
-import styles from './List.module.scss';
+import styles from './Brands.module.scss';
 import classNames from 'classnames/bind';
-
-import NavBar from '~/admin/components/navbar/Navbar';
-import SideBar from '~/admin/components/sidebar/SideBar';
 import { useEffect } from 'react';
-import { getAllUsersRedux } from '~/redux/apiReques';
+import { getAllBrands, getAllUsersRedux } from '~/redux/apiReques';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import config from '~/config';
@@ -12,10 +9,10 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import { refreshToken } from '~/services';
 import { loginSuccess } from '~/redux/authSlice';
-import DatatableUser from '~/admin/components/datatable/DatatableUsers';
+import DatatableBrands from '~/admin/components/datatable/DatatableBrands';
 
 const cx = classNames.bind(styles);
-function List() {
+function Brands() {
     const user = useSelector((state) => state.auth.login?.currentUser);
     let axiosJWT = axios.create({
         baseURL: process.env.REACT_APP_BACKEND_URL,
@@ -47,15 +44,15 @@ function List() {
             navigate(config.routes.loginAdmin);
         }
         const fetch = async () => {
-            await getAllUsersRedux(user?.accessToken, dispatch, axiosJWT, navigate);
+            await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
         };
         fetch();
     }, [user]);
     return (
         <>
-            <DatatableUser />
+            <DatatableBrands />
         </>
     );
 }
 
-export default List;
+export default Brands;

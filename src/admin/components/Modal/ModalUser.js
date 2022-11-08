@@ -112,12 +112,8 @@ function ModalUser({ isOpen, FuncToggleModal }) {
     };
     const handleSaveUser = async () => {
         let res = await handleEditUser(state, user?.accessToken, dispatch, axiosJWT);
-
-        console.log(res);
-
         if (res.errCode === 0) {
             toast.success(res.errMessage);
-
             FuncToggleModal();
         } else {
             toast.error(res.errMessage);
@@ -149,7 +145,6 @@ function ModalUser({ isOpen, FuncToggleModal }) {
                             close
                         </button>
                     </div>
-                    <div>I am a modal</div>
                     <div className={cx('top')}>
                         <h1>Add new user</h1>
                     </div>
