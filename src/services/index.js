@@ -52,3 +52,12 @@ export const refreshToken = async () => {
         console.log(error);
     }
 };
+
+export const getAllParentCategory = async () => {
+    try {
+        const res = await request.get('/api/getAllParentCategory');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};

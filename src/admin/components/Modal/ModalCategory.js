@@ -2,27 +2,21 @@ import styles from './ModalBrands.module.scss';
 import classNames from 'classnames/bind';
 import Modal from 'react-modal';
 import { useEffect, useState } from 'react';
-import images from '~/assets/images';
-import { ConstructionOutlined, DriveFolderUploadOutlined } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import CommonUtils from '~/utils/CommonUtlis';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import { loginSuccess } from '~/redux/authSlice';
-import { refreshToken } from '~/services';
-import { createNewBrand, editBrand, getAllBrands, handleEditUser } from '~/redux/apiReques';
+import { getAllParentCategory } from '~/services';
+import { createNewCategory, editBrand, editCategory, getAllBrands, getAllCategory } from '~/redux/apiReques';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import { DataGridPremium } from '@mui/x-data-grid-premium';
 import { axiosMiddle } from '~/services/axiosJWT';
 
 const cx = classNames.bind(styles);
 
 const customStyles = {
     content: {
-        height: '350px',
+        height: '450px',
         width: '900px',
         top: '50%',
         left: '50%',
@@ -33,21 +27,38 @@ const customStyles = {
     },
 };
 
-function ModalBrands({ isOpen, FuncToggleModal, data }) {
+function ModalCategory({ isOpen, FuncToggleModal, data }) {
     const {
         register,
         handleSubmit,
         reset,
         formState: { errors },
     } = useForm();
-    let [brand, setBrand] = useState('');
+    let [category, setCategory] = useState('');
+    let [valueParent, setValueParent] = useState();
+    let [listParent, setListParent] = useState();
     useEffect(() => {
-        setBrand(data);
+        setCategory(data);
         let defaultValues = {};
         defaultValues.title = data?.title ? data?.title : '';
+        defaultValues.summary = data?.summary ? data?.summary : '';
+        defaultValues.parent_id = data?.parent_id ? data?.parent_id : '';
+        defaultValues.is_parent = data?.is_parent ? data?.is_parent : 0;
         defaultValues.status = data?.status ? data?.status : 0;
         reset({ ...defaultValues });
     }, [data]);
+
+    useEffect(() => {
+        if (valueParent === '0') {
+            async function fetchApi() {
+                let res = await getAllParentCategory();
+                setListParent(res.data);
+            }
+            fetchApi();
+        } else {
+            setListParent(null);
+        }
+    }, [valueParent]);
 
     const user = useSelector((state) => state.auth.login?.currentUser);
 
@@ -60,28 +71,34 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
         subtitle.style.color = '#f00';
     };
 
-    const onSubmit = async (brand) => {
+    const onSubmit = async (category) => {
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
 
         if (data) {
             let obj = {
                 id: data.id,
-                title: brand.title,
-                status: brand.status,
+                title: category.title,
+                status: category.status,
+                is_parent: category.is_parent,
+                parent_id: category.parent_id,
+                summary: category.summary,
             };
-            let res = await editBrand(dispatch, axiosJWT, obj, user?.accessToken);
+            if (category.is_parent === '1') {
+                obj.parent_id = null;
+            }
+            let res = await editCategory(dispatch, axiosJWT, obj, user?.accessToken);
             if (res.errCode === 0) {
                 toast.success(res.errMessage);
-                await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
+                await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
                 FuncToggleModal();
             } else {
                 toast.error(res.errMessage);
             }
         } else {
-            let res = await createNewBrand(brand, user?.accessToken, dispatch, axiosJWT);
+            let res = await createNewCategory(category, user?.accessToken, dispatch, axiosJWT);
             if (res.errCode === 0) {
                 toast.success(res.errMessage);
-                await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
+                await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
                 FuncToggleModal();
             } else {
                 toast.error(res.errMessage);
@@ -105,7 +122,7 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
                         </button>
                     </div>
                     <div className={cx('top')}>
-                        <>{brand ? <h1>Edit New Brand</h1> : <h1>Add New Brand</h1>}</>
+                        <>{category ? <h1>Edit New Category</h1> : <h1>Add New Category</h1>}</>
                     </div>
                     <div className={cx('bottom')}>
                         <div className={cx('right')}>
@@ -117,6 +134,40 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
 
                                     {errors.exampleRequired && <p>This field is required</p>}
                                 </div>
+                                <div className={cx('form-input')}>
+                                    <label>Summary</label>
+
+                                    <input placeholder="Headway" {...register('summary')} />
+                                </div>
+                                <div className={cx('form-input')}>
+                                    <label>Parent</label>
+                                    <select
+                                        {...register('is_parent', {
+                                            onChange: (e) => {
+                                                setValueParent(e.target.value);
+                                            },
+                                        })}
+                                    >
+                                        <option value="1">Is parent</option>
+                                        <option value="0">Children</option>
+                                    </select>
+                                </div>
+                                {valueParent === '0' ? (
+                                    <div className={cx('form-input')}>
+                                        <label>List Parent</label>
+                                        <select {...register('parent_id')}>
+                                            {listParent?.map((item, index) => {
+                                                return (
+                                                    <option key={index} value={item.id}>
+                                                        {item.title}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
                                 <div className={cx('form-input')}>
                                     <label>Status</label>
                                     <select {...register('status')}>
@@ -134,4 +185,4 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
     );
 }
 
-export default ModalBrands;
+export default ModalCategory;

@@ -33,6 +33,20 @@ import {
     editBrandSuccess,
     editBrandFail,
 } from './brandSlice';
+import {
+    getCategoryStart,
+    getCategorySuccess,
+    getCategoryFail,
+    createCategoryStart,
+    createCategorySuccess,
+    createCategoryFail,
+    editCategoryStart,
+    editCategorySuccess,
+    editCategoryFail,
+    deleteCategoryStart,
+    deleteCategorySuccess,
+    deleteCategoryFail,
+} from './categorySlice';
 
 export const loginUser = async (email, password, dispatch, navigate) => {
     dispatch(loginStart());
@@ -233,5 +247,80 @@ export const editBrand = async (dispatch, axiosJWT, data, accessToken) => {
     } catch (e) {
         console.log(e);
         dispatch(editBrandFail());
+    }
+};
+
+export const getAllCategory = async (accessToken, dispatch, axiosJWT, navigate) => {
+    dispatch(getCategoryStart());
+    try {
+        const res = await axiosJWT.get(`/api/getAllCategory`, { headers: { token: `Bearer ${accessToken}` } });
+        if (res.data.errCode === 0) {
+            dispatch(getCategorySuccess(res));
+            return res.data;
+        } else {
+            console.log(res);
+            dispatch(getCategoryFail());
+        }
+    } catch (e) {
+        console.log(e);
+        navigate(config.routes.loginAdmin);
+        dispatch(getCategoryFail());
+    }
+};
+
+export const createNewCategory = async (data, accessToken, dispatch, axiosJWT) => {
+    dispatch(createCategoryStart());
+    try {
+        const res = await axiosJWT.post(`/api/createNewCategory`, data, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        console.log(res);
+        if (res.data.errCode === 0) {
+            dispatch(createCategorySuccess(res));
+            return res.data;
+        } else {
+            console.log(res);
+            dispatch(createCategoryFail());
+            return res.data;
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(createCategoryFail());
+    }
+};
+
+export const editCategory = async (dispatch, axiosJWT, data, accessToken) => {
+    dispatch(editCategoryStart());
+    try {
+        const res = await axiosJWT.put('/api/editCategory', data, { headers: { token: `Bearer ${accessToken}` } });
+        if (res.data.errCode === 0) {
+            dispatch(editCategorySuccess());
+            return res.data;
+        } else {
+            dispatch(editCategoryFail());
+            return res.data;
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(editCategoryFail());
+    }
+};
+
+export const deleteCategory = async (dispatch, axiosJWT, id, accessToken) => {
+    dispatch(deleteCategoryStart());
+    try {
+        const res = await axiosJWT.delete(`/api/deleteCategory?id=${id}`, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        if (res.data.errCode === 0) {
+            dispatch(deleteCategorySuccess());
+            return res.data;
+        } else {
+            dispatch(deleteCategoryFail());
+            return res.data;
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(deleteCategoryFail());
     }
 };

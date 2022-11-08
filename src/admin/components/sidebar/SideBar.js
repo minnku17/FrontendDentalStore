@@ -92,7 +92,12 @@ function SideBar() {
                                 <span>Brands</span>
                             </li>
                         </Link>
-
+                        <Link to={config.routes.category}>
+                            <li>
+                                <StorefrontIcon className={cx('icon')} />
+                                <span>Category</span>
+                            </li>
+                        </Link>
                         <li>
                             <AddBusinessIcon className={cx('icon')} />
                             <span>Products</span>

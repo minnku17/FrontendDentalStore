@@ -1,6 +1,12 @@
 import styles from './Datatable.module.scss';
 import classNames from 'classnames/bind';
-import { DataGrid } from '@mui/x-data-grid';
+import {
+    DataGrid,
+    GridColDef,
+    GridValueGetterParams,
+    useGridApiContext,
+    useGridApiEventHandler,
+} from '@mui/x-data-grid';
 import { useMovieData } from '@mui/x-data-grid-generator';
 import { useDispatch, useSelector } from 'react-redux';
 import images from '~/assets/images';
@@ -8,44 +14,47 @@ import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import { refreshToken } from '~/services';
+import { getAllParentCategory, refreshToken } from '~/services';
 import { loginSuccess } from '~/redux/authSlice';
-import { deleteBrand, deleteUserById, getAllBrands } from '~/redux/apiReques';
+import { deleteCategory, deleteUserById, getAllCategory } from '~/redux/apiReques';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import ModalBrands from '../Modal/ModalBrands';
 import { axiosMiddle } from '~/services/axiosJWT';
+import ModalCategory from '../Modal/ModalCategory';
 
 const cx = classNames.bind(styles);
-function DatatableBrands() {
-    let allBrands = useSelector((state) => state.brands.allBrand.brands?.data.data);
+function DatatableCategory() {
+    let allCategory = useSelector((state) => state.categories.allCategory.categories?.data.data);
     const user = useSelector((state) => state.auth.login?.currentUser);
 
     let [rows, setRows] = useState([]);
-    let [checkBoxSelection, setCheckBoxSelection] = useState(false);
     let [isOpen, setIsOpen] = useState(false);
 
-    const [idUser, setIdUser] = useState();
-    const data = useMovieData();
+    let [idBrand, setIdBrand] = useState(0);
+    let [listParent, setListParent] = useState();
 
-    const handleRowClick = (params) => {
-        setIdUser(idUser ? null : params.row.id);
-        setCheckBoxSelection(!checkBoxSelection);
-    };
+    const data = useMovieData();
     useEffect(() => {
-        if (allBrands) {
-            let allBrand = allBrands.map((item) => {
+        if (allCategory) {
+            let allUser = allCategory.map((item) => {
                 return {
                     id: item.id,
                     title: item.title,
-                    photo: item.photo,
+                    summary: item.summary,
+                    is_parent: item.is_parent,
+                    parent_id: item.parent_id,
                     status: item.status,
                 };
             });
 
-            setRows(allBrand);
+            setRows(allUser);
         }
-    }, [allBrands]);
+        async function fetchApi() {
+            let res = await getAllParentCategory();
+            setListParent(res.data);
+        }
+        fetchApi();
+    }, [allCategory]);
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
@@ -53,16 +62,51 @@ function DatatableBrands() {
             field: 'title',
             headerName: 'Title',
             width: 230,
+        },
+        {
+            field: 'summary',
+            headerName: 'Summary',
+            width: 200,
+        },
+        {
+            field: 'is_parent',
+            headerName: 'Parent',
+            width: 150,
             renderCell: (params) => {
                 return (
                     <>
-                        <div className={cx('cellWithImg')}>
-                            <img
-                                className={cx('cellImg')}
-                                src={params.row.image ? params.row.image : images.noImage}
-                                alt="avatar"
-                            />
-                            {params.row.title}
+                        <div className={cx('status')}>
+                            {params.row.is_parent === '1' ? (
+                                <div className={cx('active')}>Parent</div>
+                            ) : (
+                                <div className={cx('disable')}>No</div>
+                                // {params.row.parent_id === params.row.id}
+                            )}
+                        </div>
+                    </>
+                );
+            },
+        },
+        {
+            field: 'parent_id',
+            headerName: 'Parent Info',
+            width: 150,
+            renderCell: (params) => {
+                return (
+                    <>
+                        <div className={cx('status')}>
+                            {params.row.parent_id ? (
+                                <div>
+                                    {listParent.map((item) => {
+                                        if (item.id === params.row.parent_id) {
+                                            let text = item.title;
+                                            return text;
+                                        }
+                                    })}
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </div>
                     </>
                 );
@@ -71,7 +115,7 @@ function DatatableBrands() {
         {
             field: 'status',
             headerName: 'Status',
-            width: 200,
+            width: 170,
             renderCell: (params) => {
                 return (
                     <>
@@ -86,7 +130,6 @@ function DatatableBrands() {
                 );
             },
         },
-
         {
             field: 'action',
             headerName: 'Action',
@@ -98,7 +141,7 @@ function DatatableBrands() {
                             <div className={cx('view-button')} onClick={() => handleSubmit(params.row)}>
                                 Edit
                             </div>
-                            <div className={cx('delete-button')} onClick={() => handleDeleteUser(params.row.id)}>
+                            <div className={cx('delete-button')} onClick={() => handleDelete(params.row.id)}>
                                 Delete
                             </div>
                         </div>
@@ -109,21 +152,19 @@ function DatatableBrands() {
     ];
 
     const dispatch = useDispatch();
-    let [idBrand, setIdBrand] = useState(0);
+
     const handleSubmit = (id) => {
         setIdBrand(id);
         setIsOpen(true);
     };
 
-    const handleDeleteUser = async (id) => {
+    const handleDelete = async (id) => {
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-
-        let res = await deleteBrand(dispatch, axiosJWT, id, user?.accessToken);
-        console.log('check res from handleDeleteUser:>>>', res);
+        let res = await deleteCategory(dispatch, axiosJWT, id, user?.accessToken);
 
         if (res.errCode === 0) {
-            await getAllBrands(user?.accessToken, dispatch, axiosJWT);
             toast.success(res.errMessage);
+            await getAllCategory(user?.accessToken, dispatch, axiosJWT);
         } else {
             toast.error(res.errMessage);
         }
@@ -141,24 +182,23 @@ function DatatableBrands() {
         <>
             <div className={cx('datatable')}>
                 <div className={cx('datatable-title')}>
-                    List Brands
+                    List Category
                     <div className={cx('link')} onClick={() => OpenModal()}>
-                        Add New Brand
+                        Add New Category
                     </div>
                 </div>
                 <DataGrid
                     className={cx('customTable')}
-                    onRowClick={handleRowClick}
                     {...data}
                     rows={rows}
                     columns={columns}
                     pageSize={9}
                     rowsPerPageOptions={[9]}
                 />
-                <ModalBrands data={idBrand} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
+                <ModalCategory data={idBrand} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
             </div>
         </>
     );
 }
 
-export default DatatableBrands;
+export default DatatableCategory;

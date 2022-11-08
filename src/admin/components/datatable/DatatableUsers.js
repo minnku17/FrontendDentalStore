@@ -1,4 +1,4 @@
-import styles from './DatatableUsers.module.scss';
+import styles from './Datatable.module.scss';
 import classNames from 'classnames/bind';
 import {
     DataGrid,
@@ -19,6 +19,7 @@ import { loginSuccess } from '~/redux/authSlice';
 import { deleteUserById } from '~/redux/apiReques';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import { axiosMiddle } from '~/services/axiosJWT';
 
 const cx = classNames.bind(styles);
 function DatatableUser() {
@@ -125,35 +126,12 @@ function DatatableUser() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    let axiosJWT = axios.create({
-        baseURL: process.env.REACT_APP_BACKEND_URL,
-    });
-
-    axiosJWT.interceptors.request.use(
-        async (config) => {
-            let date = new Date();
-            const decodeToken = jwt_decode(user?.accessToken);
-            if (decodeToken.exp < date.getTime() / 1000) {
-                const data = await refreshToken();
-                const refreshUser = {
-                    ...user,
-                    accessToken: data.accessToken,
-                };
-                dispatch(loginSuccess(refreshUser));
-                config.headers['token'] = 'Bearer ' + data.accessToken;
-            }
-            return config;
-        },
-        (err) => {
-            return Promise.reject(err);
-        },
-    );
-
     const handleSubmit = (user) => {
         navigate(`details/${user}`);
     };
 
     const handleDeleteUser = async (id) => {
+        let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
         let res = await deleteUserById(id, user?.accessToken, dispatch, axiosJWT);
 
         if (res.errCode === 0) {

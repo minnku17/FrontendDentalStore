@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import authReducer from './authSlice';
 import userReducer from './userSlice';
 import brandReducer from './brandSlice';
+import categoryReducer from './categorySlice';
 const customizedMiddleware = getDefaultMiddleware({
     serializableCheck: false,
 });
@@ -13,7 +14,12 @@ const persistConfig = {
     whitelist: ['auth'],
     storage,
 };
-const rootReducer = combineReducers({ auth: authReducer, user: userReducer, brands: brandReducer });
+const rootReducer = combineReducers({
+    auth: authReducer,
+    user: userReducer,
+    brands: brandReducer,
+    categories: categoryReducer,
+});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

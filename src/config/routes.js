@@ -16,6 +16,9 @@ const routes = {
     //brands
     brands: '/brands',
 
+    //category
+    category: '/category',
+
     product: 'product',
     productId: ':productId',
 };
