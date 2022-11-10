@@ -5,21 +5,29 @@ import NavBar from '~/admin/components/navbar/Navbar';
 import Widget from '~/admin/components/widget/Widget';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import jwt_decode from 'jwt-decode';
+
 import { getAllUsersRedux } from '~/redux/apiReques';
 import { useNavigate } from 'react-router-dom';
 import config from '~/config';
+import { axiosMiddle } from '~/services/axiosJWT';
 
 const cx = classNames.bind(styles);
 
 function Home() {
     const user = useSelector((state) => state.auth.login?.currentUser);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     if (!user) {
         navigate(config.routes.loginAdmin);
     }
-
-    console.log('check res from Home page>>>', user);
     useEffect(() => {
+        async function fetchAllUser() {
+            let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+            await getAllUsersRedux(user?.accessToken, dispatch, axiosJWT, navigate);
+        }
+        fetchAllUser();
         if (!user) {
             navigate(config.routes.loginAdmin);
         } else if (user.user.roleId !== 'Admin') {

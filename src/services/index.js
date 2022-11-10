@@ -53,9 +53,9 @@ export const refreshToken = async () => {
     }
 };
 
-export const getAllParentCategory = async () => {
+export const getAllParentCategory = async (accessToken) => {
     try {
-        const res = await request.get('/api/getAllParentCategory');
+        const res = await request.get('/api/getAllParentCategory', { headers: { token: `Bearer ${accessToken}` } });
         return res;
     } catch (error) {
         console.log(error);

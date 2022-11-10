@@ -7,9 +7,14 @@ import {
     PersonOutlineOutlined,
     ShoppingCartOutlined,
 } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import config from '~/config';
 
 const cx = classNames.bind(styles);
 function Widget({ type }) {
+    let allUsers = useSelector((state) => state.user.users.allUsers?.data);
+    console.log(allUsers);
     let data;
 
     const amount = 100;
@@ -19,8 +24,8 @@ function Widget({ type }) {
         case 'user':
             data = {
                 title: 'USERS',
-                isMoney: true,
-                link: 'See all users',
+                isMoney: false,
+                link: <Link to={config.routes.users}>See all users</Link>,
                 icon: (
                     <PersonOutlineOutlined
                         className={cx('icon')}
@@ -77,7 +82,7 @@ function Widget({ type }) {
                 <div className={cx('left')}>
                     <span className={cx('title')}>{data.title}</span>
                     <span className={cx('counter')}>
-                        {data.isMoney && '$'} {amount}
+                        {data.isMoney && '$'} {data.title === 'USERS' ? allUsers?.length : amount}
                     </span>
                     <span className={cx('link')}>{data.link}</span>
                 </div>

@@ -14,6 +14,8 @@ import {
 import images from '~/assets/images';
 import { useSelector } from 'react-redux';
 
+import Tippy from '@tippyjs/react/headless';
+
 const cx = classNames.bind(styles);
 function NavBar() {
     const user = useSelector((state) => state.auth.login?.currentUser?.user);
@@ -54,7 +56,21 @@ function NavBar() {
                             <ListOutlined className={cx('icon')} />
                         </div>
                         <div className={cx('item')}>
-                            <img src={user?.image ? user.image : images.noImage} alt="" className={cx('avatar')} />
+                            <Tippy
+                                render={(attrs) => (
+                                    <div className="box" tabIndex="-1" {...attrs}>
+                                        My tippy box
+                                    </div>
+                                )}
+                            >
+                                <button className={cx('action-btn')}>
+                                    <img
+                                        src={user?.image ? user.image : images.noImage}
+                                        alt=""
+                                        className={cx('avatar')}
+                                    />
+                                </button>
+                            </Tippy>
                         </div>
                     </div>
                 </div>

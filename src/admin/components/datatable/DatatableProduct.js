@@ -3,107 +3,99 @@ import classNames from 'classnames/bind';
 import { DataGrid } from '@mui/x-data-grid';
 import { useMovieData } from '@mui/x-data-grid-generator';
 import { useDispatch, useSelector } from 'react-redux';
+import images from '~/assets/images';
+import { Link, useNavigate } from 'react-router-dom';
+import config from '~/config';
 import jwt_decode from 'jwt-decode';
-import { getAllParentCategory } from '~/services';
-import { deleteCategory, getAllCategory } from '~/redux/apiReques';
+import { deleteBrand, deleteUserById, getAllBrands, getAllProduct } from '~/redux/apiReques';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import ModalBrands from '../Modal/ModalBrands';
 import { axiosMiddle } from '~/services/axiosJWT';
-import ModalCategory from '../Modal/ModalCategory';
 
 const cx = classNames.bind(styles);
-function DatatableCategory() {
-    let allCategory = useSelector((state) => state.categories.allCategory.categories?.data.data);
+function DatatableProduct() {
+    let allProduct = useSelector((state) => state.product.allProduct.data?.data.data);
     const user = useSelector((state) => state.auth.login?.currentUser);
 
     let [rows, setRows] = useState([]);
+    let [checkBoxSelection, setCheckBoxSelection] = useState(false);
     let [isOpen, setIsOpen] = useState(false);
 
-    let [idBrand, setIdBrand] = useState(0);
-    let [listParent, setListParent] = useState();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const [idUser, setIdUser] = useState();
     const data = useMovieData();
+
     useEffect(() => {
-        if (allCategory) {
-            let allUser = allCategory.map((item) => {
+        if (!user) {
+            navigate(config.routes.loginAdmin);
+        }
+        const fetch = async () => {
+            let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+
+            await getAllProduct(user?.accessToken, dispatch, axiosJWT, navigate);
+        };
+        fetch();
+    }, [user]);
+    console.log(allProduct);
+
+    useEffect(() => {
+        if (allProduct) {
+            let allBrand = allProduct.map((item) => {
                 return {
                     id: item.id,
                     title: item.title,
-                    summary: item.summary,
-                    is_parent: item.is_parent,
-                    parent_id: item.parent_id,
+                    photo: item.photo,
+                    condition: item.condition,
+                    price: item.price,
                     status: item.status,
+                    stock: item.stock,
+                    sold: item.sold,
+                    discount: item.discount,
                 };
             });
 
-            setRows(allUser);
+            setRows(allBrand);
         }
-        async function fetchApi() {
-            let res = await getAllParentCategory(user?.accessToken);
-            setListParent(res.data);
-        }
-        fetchApi();
-    }, [allCategory]);
+    }, [allProduct]);
+
+    const handleRowClick = (params) => {
+        setIdUser(idUser ? null : params.row.id);
+        setCheckBoxSelection(!checkBoxSelection);
+    };
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         {
             field: 'title',
             headerName: 'Title',
-            width: 230,
-        },
-        {
-            field: 'summary',
-            headerName: 'Summary',
-            width: 250,
-        },
-        {
-            field: 'is_parent',
-            headerName: 'Parent',
-            width: 100,
+            width: 350,
             renderCell: (params) => {
                 return (
                     <>
-                        <div className={cx('status')}>
-                            {params.row.is_parent === '1' ? (
-                                <div className={cx('active')}>Parent</div>
-                            ) : (
-                                <div className={cx('disable')}>No</div>
-                                // {params.row.parent_id === params.row.id}
-                            )}
+                        <div className={cx('cellWithImg')}>
+                            <img
+                                className={cx('cellImg')}
+                                src={params.row.image ? params.row.image : images.noImage}
+                                alt="avatar"
+                            />
+                            {params.row.title}
                         </div>
                     </>
                 );
             },
         },
-        {
-            field: 'parent_id',
-            headerName: 'Parent Info',
-            width: 250,
-            renderCell: (params) => {
-                return (
-                    <>
-                        <div className={cx('status')}>
-                            {params.row.parent_id ? (
-                                <div>
-                                    {listParent.map((item) => {
-                                        if (item.id === params.row.parent_id) {
-                                            let text = item.title;
-                                            return text;
-                                        }
-                                    })}
-                                </div>
-                            ) : (
-                                <></>
-                            )}
-                        </div>
-                    </>
-                );
-            },
-        },
+        { field: 'condition', headerName: 'Condition', width: 100 },
+        { field: 'discount', headerName: 'Discount', width: 100 },
+        { field: 'price', headerName: 'Price', width: 100 },
+        { field: 'stock', headerName: 'Stock', width: 100 },
+        { field: 'sold', headerName: 'Sold', width: 100 },
         {
             field: 'status',
             headerName: 'Status',
-            width: 170,
+            width: 100,
             renderCell: (params) => {
                 return (
                     <>
@@ -118,6 +110,7 @@ function DatatableCategory() {
                 );
             },
         },
+
         {
             field: 'action',
             headerName: 'Action',
@@ -129,7 +122,7 @@ function DatatableCategory() {
                             <div className={cx('view-button')} onClick={() => handleSubmit(params.row)}>
                                 Edit
                             </div>
-                            <div className={cx('delete-button')} onClick={() => handleDelete(params.row.id)}>
+                            <div className={cx('delete-button')} onClick={() => handleDeleteUser(params.row.id)}>
                                 Delete
                             </div>
                         </div>
@@ -138,30 +131,26 @@ function DatatableCategory() {
             },
         },
     ];
-
-    const dispatch = useDispatch();
-
+    let [idBrand, setIdBrand] = useState(0);
     const handleSubmit = (id) => {
         setIdBrand(id);
         setIsOpen(true);
     };
 
-    const handleDelete = async (id) => {
+    const handleDeleteUser = async (id) => {
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-        let res = await deleteCategory(dispatch, axiosJWT, id, user?.accessToken);
+
+        let res = await deleteBrand(dispatch, axiosJWT, id, user?.accessToken);
+        console.log('check res from handleDeleteUser:>>>', res);
 
         if (res.errCode === 0) {
+            await getAllBrands(user?.accessToken, dispatch, axiosJWT);
             toast.success(res.errMessage);
-            await getAllCategory(user?.accessToken, dispatch, axiosJWT);
         } else {
             toast.error(res.errMessage);
         }
     };
 
-    const OpenModal = () => {
-        setIdBrand(null);
-        setIsOpen(true);
-    };
     const toggleModal = () => {
         setIsOpen(!isOpen);
     };
@@ -170,23 +159,24 @@ function DatatableCategory() {
         <>
             <div className={cx('datatable')}>
                 <div className={cx('datatable-title')}>
-                    List Category
-                    <div className={cx('link')} onClick={() => OpenModal()}>
-                        Add New Category
-                    </div>
+                    List Products
+                    <Link to={config.routes.create_product} className={cx('link')}>
+                        Add New Product
+                    </Link>
                 </div>
                 <DataGrid
                     className={cx('customTable')}
+                    onRowClick={handleRowClick}
                     {...data}
                     rows={rows}
                     columns={columns}
                     pageSize={9}
                     rowsPerPageOptions={[9]}
                 />
-                <ModalCategory data={idBrand} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
+                <ModalBrands data={idBrand} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
             </div>
         </>
     );
 }
 
-export default DatatableCategory;
+export default DatatableProduct;

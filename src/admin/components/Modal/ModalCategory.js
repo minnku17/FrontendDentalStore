@@ -28,6 +28,8 @@ const customStyles = {
 };
 
 function ModalCategory({ isOpen, FuncToggleModal, data }) {
+    const user = useSelector((state) => state.auth.login?.currentUser);
+
     const {
         register,
         handleSubmit,
@@ -51,7 +53,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
     useEffect(() => {
         if (valueParent === '0') {
             async function fetchApi() {
-                let res = await getAllParentCategory();
+                let res = await getAllParentCategory(user?.accessToken);
                 setListParent(res.data);
             }
             fetchApi();
@@ -59,9 +61,6 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
             setListParent(null);
         }
     }, [valueParent]);
-
-    const user = useSelector((state) => state.auth.login?.currentUser);
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
 

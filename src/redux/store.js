@@ -5,6 +5,7 @@ import authReducer from './authSlice';
 import userReducer from './userSlice';
 import brandReducer from './brandSlice';
 import categoryReducer from './categorySlice';
+import productReducer from './productSlice';
 const customizedMiddleware = getDefaultMiddleware({
     serializableCheck: false,
 });
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
     user: userReducer,
     brands: brandReducer,
     categories: categoryReducer,
+    product: productReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

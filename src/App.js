@@ -9,8 +9,9 @@ import { ToastContainer } from 'react-toastify';
 import { userInputs } from './formSource';
 import LayoutAdmin from './layouts/LayoutAdmin';
 import Brands from './admin/pages/brand/Brands';
-import DatatableCategory from './admin/components/datatable/DatatableCategory';
 import Category from './admin/pages/category/Category';
+import Product from './admin/pages/product/Product';
+import NewProduct from './admin/pages/newProduct/NewProduct';
 
 function App() {
     return (
@@ -65,6 +66,24 @@ function App() {
                                 element={
                                     <LayoutAdmin>
                                         <Category />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.product}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <Product />
+                                    </LayoutAdmin>
+                                }
+                            />
+                            <Route
+                                path={config.routes.create_product}
+                                element={
+                                    <LayoutAdmin>
+                                        <NewProduct />
                                     </LayoutAdmin>
                                 }
                             />
