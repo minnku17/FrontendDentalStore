@@ -78,7 +78,7 @@ function DatatableProduct() {
                         <div className={cx('cellWithImg')}>
                             <img
                                 className={cx('cellImg')}
-                                src={params.row.image ? params.row.image : images.noImage}
+                                src={params.row.photo ? params.row.photo : images.noImage}
                                 alt="avatar"
                             />
                             {params.row.title}

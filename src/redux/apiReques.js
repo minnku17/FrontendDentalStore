@@ -47,7 +47,14 @@ import {
     deleteCategorySuccess,
     deleteCategoryFail,
 } from './categorySlice';
-import { getAllProductStart, getAllProductSuccess, getAllProductFail } from './productSlice';
+import {
+    getAllProductStart,
+    getAllProductSuccess,
+    getAllProductFail,
+    createProductStart,
+    createProductSuccess,
+    createProductFail,
+} from './productSlice';
 
 export const loginUser = async (email, password, dispatch, navigate) => {
     dispatch(loginStart());
@@ -341,5 +348,26 @@ export const getAllProduct = async (accessToken, dispatch, axiosJWT, navigate) =
         console.log(e);
         navigate(config.routes.loginAdmin);
         dispatch(getAllProductFail());
+    }
+};
+
+export const createNewProduct = async (data, accessToken, dispatch, axiosJWT) => {
+    dispatch(createProductStart());
+    try {
+        const res = await axiosJWT.post(`/api/createNewProduct`, data, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        console.log(res);
+        if (res.data.errCode === 0) {
+            dispatch(createProductSuccess(res));
+            return res.data;
+        } else {
+            console.log(res);
+            dispatch(createProductFail());
+            return res.data;
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(createProductFail());
     }
 };
