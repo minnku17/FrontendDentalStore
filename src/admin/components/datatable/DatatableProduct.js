@@ -7,7 +7,7 @@ import images from '~/assets/images';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import jwt_decode from 'jwt-decode';
-import { deleteBrand, deleteUserById, getAllBrands, getAllProduct } from '~/redux/apiReques';
+import { getAllProduct, handleDeleteProduct } from '~/redux/apiReques';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import ModalBrands from '../Modal/ModalBrands';
@@ -39,7 +39,6 @@ function DatatableProduct() {
         };
         fetch();
     }, [user]);
-    console.log(allProduct);
 
     useEffect(() => {
         if (allProduct) {
@@ -100,7 +99,7 @@ function DatatableProduct() {
                 return (
                     <>
                         <div className={cx('status')}>
-                            {params.row.status === 1 ? (
+                            {params.row.status === true ? (
                                 <div className={cx('active')}>Active</div>
                             ) : (
                                 <div className={cx('disable')}>Disable</div>
@@ -119,10 +118,10 @@ function DatatableProduct() {
                 return (
                     <>
                         <div className={cx('cell-action')}>
-                            <div className={cx('view-button')} onClick={() => handleSubmit(params.row)}>
+                            <div className={cx('view-button')} onClick={() => handleSubmit(params.row.id)}>
                                 Edit
                             </div>
-                            <div className={cx('delete-button')} onClick={() => handleDeleteUser(params.row.id)}>
+                            <div className={cx('delete-button')} onClick={() => deleteProduct(params.row.id)}>
                                 Delete
                             </div>
                         </div>
@@ -134,20 +133,19 @@ function DatatableProduct() {
     let [idBrand, setIdBrand] = useState(0);
     const handleSubmit = (id) => {
         setIdBrand(id);
+        navigate(`edit-product/${id}`);
+
         setIsOpen(true);
     };
 
-    const handleDeleteUser = async (id) => {
+    const deleteProduct = async (id) => {
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
 
-        let res = await deleteBrand(dispatch, axiosJWT, id, user?.accessToken);
-        console.log('check res from handleDeleteUser:>>>', res);
-
+        let res = await handleDeleteProduct(axiosJWT, id, user?.accessToken, dispatch);
+        console.log(res);
         if (res.errCode === 0) {
-            await getAllBrands(user?.accessToken, dispatch, axiosJWT);
             toast.success(res.errMessage);
-        } else {
-            toast.error(res.errMessage);
+            await getAllProduct(user?.accessToken, dispatch, axiosJWT, navigate);
         }
     };
 
@@ -173,7 +171,6 @@ function DatatableProduct() {
                     pageSize={9}
                     rowsPerPageOptions={[9]}
                 />
-                <ModalBrands data={idBrand} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
             </div>
         </>
     );

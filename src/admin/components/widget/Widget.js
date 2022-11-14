@@ -14,7 +14,6 @@ import config from '~/config';
 const cx = classNames.bind(styles);
 function Widget({ type }) {
     let allUsers = useSelector((state) => state.user.users.allUsers?.data);
-    console.log(allUsers);
     let data;
 
     const amount = 100;

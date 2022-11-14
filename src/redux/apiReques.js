@@ -1,4 +1,4 @@
-import { loginFail, loginStart, loginSuccess } from './authSlice';
+import { loginFail, loginStart, loginSuccess, logoutStart, logoutSuccess, logoutFail } from './authSlice';
 import { login, getAllUsers, getUserInfo } from '~/services/index';
 import config from '~/config';
 import {
@@ -54,6 +54,12 @@ import {
     createProductStart,
     createProductSuccess,
     createProductFail,
+    deleteProductStart,
+    deleteProductSuccess,
+    deleteProductFail,
+    getProductInfoStart,
+    getProductInfoSuccess,
+    getProductInfoFail,
 } from './productSlice';
 
 export const loginUser = async (email, password, dispatch, navigate) => {
@@ -77,19 +83,23 @@ export const loginUser = async (email, password, dispatch, navigate) => {
     }
 };
 
-export const logoutUser = async (id, axiosJWT, accessToken, navigate) => {
+export const logoutUser = async (dispatch, axiosJWT, id, accessToken, navigate) => {
+    console.log('check token', accessToken);
+
     try {
-        const res = await axiosJWT.post(`/api/logout?id=${id}`, { headers: { token: `Bearer ${accessToken}` } });
-
-        console.log(res);
-
-        if (res.errCode === 0) {
+        dispatch(logoutStart());
+        const res = await axiosJWT.get(`/api/logout?id=${id}`, { headers: { token: `Bearer ${accessToken}` } });
+        if (res.data.errCode === 0) {
+            dispatch(logoutSuccess());
             navigate(config.routes.loginAdmin);
         } else {
             console.log(res);
+            dispatch(logoutFail());
         }
     } catch (e) {
         console.log(e);
+        dispatch(logoutFail());
+
         // navigate(config.routes.loginAdmin);
     }
 };
@@ -351,6 +361,25 @@ export const getAllProduct = async (accessToken, dispatch, axiosJWT, navigate) =
     }
 };
 
+export const getProductInfoById = async (dispatch, axiosJWT, id, accessToken) => {
+    dispatch(getProductInfoStart());
+    try {
+        const res = await axiosJWT.get(`/api/getProductInfoById?id=${id}`, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        if (res.data.errCode === 0) {
+            dispatch(getProductInfoSuccess(res));
+            return res.data.data;
+        } else {
+            console.log(res);
+            dispatch(getProductInfoFail());
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(getProductInfoFail());
+    }
+};
+
 export const createNewProduct = async (data, accessToken, dispatch, axiosJWT) => {
     dispatch(createProductStart());
     try {
@@ -369,5 +398,26 @@ export const createNewProduct = async (data, accessToken, dispatch, axiosJWT) =>
     } catch (e) {
         console.log(e);
         dispatch(createProductFail());
+    }
+};
+
+export const handleDeleteProduct = async (axiosJWT, id, accessToken, dispatch) => {
+    dispatch(deleteProductStart());
+    try {
+        const res = await axiosJWT.delete(`/api/deleteProduct?id=${id}`, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        console.log(res);
+        if (res.data.errCode === 0) {
+            dispatch(deleteProductSuccess(res.data));
+            return res.data;
+        } else {
+            console.log(res);
+            dispatch(deleteProductFail());
+            return res.data;
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(deleteProductFail());
     }
 };

@@ -67,7 +67,6 @@ function LoginAdmin() {
                             <span></span>
                             <label>Password</label>
                         </div>
-                        <div className={cx('pass')}>Forgot Password?</div>
                         {message ? (
                             <>
                                 <div className={cx('message')}>{message}</div>
@@ -76,7 +75,6 @@ function LoginAdmin() {
                             ''
                         )}
                         <input type="submit" onClick={(e) => handleSubmit(e)} value="Login" />
-                        <div>Not a member?</div>
                     </form>
                 </div>
             </div>

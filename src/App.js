@@ -87,6 +87,14 @@ function App() {
                                     </LayoutAdmin>
                                 }
                             />
+                            <Route
+                                path={config.routes.editProduct}
+                                element={
+                                    <LayoutAdmin>
+                                        <NewProduct />
+                                    </LayoutAdmin>
+                                }
+                            />
                         </Route>
                     </Route>
                 </Routes>

@@ -6,15 +6,13 @@ import userReducer from './userSlice';
 import brandReducer from './brandSlice';
 import categoryReducer from './categorySlice';
 import productReducer from './productSlice';
-const customizedMiddleware = getDefaultMiddleware({
-    serializableCheck: false,
-});
 const persistConfig = {
     key: 'rootDental',
     version: 1,
     whitelist: ['auth'],
     storage,
 };
+
 const rootReducer = combineReducers({
     auth: authReducer,
     user: userReducer,
@@ -32,6 +30,7 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
+            serializableCheck: false,
         }),
 });
 

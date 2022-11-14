@@ -19,8 +19,9 @@ const routes = {
     //category
     category: '/category',
 
+    //product
     product: '/product',
-    productId: ':productId',
+    editProduct: 'edit-product/:productId',
     create_product: 'create-product',
 };
 export default routes;

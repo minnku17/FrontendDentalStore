@@ -15,6 +15,15 @@ export const search = async (q, type = 'less') => {
     }
 };
 
+export const searchUser = async (q, type = 'less') => {
+    try {
+        const res = await request.get(`users/search`);
+        return res.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const login = async (email, password) => {
     try {
         const res = await request.post('/api/login', { email, password }, { withCredentials: true });

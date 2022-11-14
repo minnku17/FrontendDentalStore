@@ -45,8 +45,8 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
         defaultValues.title = data?.title ? data?.title : '';
         defaultValues.summary = data?.summary ? data?.summary : '';
         defaultValues.parent_id = data?.parent_id ? data?.parent_id : '';
-        defaultValues.is_parent = data?.is_parent ? data?.is_parent : 0;
-        defaultValues.status = data?.status ? data?.status : 0;
+        defaultValues.is_parent = data?.is_parent ? data?.is_parent : '0';
+        defaultValues.status = data?.status ? data?.status : '0';
         reset({ ...defaultValues });
     }, [data]);
 

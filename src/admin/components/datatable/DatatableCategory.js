@@ -85,7 +85,7 @@ function DatatableCategory() {
                         <div className={cx('status')}>
                             {params.row.parent_id ? (
                                 <div>
-                                    {listParent.map((item) => {
+                                    {listParent?.map((item) => {
                                         if (item.id === params.row.parent_id) {
                                             let text = item.title;
                                             return text;

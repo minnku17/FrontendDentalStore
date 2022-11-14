@@ -18,46 +18,23 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { refreshToken } from '~/services';
-import { loginSuccess } from '~/redux/authSlice';
 import { logoutUser } from '~/redux/apiReques';
+import { axiosMiddle } from '~/services/axiosJWT';
 const cx = classNames.bind(styles);
 function SideBar() {
     const user = useSelector((state) => state.auth.login?.currentUser);
 
     const idUser = user?.user.id;
-
-    let axiosJWT = axios.create({
-        baseURL: process.env.REACT_APP_BACKEND_URL,
-    });
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    axiosJWT.interceptors.request.use(
-        async (config) => {
-            let date = new Date();
-            const decodeToken = jwt_decode(user?.accessToken);
-            if (decodeToken.exp < date.getTime() / 1000) {
-                const data = await refreshToken();
-                const refreshUser = {
-                    ...user,
-                    accessToken: data.accessToken,
-                };
-                dispatch(loginSuccess(refreshUser));
-                config.headers['token'] = 'Bearer ' + data.accessToken;
-            }
-            return config;
-        },
-        (err) => {
-            return Promise.reject(err);
-        },
-    );
-
     const handleLogout = async () => {
+        let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
         console.log(idUser);
 
         if (idUser) {
-            await logoutUser(idUser, axiosJWT, user?.accessToken, navigate);
+            let res = await logoutUser(dispatch, axiosJWT, idUser, user?.accessToken, navigate);
+            console.log(res);
         }
     };
     return (

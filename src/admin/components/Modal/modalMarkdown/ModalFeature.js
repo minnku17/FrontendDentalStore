@@ -29,11 +29,17 @@ const customStyles = {
     },
 };
 
-function ModalFeature({ isOpen, FuncToggleModal, handleGetDateFromChildren }) {
+function ModalFeature({ feau, isOpen, FuncToggleModal, handleGetDateFromChildren }) {
     const user = useSelector((state) => state.auth.login?.currentUser);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let [html, setHtml] = useState();
+
+    useEffect(() => {
+        if (feau) {
+            setHtml(feau);
+        }
+    }, [feau]);
 
     const {
         register,

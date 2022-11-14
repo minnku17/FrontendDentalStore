@@ -1,24 +1,18 @@
 import styles from './New.module.scss';
 import classNames from 'classnames/bind';
-import SideBar from '~/admin/components/sidebar/SideBar';
-import NavBar from '~/admin/components/navbar/Navbar';
 import images from '~/assets/images';
-import { ConnectingAirportsOutlined, DriveFolderUploadOutlined } from '@mui/icons-material';
-import { useEffect, useRef, useState } from 'react';
+import { DriveFolderUploadOutlined } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
 import CommonUtils from '~/utils/CommonUtlis';
 import { useDispatch, useSelector } from 'react-redux';
-import Modal from 'react-modal';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import config from '~/config';
-import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import { createNewProduct, createNewUser, getAllBrands, getAllCategory, getAllProduct } from '~/redux/apiReques';
+import { createNewProduct, getAllBrands, getAllCategory, getAllProduct, getProductInfoById } from '~/redux/apiReques';
 import { toast } from 'react-toastify';
 import { axiosMiddle } from '~/services/axiosJWT';
 import { useForm } from 'react-hook-form';
-import ModalAddNew from '~/admin/components/Modal/ModalAddNew';
 import ModalDescription from '~/admin/components/Modal/modalMarkdown/ModalDescription';
 import ModalSpecification from '~/admin/components/Modal/modalMarkdown/ModalSpecification';
 import ModalFeature from '~/admin/components/Modal/modalMarkdown/ModalFeature';
@@ -26,6 +20,10 @@ import ModalAssign from '~/admin/components/Modal/modalMarkdown/ModalAssign';
 
 const cx = classNames.bind(styles);
 function NewProduct() {
+    const { productId } = useParams();
+
+    console.log('check id ', productId);
+
     const user = useSelector((state) => state.auth.login?.currentUser);
     const dataBrand = useSelector((state) => state.brands.allBrand.brands?.data.data);
     const dataCategory = useSelector((state) => state.categories.allCategory.categories?.data.data);
@@ -36,18 +34,8 @@ function NewProduct() {
         featureHtml: null,
         assignHtml: null,
     });
-
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors },
-    } = useForm();
-    const brand = register('brand_id');
-    const category = register('cat_id');
-    const type = register('type');
-    const condition = register('condition');
-    const status = register('status');
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     let [openDesc, setOpenDesc] = useState(false);
     let [openFeau, setOpenFeau] = useState(false);
@@ -62,11 +50,50 @@ function NewProduct() {
     let [reviewAvatar, setReviewAvatar] = useState('');
     let [photo, setPhoto] = useState('');
 
+    const axiosJWT = axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm();
+    const brand = register('brand_id');
+    const category = register('cat_id');
+    const type = register('type');
+    const condition = register('condition');
+    const status = register('status');
+
     useEffect(() => {
         async function fetchData() {
-            let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
             await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
             await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
+
+            if (productId) {
+                let res = await getProductInfoById(dispatch, axiosJWT, productId, user?.accessToken);
+                if (res) {
+                    console.log(res);
+                    let defaultValues = {};
+                    defaultValues.title = res?.title;
+                    defaultValues.status = res?.status === true ? '1' : '0';
+                    defaultValues.brand_id = res?.brand_id;
+                    defaultValues.cat_id = res?.cat_id;
+                    defaultValues.type = res?.type;
+                    defaultValues.stock = res?.stock;
+                    defaultValues.unit_of_product = res?.unit_of_product;
+                    defaultValues.expiry = res?.expiry;
+                    defaultValues.price = res?.price;
+                    defaultValues.discount = res?.discount;
+                    defaultValues.condition = res?.condition;
+                    setReviewAvatar(res.photo);
+                    setPhoto(res.photo);
+                    setDesc(res.Markdown.descriptionHtml);
+                    setSpec(res.Markdown.specificationHtml);
+                    setFeau(res.Markdown.featureHtml);
+                    setAss(res.Markdown.assignHtml);
+
+                    reset({ ...defaultValues });
+                }
+            }
         }
 
         fetchData();
@@ -101,9 +128,6 @@ function NewProduct() {
         }
     };
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
     const handleOnchangeImg = async (e) => {
         let data = e.target.files;
         let files = data[0];
@@ -116,7 +140,6 @@ function NewProduct() {
             setReviewAvatar(objectUrl);
         }
     };
-    const handleOnchangeInput = (e, id) => {};
 
     const handleGetDateFromChildren = (data, id) => {
         console.log(data, id);
@@ -151,9 +174,10 @@ function NewProduct() {
             featureHtml: feau,
             assignHtml: ass,
 
-            action: 'CREATE',
+            action: productId ? 'EDIT' : 'CREATE',
+            id: productId,
         };
-        let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+
         let res = await createNewProduct(data, user?.accessToken, dispatch, axiosJWT);
         if (res.errCode === 0) {
             toast.success(res.errMessage);
@@ -166,9 +190,7 @@ function NewProduct() {
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div className={cx('top')}>
-                    <h1>Thêm sản phẩm mới</h1>
-                </div>
+                <div className={cx('top')}>{productId ? <h1>Chỉnh sửa sản phẩm</h1> : <h1>Thêm sản phẩm mới</h1>}</div>
                 <div className={cx('bottom')}>
                     <div className={cx('left')}>
                         <img src={reviewAvatar ? reviewAvatar : images.noImage} alt="" />
@@ -212,6 +234,7 @@ function NewProduct() {
                             <ModalSpecification
                                 handleGetDateFromChildren={(data, id) => handleGetDateFromChildren(data, id)}
                                 isOpen={openSpec}
+                                spec={spec}
                                 FuncToggleModal={() => setOpenSpec(!openSpec)}
                             />
                             <div
@@ -228,6 +251,7 @@ function NewProduct() {
                             <ModalFeature
                                 handleGetDateFromChildren={(data, id) => handleGetDateFromChildren(data, id)}
                                 isOpen={openFeau}
+                                feau={feau}
                                 FuncToggleModal={() => setOpenFeau(!openFeau)}
                             />
                             <div
@@ -244,6 +268,7 @@ function NewProduct() {
                             <ModalAssign
                                 handleGetDateFromChildren={(data, id) => handleGetDateFromChildren(data, id)}
                                 isOpen={openAss}
+                                ass={ass}
                                 FuncToggleModal={() => setOpenAss(!openAss)}
                             />
                             <div
