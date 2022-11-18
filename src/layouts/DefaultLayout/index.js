@@ -4,6 +4,7 @@ import className from 'classnames/bind';
 import Header from '../component/Header';
 import Sidebar from './Sidebar';
 import styles from './DefaultLayout.module.scss';
+import Footer from '../component/Footer/Footer';
 
 function DefaultLayout({ children }) {
     const cx = className.bind(styles);
@@ -11,9 +12,9 @@ function DefaultLayout({ children }) {
         <div className={cx('wrapper')}>
             <Header />
             <div className={cx('container')}>
-                <Sidebar />
                 <div className={cx('content')}>{children}</div>
             </div>
+            <Footer />
         </div>
     );
 }

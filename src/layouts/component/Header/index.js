@@ -1,148 +1,191 @@
 import className from 'classnames/bind';
-import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCircleQuestion,
-    faCoins,
-    faEarthAsia,
-    faEllipsisVertical,
-    faGear,
-    faKeyboard,
-    faSignOut,
-    faUser,
-} from '@fortawesome/free-solid-svg-icons';
-import { InboxIcon, MessageIcon, UploadIcon } from '~/Component/Icons';
-import Image from '~/Component/Image';
-import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import HeadlessTippy from '@tippyjs/react/headless';
+
+import SearchIcon from '@mui/icons-material/Search';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Person4Icon from '@mui/icons-material/Person4';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
 import styles from './Header.module.scss';
 import images from '~/assets/images';
-import config from '~/config';
+import { Wrapper as PopperWrapper } from '~/Component/Popper';
 
-import Button from '~/Component/Button';
-import Menu from '~/Component/Popper/Menu';
-import Search from '../Search';
+import config from '~/config';
+import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { useDebounce } from '~/hooks';
+import { searchProduct } from '~/redux/apiReques';
+import { useDispatch } from 'react-redux';
+import Tippy from '@tippyjs/react/headless';
+import { followCursor } from 'tippy.js';
 
 const cx = className.bind(styles);
 
-const MENU_ITEMS = [
-    {
-        icon: <FontAwesomeIcon icon={faEarthAsia} />,
-        title: 'English',
-        children: {
-            title: 'Language',
-            data: [
-                {
-                    type: 'language',
-                    code: 'en',
-                    title: 'English',
-                },
-                {
-                    type: 'language',
-                    code: 'vi',
-                    title: 'Tiếng Việt',
-                },
-            ],
-        },
-    },
-    {
-        icon: <FontAwesomeIcon icon={faCircleQuestion} />,
-        title: 'Feedback and help',
-        to: '/feedback',
-    },
-    {
-        icon: <FontAwesomeIcon icon={faKeyboard} />,
-        title: 'Keyboard shortcuts',
-    },
-];
-
 function Header() {
-    const currentUser = true;
+    const [searchValue, setSearchValue] = useState('');
+    const [showResult, setShowResult] = useState(true);
 
-    // Handle logic
-    const handleMenuChange = (menuItem) => {
-        switch (menuItem.type) {
-            case 'language':
-                // Handle change language
-                break;
-            default:
+    let [loading, setLoading] = useState('');
+    let [searchResult, setSearchResult] = useState([]);
+
+    const inputRef = useRef();
+
+    const dispatch = useDispatch();
+
+    const debounced = useDebounce(searchValue, 700);
+
+    useEffect(() => {
+        if (!debounced.trim()) {
+            return;
+        }
+
+        const fetchApi = async () => {
+            setLoading(true);
+            await setTimeout(async () => {
+                const result = await searchProduct(dispatch, debounced);
+                setSearchResult(result);
+                setShowResult(true);
+                setLoading(false);
+            }, 1000);
+        };
+
+        fetchApi();
+    }, [debounced, searchValue]);
+
+    console.log('render search', searchResult);
+
+    const handleOnchange = (e) => {
+        const searchValue = e.target.value;
+        if (!searchValue.startsWith(' ')) {
+            setSearchValue(searchValue);
         }
     };
+    const handleClear = () => {
+        setSearchValue('');
+        setSearchResult([]);
+        inputRef.current.focus();
+    };
 
-    const userMenu = [
-        {
-            icon: <FontAwesomeIcon icon={faUser} />,
-            title: 'View profile',
-            to: '/',
-        },
-        {
-            icon: <FontAwesomeIcon icon={faCoins} />,
-            title: 'Get coins',
-            to: '/coin',
-        },
-        {
-            icon: <FontAwesomeIcon icon={faGear} />,
-            title: 'Settings',
-            to: '/settings',
-        },
-        ...MENU_ITEMS,
-        {
-            icon: <FontAwesomeIcon icon={faSignOut} />,
-            title: 'Log out',
-            to: '/settings',
-            separate: true,
-        },
-    ];
+    const handleHideResult = () => {
+        setShowResult(false);
+    };
 
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
-                <Link to={config.routes.home} className={cx('logo-link')}>
-                    <img src={images.logo} alt="logo tiktok" />
-                </Link>
+                <div className={cx('left')}>
+                    <Link to={config.routes.home}>
+                        <div className={cx('logo')}>
+                            <img src={images.logo} alt="" />
+                        </div>
+                    </Link>
+                </div>
+                <div className={cx('cat')}>
+                    <MenuOpenIcon className={cx('iconMenu')} />
+                </div>
+                <div className={cx('right')}>
+                    <div className={cx('top')}>
+                        <ul>
+                            <li>Hotline: 1900 633 639</li>
+                            <li>Lịch sử mua hàng</li>
+                            <Link to={config.routes.customer_login}>
+                                <li>Đăng nhập</li>
+                            </Link>
+                        </ul>
+                    </div>
+                    <div className={cx('bottom')}>
+                        <HeadlessTippy
+                            interactive
+                            visible={showResult && searchResult.length > 0}
+                            render={(attrs) => (
+                                <div className={cx('search-result')} tabIndex="1" {...attrs}>
+                                    <PopperWrapper>
+                                        <h4 className={cx('key-search')}>Bạn đang tìm: {searchValue}</h4>
+                                        {searchResult.map((result) => (
+                                            <>
+                                                <div className={cx('search-item')}>
+                                                    <img src={result.photo ? result.photo : images.noImage} alt="" />
+                                                    <span>{result.title}</span>
+                                                </div>
+                                                <div className={cx('line')}></div>
+                                            </>
+                                        ))}
+                                    </PopperWrapper>
+                                </div>
+                            )}
+                            onClickOutside={handleHideResult}
+                        >
+                            <div className={cx('search')}>
+                                <SearchIcon className={cx('icon-search')} />
+                                <input
+                                    ref={inputRef}
+                                    value={searchValue}
+                                    onChange={(e) => {
+                                        handleOnchange(e);
+                                    }}
+                                    placeholder="Tìm gì cũng có, thử ngay! (gọi 1900.633.639)"
+                                />
+                                {loading ? (
+                                    <div className={cx('spinner-3')}></div>
+                                ) : (
+                                    <div className={cx('spinner')}></div>
+                                )}
+                                <button>Tìm kiếm</button>
+                            </div>
+                        </HeadlessTippy>
+                        <div className={cx('action')}>
+                            <Tippy
+                                arrow
+                                interactive
+                                delay={300}
+                                render={(attrs) => (
+                                    <div className={cx('loyalty-dropdown')} tabIndex="-1" {...attrs}>
+                                        <PopperWrapper className={cx('popper-wrapper')}>
+                                            <>hello</>
+                                        </PopperWrapper>
+                                    </div>
+                                )}
+                                onClickOutside={handleHideResult}
+                            >
+                                <div className={cx('loyalty')}>
+                                    <Person4Icon className={cx('icon-loyalty')} />
+                                    <div className={cx('item')}>
+                                        <span className={cx('level')}>THƯỜNG</span>
+                                        <span className={cx('point')}>0</span>
+                                    </div>
+                                </div>
+                            </Tippy>
 
-                <Search />
+                            <Tippy
+                                arrow
+                                interactive
+                                followCursor={true}
+                                delay={300}
+                                render={(attrs) => (
+                                    <div className={cx('gift-dropdown')} tabIndex="-1" {...attrs}>
+                                        <PopperWrapper className={cx('popper-wrapper')}>
+                                            <>hello</>
+                                        </PopperWrapper>
+                                    </div>
+                                )}
+                                onClickOutside={handleHideResult}
+                            >
+                                <div className={cx('gift')}>
+                                    <CardGiftcardIcon className={cx('gift-icon')} />
+                                    <div className={cx('notifi')}>0</div>
+                                </div>
+                            </Tippy>
 
-                <div className={cx('actions')}>
-                    {currentUser ? (
-                        <>
-                            <Tippy delay={[0, 50]} content="Upload video" placement="bottom">
-                                <button className={cx('action-btn')}>
-                                    <UploadIcon />
-                                </button>
-                            </Tippy>
-                            <Tippy delay={[0, 50]} content="Message" placement="bottom">
-                                <button className={cx('action-btn')}>
-                                    <MessageIcon />
-                                </button>
-                            </Tippy>
-                            <Tippy delay={[0, 50]} content="Inbox" placement="bottom">
-                                <button className={cx('action-btn')}>
-                                    <InboxIcon />
-                                    <span className={cx('badge')}>12</span>
-                                </button>
-                            </Tippy>
-                        </>
-                    ) : (
-                        <>
-                            <Button text>Upload</Button>
-                            <Button primary>Log in</Button>
-                        </>
-                    )}
-                    <Menu items={currentUser ? userMenu : MENU_ITEMS} onChange={handleMenuChange}>
-                        {currentUser ? (
-                            <Image
-                                className={cx('user-avatar')}
-                                src="https://p16-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/f9eddead50263392b5ea3ee0036bf922~c5_300x300.webp?x-expires=1659585600&x-signature=9nRyAEtXpg16v6iKvyaypx5ocD8%3D"
-                                alt="Nguyen Van A"
-                            />
-                        ) : (
-                            <button className={cx('more-btn')}>
-                                <FontAwesomeIcon icon={faEllipsisVertical} />
-                            </button>
-                        )}
-                    </Menu>
+                            <div className={cx('cart')}>
+                                <ShoppingCartIcon className={cx('cart-icon')} />
+                                <div className={cx('notifi')}>0</div>
+                                <div className={cx('pulsing-2')}></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>

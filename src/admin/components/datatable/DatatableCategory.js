@@ -19,7 +19,7 @@ function DatatableCategory() {
     let [rows, setRows] = useState([]);
     let [isOpen, setIsOpen] = useState(false);
 
-    let [idBrand, setIdBrand] = useState(0);
+    let [category, setCategory] = useState(0);
     let [listParent, setListParent] = useState();
     const data = useMovieData();
     useEffect(() => {
@@ -141,8 +141,8 @@ function DatatableCategory() {
 
     const dispatch = useDispatch();
 
-    const handleSubmit = (id) => {
-        setIdBrand(id);
+    const handleSubmit = (data) => {
+        setCategory(data);
         setIsOpen(true);
     };
 
@@ -159,7 +159,7 @@ function DatatableCategory() {
     };
 
     const OpenModal = () => {
-        setIdBrand(null);
+        setCategory(null);
         setIsOpen(true);
     };
     const toggleModal = () => {
@@ -183,7 +183,7 @@ function DatatableCategory() {
                     pageSize={9}
                     rowsPerPageOptions={[9]}
                 />
-                <ModalCategory data={idBrand} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
+                <ModalCategory data={category} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
             </div>
         </>
     );

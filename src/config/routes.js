@@ -1,27 +1,26 @@
 const routes = {
-    home: '/home',
-    following: '/following',
-    profile: '/@:nickname',
-    upload: '/upload',
-    search: '/search',
-
-    ///Admin routes
-
-    dashboard: '/',
+    //admin
+    dashboard: '/admin',
     loginAdmin: '/login-admin',
     new: 'new',
-    users: '/users',
+    users: '/admin/users',
     single: 'details/:id',
 
     //brands
-    brands: '/brands',
+    brands: '/admin/brands',
 
     //category
-    category: '/category',
+    category: '/admin/category',
 
     //product
-    product: '/product',
+    product: '/admin/product',
     editProduct: 'edit-product/:productId',
     create_product: 'create-product',
+
+    //customer
+    customer_login: '/login-customer',
+
+    home: '/',
+    product_detail: 'product-detail/:id',
 };
 export default routes;

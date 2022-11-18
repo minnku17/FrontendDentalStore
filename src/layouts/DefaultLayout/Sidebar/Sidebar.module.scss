@@ -1,3 +1,24 @@
 .wrapper {
-    width: 356px;
+    width: 240px;
+    height: 366px;
+    position: relative;
+
+    .category-dropdown {
+    }
+
+    .row-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0px 14px;
+        color: #216daa;
+        font-size: 13px;
+        margin: 5px 0;
+        height: 23px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #e7f3fd;
+        }
+    }
 }

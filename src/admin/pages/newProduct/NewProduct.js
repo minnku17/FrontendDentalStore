@@ -1,18 +1,18 @@
-import styles from './New.module.scss';
-import classNames from 'classnames/bind';
-import images from '~/assets/images';
-import { DriveFolderUploadOutlined } from '@mui/icons-material';
+import { toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import CommonUtils from '~/utils/CommonUtlis';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-
-import config from '~/config';
+import { DriveFolderUploadOutlined } from '@mui/icons-material';
 import jwt_decode from 'jwt-decode';
+import classNames from 'classnames/bind';
+
+import styles from './New.module.scss';
+import images from '~/assets/images';
+import CommonUtils from '~/utils/CommonUtlis';
+import config from '~/config';
 import { createNewProduct, getAllBrands, getAllCategory, getAllProduct, getProductInfoById } from '~/redux/apiReques';
-import { toast } from 'react-toastify';
 import { axiosMiddle } from '~/services/axiosJWT';
-import { useForm } from 'react-hook-form';
 import ModalDescription from '~/admin/components/Modal/modalMarkdown/ModalDescription';
 import ModalSpecification from '~/admin/components/Modal/modalMarkdown/ModalSpecification';
 import ModalFeature from '~/admin/components/Modal/modalMarkdown/ModalFeature';
@@ -22,18 +22,10 @@ const cx = classNames.bind(styles);
 function NewProduct() {
     const { productId } = useParams();
 
-    console.log('check id ', productId);
-
     const user = useSelector((state) => state.auth.login?.currentUser);
     const dataBrand = useSelector((state) => state.brands.allBrand.brands?.data.data);
     const dataCategory = useSelector((state) => state.categories.allCategory.categories?.data.data);
 
-    let [data, setData] = useState({
-        descriptionHtml: '',
-        specificationHtml: null,
-        featureHtml: null,
-        assignHtml: null,
-    });
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -98,23 +90,6 @@ function NewProduct() {
 
         fetchData();
     }, []);
-    let subtitle;
-
-    const afterOpenModal = () => {
-        subtitle.style.color = '#f00';
-    };
-    const customStyles = {
-        content: {
-            height: '350px',
-            width: '900px',
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-        },
-    };
 
     const OpenModal = (e, id) => {
         if (id === 'a') {

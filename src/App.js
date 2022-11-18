@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import config from '~/config';
-import Home from './admin/pages/home/Home';
 import LoginAdmin from './auth/adminLogin';
 import List from './admin/pages/list/List';
 import Single from './admin/pages/single/Single';
@@ -12,6 +11,11 @@ import Brands from './admin/pages/brand/Brands';
 import Category from './admin/pages/category/Category';
 import Product from './admin/pages/product/Product';
 import NewProduct from './admin/pages/newProduct/NewProduct';
+import CustomerLogin from './auth/customerLogin/CustomerLogin';
+import Home from './pages/Home';
+import Dashboard from './admin/pages/home';
+import { DefaultLayout } from './layouts';
+import ProductDetail from './pages/ProductDetail/ProductDetail';
 
 function App() {
     return (
@@ -24,7 +28,7 @@ function App() {
                             index
                             element={
                                 <LayoutAdmin>
-                                    <Home />
+                                    <Dashboard />
                                 </LayoutAdmin>
                             }
                         />
@@ -96,6 +100,27 @@ function App() {
                                 }
                             />
                         </Route>
+                    </Route>
+                </Routes>
+                <Routes>
+                    <Route path={config.routes.customer_login} element={<CustomerLogin />} />
+                    <Route path={config.routes.home}>
+                        <Route
+                            index
+                            element={
+                                <DefaultLayout>
+                                    <Home />
+                                </DefaultLayout>
+                            }
+                        />
+                        <Route
+                            path={config.routes.product_detail}
+                            element={
+                                <DefaultLayout>
+                                    <ProductDetail />
+                                </DefaultLayout>
+                            }
+                        />
                     </Route>
                 </Routes>
                 <ToastContainer

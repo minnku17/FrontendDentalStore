@@ -20,6 +20,10 @@ const productSlice = createSlice({
             data: null,
             error: false,
         },
+        search: {
+            isFetching: false,
+            error: false,
+        },
     },
     reducers: {
         getAllProductStart: (state) => {
@@ -68,6 +72,17 @@ const productSlice = createSlice({
             state.product_info.isFetching = false;
             state.product_info.error = true;
         },
+        searchProductStart: (state) => {
+            state.search.isFetching = true;
+        },
+        searchProductSuccess: (state, action) => {
+            state.search.isFetching = false;
+            state.search.error = false;
+        },
+        searchProductFail: (state) => {
+            state.search.isFetching = false;
+            state.search.error = true;
+        },
     },
 });
 
@@ -84,6 +99,9 @@ export const {
     getProductInfoStart,
     getProductInfoSuccess,
     getProductInfoFail,
+    searchProductStart,
+    searchProductSuccess,
+    searchProductFail,
 } = productSlice.actions;
 
 export default productSlice.reducer;

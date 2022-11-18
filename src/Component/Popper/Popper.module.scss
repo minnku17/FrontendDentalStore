@@ -2,8 +2,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-height: min((100vh - 96px) - 60px, 734px);
-    min-height: 100px;
+    // max-height: min((100vh - 96px) - 60px, 734px);
+    height: 100%;
     padding-top: 8px;
     background: rgb(255, 255, 255);
     box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;

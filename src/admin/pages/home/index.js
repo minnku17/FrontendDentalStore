@@ -14,7 +14,7 @@ import { axiosMiddle } from '~/services/axiosJWT';
 
 const cx = classNames.bind(styles);
 
-function Home() {
+function Dashboard() {
     const user = useSelector((state) => state.auth.login?.currentUser);
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -46,4 +46,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Dashboard;

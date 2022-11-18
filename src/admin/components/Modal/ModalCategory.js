@@ -7,7 +7,14 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import { getAllParentCategory } from '~/services';
-import { createNewCategory, editBrand, editCategory, getAllBrands, getAllCategory } from '~/redux/apiReques';
+import {
+    createNewCategory,
+    editBrand,
+    editCategory,
+    getAllBrands,
+    getAllCategory,
+    getListParentCategory,
+} from '~/redux/apiReques';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { axiosMiddle } from '~/services/axiosJWT';
@@ -29,6 +36,7 @@ const customStyles = {
 
 function ModalCategory({ isOpen, FuncToggleModal, data }) {
     const user = useSelector((state) => state.auth.login?.currentUser);
+    const listParentRedux = useSelector((state) => state.auth.login?.currentUser);
 
     const {
         register,
@@ -45,22 +53,21 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
         defaultValues.title = data?.title ? data?.title : '';
         defaultValues.summary = data?.summary ? data?.summary : '';
         defaultValues.parent_id = data?.parent_id ? data?.parent_id : '';
-        defaultValues.is_parent = data?.is_parent ? data?.is_parent : '0';
-        defaultValues.status = data?.status ? data?.status : '0';
+        defaultValues.is_parent = data?.is_parent ? data?.is_parent : '1';
+        defaultValues.status = data?.status ? data?.status : '1';
         reset({ ...defaultValues });
     }, [data]);
 
     useEffect(() => {
-        if (valueParent === '0') {
-            async function fetchApi() {
-                let res = await getAllParentCategory(user?.accessToken);
-                setListParent(res.data);
-            }
-            fetchApi();
-        } else {
-            setListParent(null);
+        async function fetchApi() {
+            let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+
+            let res = await getListParentCategory(dispatch);
+            setListParent(res.data);
         }
-    }, [valueParent]);
+        fetchApi();
+    }, []);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 

@@ -8,6 +8,12 @@ const category = createSlice({
             categories: null,
             error: false,
         },
+        listParent: {
+            isFetching: false,
+            data: null,
+            error: false,
+        },
+
         create: {
             isFetching: false,
             error: false,
@@ -33,6 +39,19 @@ const category = createSlice({
         getCategoryFail: (state) => {
             state.allCategory.isFetching = false;
             state.allCategory.error = true;
+        },
+
+        getListCategoryStart: (state) => {
+            state.listParent.isFetching = true;
+        },
+        getListCategorySuccess: (state, action) => {
+            state.listParent.isFetching = false;
+            state.listParent.data = action.payload;
+            state.listParent.error = false;
+        },
+        getListCategoryFail: (state) => {
+            state.listParent.isFetching = false;
+            state.listParent.error = true;
         },
 
         createCategoryStart: (state) => {
@@ -89,6 +108,9 @@ export const {
     getCategoryStart,
     getCategorySuccess,
     getCategoryFail,
+    getListCategoryStart,
+    getListCategorySuccess,
+    getListCategoryFail,
     createCategoryStart,
     createCategorySuccess,
     createCategoryFail,

@@ -37,6 +37,9 @@ import {
     getCategoryStart,
     getCategorySuccess,
     getCategoryFail,
+    getListCategoryStart,
+    getListCategorySuccess,
+    getListCategoryFail,
     createCategoryStart,
     createCategorySuccess,
     createCategoryFail,
@@ -60,7 +63,11 @@ import {
     getProductInfoStart,
     getProductInfoSuccess,
     getProductInfoFail,
+    searchProductStart,
+    searchProductSuccess,
+    searchProductFail,
 } from './productSlice';
+import request from '~/utils/request';
 
 export const loginUser = async (email, password, dispatch, navigate) => {
     dispatch(loginStart());
@@ -286,6 +293,26 @@ export const getAllCategory = async (accessToken, dispatch, axiosJWT, navigate) 
     }
 };
 
+export const getListParentCategory = async (dispatch) => {
+    dispatch(getListCategoryStart());
+    try {
+        console.log('check ressssss');
+
+        const res = await request.get(`/api/getAllParentCategory`);
+        console.log(res);
+        if (res.data.errCode === 0) {
+            dispatch(getListCategorySuccess(res));
+            return res.data;
+        } else {
+            console.log(res);
+            dispatch(getListCategoryFail());
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(getListCategoryFail());
+    }
+};
+
 export const createNewCategory = async (data, accessToken, dispatch, axiosJWT) => {
     dispatch(createCategoryStart());
     try {
@@ -419,5 +446,22 @@ export const handleDeleteProduct = async (axiosJWT, id, accessToken, dispatch) =
     } catch (e) {
         console.log(e);
         dispatch(deleteProductFail());
+    }
+};
+
+export const searchProduct = async (dispatch, key) => {
+    dispatch(getProductInfoStart());
+    try {
+        const res = await request.get(`/api/search-product?q=${key}`);
+        if (res.data.errCode === 0) {
+            dispatch(getProductInfoSuccess());
+            return res.data.data;
+        } else {
+            console.log(res);
+            dispatch(getProductInfoFail());
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(getProductInfoFail());
     }
 };
