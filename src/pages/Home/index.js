@@ -1,5 +1,6 @@
 import className from 'classnames/bind';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import 'tippy.js/dist/tippy.css';
 import images from '~/assets/images';
 import Banner from '~/Component/Banner/Banner';
@@ -8,13 +9,24 @@ import CategoryFeature from '~/Component/CategoryFeature/CategoryFeature';
 import ListProduct from '~/Component/ListProduct/ListProduct';
 import SaleCarousel from '~/Component/SaleCarousel/SaleCarousel';
 import Sidebar from '~/layouts/DefaultLayout/Sidebar';
+import { getAllProductLittleInfo } from '~/redux/apiReques';
 
 import styles from './Home.module.scss';
 
 const cx = className.bind(styles);
 
 function Home() {
-    console.log('scroll', window.scrollY);
+    const [allProduct, setAllProduct] = useState();
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        async function fetchApi() {
+            let res = await getAllProductLittleInfo(dispatch);
+            setAllProduct(res);
+        }
+        fetchApi();
+    }, []);
 
     return (
         <>
@@ -63,7 +75,7 @@ function Home() {
                     </div>
                 </div>
                 <div className={cx('sale-device')}></div>
-                <SaleCarousel />
+                <SaleCarousel data={allProduct} sale={true} />
                 <div className={cx('banner-sale-2')}>
                     <div className={cx('left')}>
                         <img src={images.bannerSale7} alt="" />
@@ -83,7 +95,7 @@ function Home() {
                         <img src={images.bannerSale11} alt="" />
                     </div>
                 </div>
-                <SaleCarousel />
+                <SaleCarousel data={allProduct} sale={false} />
                 <div className={cx('banner-sale-4')}>
                     <div className={cx('banner-item')}>
                         <img src={images.bannerSale9} alt="" />
@@ -99,7 +111,7 @@ function Home() {
                     </div>
                 </div>
                 <CategoryFeature />
-                <ListProduct />
+                <ListProduct data={allProduct} />
             </div>
         </>
     );

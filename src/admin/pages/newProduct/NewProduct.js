@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DriveFolderUploadOutlined } from '@mui/icons-material';
@@ -17,10 +17,17 @@ import ModalDescription from '~/admin/components/Modal/modalMarkdown/ModalDescri
 import ModalSpecification from '~/admin/components/Modal/modalMarkdown/ModalSpecification';
 import ModalFeature from '~/admin/components/Modal/modalMarkdown/ModalFeature';
 import ModalAssign from '~/admin/components/Modal/modalMarkdown/ModalAssign';
+import ReactImageGallery from 'react-image-gallery';
+import { Buffer } from 'buffer';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import ImageViewer from 'react-simple-image-viewer';
 
 const cx = classNames.bind(styles);
 function NewProduct() {
     const { productId } = useParams();
+
+    const [currentImage, setCurrentImage] = useState(0);
+    const [isViewerOpen, setIsViewerOpen] = useState(false);
 
     const user = useSelector((state) => state.auth.login?.currentUser);
     const dataBrand = useSelector((state) => state.brands.allBrand.brands?.data.data);
@@ -39,8 +46,8 @@ function NewProduct() {
     let [feau, setFeau] = useState();
     let [ass, setAss] = useState();
 
-    let [reviewAvatar, setReviewAvatar] = useState('');
-    let [photo, setPhoto] = useState('');
+    let [image, setImage] = useState([]);
+    let [photo, setPhoto] = useState([]);
 
     const axiosJWT = axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
     const {
@@ -61,9 +68,17 @@ function NewProduct() {
             await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
 
             if (productId) {
-                let res = await getProductInfoById(dispatch, axiosJWT, productId, user?.accessToken);
+                let res = await getProductInfoById(dispatch, productId);
                 if (res) {
-                    console.log(res);
+                    if (res.Images) {
+                        let arrImage = [];
+
+                        res.Images?.map((item) => {
+                            return arrImage.push(item.photo);
+                        });
+                        setImage(arrImage);
+                    }
+
                     let defaultValues = {};
                     defaultValues.title = res?.title;
                     defaultValues.status = res?.status === true ? '1' : '0';
@@ -76,8 +91,8 @@ function NewProduct() {
                     defaultValues.price = res?.price;
                     defaultValues.discount = res?.discount;
                     defaultValues.condition = res?.condition;
-                    setReviewAvatar(res.photo);
-                    setPhoto(res.photo);
+                    // setImage(res.photo);
+                    setPhoto(image);
                     setDesc(res.Markdown.descriptionHtml);
                     setSpec(res.Markdown.specificationHtml);
                     setFeau(res.Markdown.featureHtml);
@@ -109,10 +124,9 @@ function NewProduct() {
 
         if (files) {
             let base64 = await CommonUtils.getBase64(files);
-            console.log(base64);
-            setPhoto(base64);
-            let objectUrl = URL.createObjectURL(files);
-            setReviewAvatar(objectUrl);
+            setPhoto([...photo, base64]);
+
+            setImage([...image, base64]);
         }
     };
 
@@ -129,12 +143,15 @@ function NewProduct() {
         }
     };
 
-    const onSubmit = async (brand) => {
+    const submit = async (brand, event) => {
+        event.preventDefault();
+        console.log('check');
+
         let data = {
             cat_id: +brand.cat_id,
             brand_id: +brand.brand_id,
             title: brand.title,
-            photo: photo,
+            photo: image,
             type: brand.type,
             stock: +brand.stock,
             unit_of_product: brand.unit_of_product,
@@ -162,13 +179,45 @@ function NewProduct() {
             toast.error(res.errMessage);
         }
     };
+
+    const openImageViewer = useCallback((index) => {
+        setCurrentImage(index);
+        setIsViewerOpen(true);
+    }, []);
+
+    const closeImageViewer = () => {
+        setCurrentImage(0);
+        setIsViewerOpen(false);
+    };
+
+    const deleteImage = (id) => {
+        setImage([...image.slice(0, id), ...image.slice(id + 1)]);
+    };
+
     return (
         <>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(submit)}>
                 <div className={cx('top')}>{productId ? <h1>Chỉnh sửa sản phẩm</h1> : <h1>Thêm sản phẩm mới</h1>}</div>
                 <div className={cx('bottom')}>
                     <div className={cx('left')}>
-                        <img src={reviewAvatar ? reviewAvatar : images.noImage} alt="" />
+                        {/* {image[0] ? <ReactImageGallery items={image} /> : <img src={images.noImage} alt="" />} */}
+                        {image.map((src, index) => (
+                            <>
+                                <div className={cx('image')}>
+                                    <img
+                                        src={src}
+                                        onClick={() => openImageViewer(index)}
+                                        width="300"
+                                        key={index}
+                                        style={{ margin: '2px' }}
+                                        alt=""
+                                    />
+                                    <div onClick={() => deleteImage(index)} className={cx('buttonDelete')}>
+                                        <HighlightOffIcon />
+                                    </div>
+                                </div>
+                            </>
+                        ))}
                     </div>
                     <div className={cx('right')}>
                         <div className={cx('form-input')}>
@@ -184,7 +233,7 @@ function NewProduct() {
                         </div>
                         <div className={cx('form-input')}>
                             <label>Tên sản phẩm</label>
-                            <input placeholder="John" {...register('title', { required: true })} />
+                            <input placeholder="John" {...register('title')} />
                             {errors.exampleRequired && <p>This field is required</p>}
                         </div>
                         <div className={cx('form-input')}>
@@ -236,7 +285,6 @@ function NewProduct() {
                                     __html: feau,
                                 }}
                             ></div>
-                            {errors.exampleRequired && <p>This field is required</p>}
                         </div>
                         <div className={cx('form-input')}>
                             <label>Chỉ định</label>
@@ -253,7 +301,6 @@ function NewProduct() {
                                     __html: ass,
                                 }}
                             ></div>
-                            {errors.exampleRequired && <p>This field is required</p>}
                         </div>
                         <div className={cx('form-input')}>
                             <label>Hãng</label>
@@ -322,23 +369,23 @@ function NewProduct() {
                         </div>
                         <div className={cx('form-input')}>
                             <label>Hạn sử dụng (nếu có)</label>
-                            <input type="text" {...register('expiry', { required: true })} />
+                            <input type="text" {...register('expiry')} />
                         </div>
                         <div className={cx('form-input')}>
                             <label>Số lượng</label>
-                            <input type="number" {...register('stock', { required: true })} />
+                            <input type="number" {...register('stock')} />
                         </div>
                         <div className={cx('form-input')}>
                             <label>Quy cách</label>
-                            <input {...register('unit_of_product', { required: true })} />
+                            <input {...register('unit_of_product')} />
                         </div>
                         <div className={cx('form-input')}>
                             <label>Giá tiền</label>
-                            <input type="number" {...register('price', { required: true })} />
+                            <input type="number" {...register('price')} />
                         </div>
                         <div className={cx('form-input')}>
                             <label>Giảm giá</label>
-                            <input type="number" {...register('discount', { required: true })} />
+                            <input type="number" {...register('discount')} />
                         </div>
                         <div className={cx('form-input')}>
                             <label>Tình trạng</label>

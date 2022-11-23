@@ -3,7 +3,6 @@ import classNames from 'classnames/bind';
 import Modal from 'react-modal';
 import { useEffect, useState } from 'react';
 import images from '~/assets/images';
-import { ConstructionOutlined, DriveFolderUploadOutlined } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import CommonUtils from '~/utils/CommonUtlis';
 import { useDispatch } from 'react-redux';
@@ -17,6 +16,7 @@ import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { DataGridPremium } from '@mui/x-data-grid-premium';
 import { axiosMiddle } from '~/services/axiosJWT';
+import { DriveFolderUploadOutlined } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
@@ -34,6 +34,10 @@ const customStyles = {
 };
 
 function ModalBrands({ isOpen, FuncToggleModal, data }) {
+    let [image, setImage] = useState();
+
+    console.log(data);
+
     const {
         register,
         handleSubmit,
@@ -46,6 +50,7 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
         let defaultValues = {};
         defaultValues.title = data?.title ? data?.title : '';
         defaultValues.status = data?.status ? data?.status : 0;
+        setImage(data?.photo);
         reset({ ...defaultValues });
     }, [data]);
 
@@ -68,6 +73,7 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
                 id: data.id,
                 title: brand.title,
                 status: brand.status,
+                photo: image,
             };
             let res = await editBrand(dispatch, axiosJWT, obj, user?.accessToken);
             if (res.errCode === 0) {
@@ -78,7 +84,12 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
                 toast.error(res.errMessage);
             }
         } else {
-            let res = await createNewBrand(brand, user?.accessToken, dispatch, axiosJWT);
+            let obj = {
+                title: brand.title,
+                status: brand.status,
+                photo: image ? image : null,
+            };
+            let res = await createNewBrand(obj, user?.accessToken, dispatch, axiosJWT);
             if (res.errCode === 0) {
                 toast.success(res.errMessage);
                 await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
@@ -86,6 +97,15 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
             } else {
                 toast.error(res.errMessage);
             }
+        }
+    };
+    const handleOnchangeImg = async (e) => {
+        let data = e.target.files;
+        let files = data[0];
+
+        if (files) {
+            let base64 = await CommonUtils.getBase64(files);
+            setImage(base64);
         }
     };
     return (
@@ -108,8 +128,22 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
                         <>{brand ? <h1>Edit New Brand</h1> : <h1>Add New Brand</h1>}</>
                     </div>
                     <div className={cx('bottom')}>
+                        <div className={cx('left')}>
+                            <img src={image ? image : images.noImage} alt="" />
+                        </div>
                         <div className={cx('right')}>
                             <form onSubmit={handleSubmit(onSubmit)}>
+                                <div className={cx('form-input')}>
+                                    <label htmlFor="file">
+                                        Image: <DriveFolderUploadOutlined className={cx('icon')} />
+                                    </label>
+                                    <input
+                                        onChange={(e) => handleOnchangeImg(e)}
+                                        type="file"
+                                        id="file"
+                                        style={{ display: 'none' }}
+                                    />
+                                </div>
                                 <div className={cx('form-input')}>
                                     <label>Title</label>
 

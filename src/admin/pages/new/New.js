@@ -72,7 +72,6 @@ function New() {
                 ...state,
                 avatar: base64,
             });
-            console.log(base64);
             let objectUrl = URL.createObjectURL(files);
             setReviewAvatar(objectUrl);
         }

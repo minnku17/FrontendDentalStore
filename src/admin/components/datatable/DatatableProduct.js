@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import ModalBrands from '../Modal/ModalBrands';
 import { axiosMiddle } from '~/services/axiosJWT';
-
+import { Buffer } from 'buffer';
 const cx = classNames.bind(styles);
 function DatatableProduct() {
     let allProduct = useSelector((state) => state.product.allProduct.data?.data.data);
@@ -43,10 +43,14 @@ function DatatableProduct() {
     useEffect(() => {
         if (allProduct) {
             let allBrand = allProduct.map((item) => {
+                let image = '';
+                if (item.Images) {
+                    image = new Buffer(item.Images[0]?.photo, 'base64').toString('binary');
+                }
                 return {
                     id: item.id,
                     title: item.title,
-                    photo: item.photo,
+                    photo: image,
                     condition: item.condition,
                     price: item.price,
                     status: item.status,

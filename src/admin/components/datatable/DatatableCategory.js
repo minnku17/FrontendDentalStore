@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { axiosMiddle } from '~/services/axiosJWT';
 import ModalCategory from '../Modal/ModalCategory';
+import images from '~/assets/images';
 
 const cx = classNames.bind(styles);
 function DatatableCategory() {
@@ -31,6 +32,7 @@ function DatatableCategory() {
                     summary: item.summary,
                     is_parent: item.is_parent,
                     parent_id: item.parent_id,
+                    photo: item.Image.photo,
                     status: item.status,
                 };
             });
@@ -50,6 +52,20 @@ function DatatableCategory() {
             field: 'title',
             headerName: 'Title',
             width: 230,
+            renderCell: (params) => {
+                return (
+                    <>
+                        <div className={cx('cellWithImg')}>
+                            <img
+                                className={cx('cellImg')}
+                                src={params.row.photo ? params.row.photo : images.noImage}
+                                alt="avatar"
+                            />
+                            {params.row.title}
+                        </div>
+                    </>
+                );
+            },
         },
         {
             field: 'summary',
@@ -108,7 +124,7 @@ function DatatableCategory() {
                 return (
                     <>
                         <div className={cx('status')}>
-                            {params.row.status === 1 ? (
+                            {params.row.status === true ? (
                                 <div className={cx('active')}>Active</div>
                             ) : (
                                 <div className={cx('disable')}>Disable</div>

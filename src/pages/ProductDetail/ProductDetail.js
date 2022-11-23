@@ -1,6 +1,6 @@
 import className from 'classnames/bind';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import 'tippy.js/dist/tippy.css';
 import images from '../../assets/images';
 import 'react-image-gallery/styles/scss/image-gallery.scss';
@@ -15,23 +15,43 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import SaleCarousel from '~/Component/SaleCarousel/SaleCarousel';
+import TabsStyle from '~/Component/TabsStyle/TabsStyle';
+import { getProductInfoById } from '~/redux/apiReques';
+import { useDispatch } from 'react-redux';
 const cx = className.bind(styles);
 
+function a11yProps(index) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
+
 function ProductDetail() {
-    const images = [
-        {
-            original: 'https://picsum.photos/id/1018/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1019/1000/600/',
-        },
-        {
-            original: 'https://picsum.photos/id/1015/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1015/250/150/',
-        },
-        {
-            original: 'https://picsum.photos/id/1019/1000/600/',
-            thumbnail: 'https://picsum.photos/id/1019/250/150/',
-        },
-    ];
+    const dispatch = useDispatch();
+    const { id } = useParams();
+    let [images, setImages] = useState([]);
+    const [state, setState] = useState({});
+    useEffect(() => {
+        async function fetchApi() {
+            let res = await getProductInfoById(dispatch, id);
+            if (res.Images) {
+                let arr = [];
+
+                res.Images.map((item) => {
+                    let obj = {};
+                    obj.original = item.photo;
+                    obj.thumbnail = item.photo;
+
+                    arr.push(obj);
+                    setImages(arr);
+                });
+            }
+            console.log(res);
+        }
+        fetchApi();
+    }, []);
 
     let [quality, setQuality] = useState(0);
 
@@ -43,7 +63,6 @@ function ProductDetail() {
         if (quality < 1) return;
         setQuality((quality) => (quality -= 1));
     };
-    console.log(quality);
 
     return (
         <>
@@ -191,6 +210,10 @@ function ProductDetail() {
                             </div>
                         </div>
                     </div>
+                </div>
+                <SaleCarousel />
+                <div className={cx('description')}>
+                    <TabsStyle />
                 </div>
             </div>
         </>

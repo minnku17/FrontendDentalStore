@@ -18,6 +18,9 @@ import {
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { axiosMiddle } from '~/services/axiosJWT';
+import images from '~/assets/images';
+import { DriveFolderUploadOutlined } from '@mui/icons-material';
+import CommonUtils from '~/utils/CommonUtlis';
 
 const cx = classNames.bind(styles);
 
@@ -37,7 +40,7 @@ const customStyles = {
 function ModalCategory({ isOpen, FuncToggleModal, data }) {
     const user = useSelector((state) => state.auth.login?.currentUser);
     const listParentRedux = useSelector((state) => state.auth.login?.currentUser);
-
+    console.log(data);
     const {
         register,
         handleSubmit,
@@ -47,6 +50,8 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
     let [category, setCategory] = useState('');
     let [valueParent, setValueParent] = useState();
     let [listParent, setListParent] = useState();
+    let [reviewImage, setReviewImage] = useState();
+    let [image, setImage] = useState();
     useEffect(() => {
         setCategory(data);
         let defaultValues = {};
@@ -55,6 +60,8 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
         defaultValues.parent_id = data?.parent_id ? data?.parent_id : '';
         defaultValues.is_parent = data?.is_parent ? data?.is_parent : '1';
         defaultValues.status = data?.status ? data?.status : '1';
+        setImage(data?.photo ? data.photo : images.noImage);
+
         reset({ ...defaultValues });
     }, [data]);
 
@@ -79,7 +86,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
 
     const onSubmit = async (category) => {
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-
+        console.log(image);
         if (data) {
             let obj = {
                 id: data.id,
@@ -88,6 +95,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
                 is_parent: category.is_parent,
                 parent_id: category.parent_id,
                 summary: category.summary,
+                image: image,
             };
             if (category.is_parent === '1') {
                 obj.parent_id = null;
@@ -101,7 +109,15 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
                 toast.error(res.errMessage);
             }
         } else {
-            let res = await createNewCategory(category, user?.accessToken, dispatch, axiosJWT);
+            let obj = {
+                title: category.title,
+                status: category.status,
+                is_parent: category.is_parent,
+                parent_id: category.parent_id,
+                summary: category.summary,
+                image: image,
+            };
+            let res = await createNewCategory(obj, user?.accessToken, dispatch, axiosJWT);
             if (res.errCode === 0) {
                 toast.success(res.errMessage);
                 await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
@@ -109,6 +125,15 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
             } else {
                 toast.error(res.errMessage);
             }
+        }
+    };
+    const handleOnchangeImg = async (e) => {
+        let data = e.target.files;
+        let files = data[0];
+
+        if (files) {
+            let base64 = await CommonUtils.getBase64(files);
+            setImage(base64);
         }
     };
     return (
@@ -122,7 +147,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
                     contentLabel="Example Modal"
                 >
                     <div className={cx('header')}>
-                        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>BRAND</h2>
+                        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>CATEGORY</h2>
                         <button className={cx('close')} onClick={FuncToggleModal}>
                             close
                         </button>
@@ -131,8 +156,22 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
                         <>{category ? <h1>Edit New Category</h1> : <h1>Add New Category</h1>}</>
                     </div>
                     <div className={cx('bottom')}>
+                        <div className={cx('left')}>
+                            <img src={image ? image : images.noImage} alt="" />
+                        </div>
                         <div className={cx('right')}>
                             <form onSubmit={handleSubmit(onSubmit)}>
+                                <div className={cx('form-input')}>
+                                    <label htmlFor="file">
+                                        Image: <DriveFolderUploadOutlined className={cx('icon')} />
+                                    </label>
+                                    <input
+                                        onChange={(e) => handleOnchangeImg(e)}
+                                        type="file"
+                                        id="file"
+                                        style={{ display: 'none' }}
+                                    />
+                                </div>
                                 <div className={cx('form-input')}>
                                     <label>Title</label>
 

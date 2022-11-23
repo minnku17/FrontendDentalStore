@@ -44,7 +44,7 @@ function DatatableUser() {
                     username: `${item.firstName} ${item.lastName}`,
                     status: 'active',
                     email: item.email,
-                    image: item.image,
+                    image: item.Image.photo,
                     gender: item.gender,
                     address: item.address,
                     role: item.roleId,

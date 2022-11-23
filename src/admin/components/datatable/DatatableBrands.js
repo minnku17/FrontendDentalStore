@@ -38,7 +38,7 @@ function DatatableBrands() {
                 return {
                     id: item.id,
                     title: item.title,
-                    photo: item.photo,
+                    photo: item.Image?.photo,
                     status: item.status,
                 };
             });
@@ -59,7 +59,7 @@ function DatatableBrands() {
                         <div className={cx('cellWithImg')}>
                             <img
                                 className={cx('cellImg')}
-                                src={params.row.image ? params.row.image : images.noImage}
+                                src={params.row.photo ? params.row.photo : images.noImage}
                                 alt="avatar"
                             />
                             {params.row.title}
@@ -76,7 +76,7 @@ function DatatableBrands() {
                 return (
                     <>
                         <div className={cx('status')}>
-                            {params.row.status === 1 ? (
+                            {params.row.status === true ? (
                                 <div className={cx('active')}>Active</div>
                             ) : (
                                 <div className={cx('disable')}>Disable</div>
@@ -119,7 +119,6 @@ function DatatableBrands() {
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
 
         let res = await deleteBrand(dispatch, axiosJWT, id, user?.accessToken);
-        console.log('check res from handleDeleteUser:>>>', res);
 
         if (res.errCode === 0) {
             await getAllBrands(user?.accessToken, dispatch, axiosJWT);

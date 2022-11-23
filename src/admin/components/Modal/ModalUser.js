@@ -198,6 +198,7 @@ function ModalUser({ isOpen, FuncToggleModal }) {
                                         value={state.email}
                                         onChange={(e) => handleOnchangeInput(e, 'email')}
                                         type="email"
+                                        readOnly
                                         placeholder="thanhhoa@gmail.com"
                                     />
                                 </div>

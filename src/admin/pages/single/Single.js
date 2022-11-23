@@ -35,7 +35,7 @@ function Single() {
     useEffect(() => {
         if (userRedux) {
             setDetailUser({
-                image: userRedux?.image,
+                image: userRedux?.Image.photo,
                 firstName: userRedux.firstName,
                 lastName: userRedux.lastName,
                 email: userRedux.email,

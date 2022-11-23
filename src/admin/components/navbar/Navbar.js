@@ -18,7 +18,7 @@ import Tippy from '@tippyjs/react/headless';
 
 const cx = classNames.bind(styles);
 function NavBar() {
-    const user = useSelector((state) => state.auth.login?.currentUser?.user);
+    const user = useSelector((state) => state.auth.login.currentUser?.user.Image);
 
     return (
         <>
@@ -65,7 +65,7 @@ function NavBar() {
                             >
                                 <button className={cx('action-btn')}>
                                     <img
-                                        src={user?.image ? user.image : images.noImage}
+                                        src={user?.photo ? user.photo : images.noImage}
                                         alt=""
                                         className={cx('avatar')}
                                     />

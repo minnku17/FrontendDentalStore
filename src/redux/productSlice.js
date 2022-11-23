@@ -24,6 +24,11 @@ const productSlice = createSlice({
             isFetching: false,
             error: false,
         },
+        LittleInFoAllProduct: {
+            data: null,
+            isFetching: false,
+            error: false,
+        },
     },
     reducers: {
         getAllProductStart: (state) => {
@@ -72,6 +77,19 @@ const productSlice = createSlice({
             state.product_info.isFetching = false;
             state.product_info.error = true;
         },
+        LittleInFoAllProductStart: (state) => {
+            state.LittleInFoAllProduct.isFetching = true;
+        },
+        LittleInFoAllProductSuccess: (state, action) => {
+            state.LittleInFoAllProduct.isFetching = false;
+            state.LittleInFoAllProduct.data = action.payload;
+
+            state.LittleInFoAllProduct.error = false;
+        },
+        LittleInFoAllProductFail: (state) => {
+            state.LittleInFoAllProduct.isFetching = false;
+            state.LittleInFoAllProduct.error = true;
+        },
         searchProductStart: (state) => {
             state.search.isFetching = true;
         },
@@ -102,6 +120,9 @@ export const {
     searchProductStart,
     searchProductSuccess,
     searchProductFail,
+    LittleInFoAllProductStart,
+    LittleInFoAllProductSuccess,
+    LittleInFoAllProductFail,
 } = productSlice.actions;
 
 export default productSlice.reducer;

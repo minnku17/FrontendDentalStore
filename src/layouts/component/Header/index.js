@@ -55,8 +55,6 @@ function Header() {
         fetchApi();
     }, [debounced, searchValue]);
 
-    console.log('render search', searchResult);
-
     const handleOnchange = (e) => {
         const searchValue = e.target.value;
         if (!searchValue.startsWith(' ')) {

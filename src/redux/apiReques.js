@@ -66,6 +66,9 @@ import {
     searchProductStart,
     searchProductSuccess,
     searchProductFail,
+    LittleInFoAllProductStart,
+    LittleInFoAllProductSuccess,
+    LittleInFoAllProductFail,
 } from './productSlice';
 import request from '~/utils/request';
 
@@ -296,10 +299,7 @@ export const getAllCategory = async (accessToken, dispatch, axiosJWT, navigate) 
 export const getListParentCategory = async (dispatch) => {
     dispatch(getListCategoryStart());
     try {
-        console.log('check ressssss');
-
         const res = await request.get(`/api/getAllParentCategory`);
-        console.log(res);
         if (res.data.errCode === 0) {
             dispatch(getListCategorySuccess(res));
             return res.data;
@@ -388,12 +388,27 @@ export const getAllProduct = async (accessToken, dispatch, axiosJWT, navigate) =
     }
 };
 
-export const getProductInfoById = async (dispatch, axiosJWT, id, accessToken) => {
+export const getAllProductLittleInfo = async (dispatch) => {
+    dispatch(LittleInFoAllProductStart());
+    try {
+        const res = await request.get(`/api/getAllProductHome`);
+        if (res.data.errCode === 0) {
+            dispatch(LittleInFoAllProductSuccess());
+            return res.data.data;
+        } else {
+            console.log(res);
+            dispatch(LittleInFoAllProductFail());
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(LittleInFoAllProductFail());
+    }
+};
+
+export const getProductInfoById = async (dispatch, id) => {
     dispatch(getProductInfoStart());
     try {
-        const res = await axiosJWT.get(`/api/getProductInfoById?id=${id}`, {
-            headers: { token: `Bearer ${accessToken}` },
-        });
+        const res = await request.get(`/api/getProductInfoById?id=${id}`);
         if (res.data.errCode === 0) {
             dispatch(getProductInfoSuccess(res));
             return res.data.data;

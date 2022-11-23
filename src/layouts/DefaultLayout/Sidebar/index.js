@@ -27,8 +27,6 @@ function Sidebar() {
         }
         fetchApi();
     }, []);
-
-    console.log(listParent);
     return (
         <aside className={cx('wrapper')}>
             <PopperWrapper>
