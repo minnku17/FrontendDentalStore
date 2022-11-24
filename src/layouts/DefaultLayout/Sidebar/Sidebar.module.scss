@@ -1,7 +1,10 @@
 .wrapper {
     width: 240px;
     height: 366px;
+    background-color: #fff;
+    border-radius: 8px;
     position: relative;
+    overflow-y: hidden;
 
     .category-dropdown {
     }

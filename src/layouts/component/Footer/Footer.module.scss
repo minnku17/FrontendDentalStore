@@ -30,6 +30,11 @@
                     display: block;
                     color: #808089;
                     margin: 10px 0;
+                    cursor: pointer;
+
+                    &:hover {
+                        color: #188aeb;
+                    }
                 }
                 .connect {
                     display: flex;

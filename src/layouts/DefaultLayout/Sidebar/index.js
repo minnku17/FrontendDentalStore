@@ -29,31 +29,29 @@ function Sidebar() {
     }, []);
     return (
         <aside className={cx('wrapper')}>
-            <PopperWrapper>
-                {listParent?.map((item, index) => {
-                    return (
-                        <Tippy
-                            className={cx('tippy')}
-                            interactive
-                            delay={300}
-                            render={(attrs) => (
-                                <div className={cx('category-dropdown')} tabIndex="-1" {...attrs}>
-                                    <PopperWrapper className={cx('popper-wrapper')}>
-                                        <>hello</>
-                                    </PopperWrapper>
-                                </div>
-                            )}
-                        >
-                            <div className={cx('row-item')}>
-                                <div className={cx('title')}>{item.title}</div>
-                                <div className={cx('icon')}>
-                                    <KeyboardArrowRightIcon />
-                                </div>
+            {listParent?.map((item, index) => {
+                return (
+                    <Tippy
+                        className={cx('tippy')}
+                        interactive
+                        delay={300}
+                        render={(attrs) => (
+                            <div className={cx('category-dropdown')} tabIndex="-1" {...attrs}>
+                                <PopperWrapper className={cx('popper-wrapper')}>
+                                    <>hello</>
+                                </PopperWrapper>
                             </div>
-                        </Tippy>
-                    );
-                })}
-            </PopperWrapper>
+                        )}
+                    >
+                        <div className={cx('row-item')}>
+                            <div className={cx('title')}>{item.title}</div>
+                            <div className={cx('icon')}>
+                                <KeyboardArrowRightIcon />
+                            </div>
+                        </div>
+                    </Tippy>
+                );
+            })}
         </aside>
     );
 }

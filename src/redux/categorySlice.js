@@ -8,6 +8,11 @@ const category = createSlice({
             categories: null,
             error: false,
         },
+        allCategoryCustomer: {
+            isFetching: false,
+            categories: null,
+            error: false,
+        },
         listParent: {
             isFetching: false,
             data: null,
@@ -28,17 +33,29 @@ const category = createSlice({
         },
     },
     reducers: {
-        getCategoryStart: (state) => {
+        getCategoryStartAdmin: (state) => {
             state.allCategory.isFetching = true;
         },
-        getCategorySuccess: (state, action) => {
+        getCategorySuccessAdmin: (state, action) => {
             state.allCategory.isFetching = false;
             state.allCategory.categories = action.payload;
             state.allCategory.error = false;
         },
-        getCategoryFail: (state) => {
+        getCategoryFailAdmin: (state) => {
             state.allCategory.isFetching = false;
             state.allCategory.error = true;
+        },
+        getCategoryStart: (state) => {
+            state.allCategoryCustomer.isFetching = true;
+        },
+        getCategorySuccess: (state, action) => {
+            state.allCategoryCustomer.isFetching = false;
+            state.allCategoryCustomer.categories = action.payload;
+            state.allCategoryCustomer.error = false;
+        },
+        getCategoryFail: (state) => {
+            state.allCategoryCustomer.isFetching = false;
+            state.allCategoryCustomer.error = true;
         },
 
         getListCategoryStart: (state) => {
@@ -105,6 +122,9 @@ const category = createSlice({
 });
 
 export const {
+    getCategoryStartAdmin,
+    getCategorySuccessAdmin,
+    getCategoryFailAdmin,
     getCategoryStart,
     getCategorySuccess,
     getCategoryFail,

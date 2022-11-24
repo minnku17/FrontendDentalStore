@@ -12,23 +12,25 @@ const cx = className.bind(styles);
 function ListProduct(data) {
     const [allProducts, setAllProduct] = useState();
     useEffect(() => {
-        // setAllProduct(data.data);
+        console.log(data);
+        setAllProduct(data.data);
     }, [data]);
     const viewDetailProduct = (id) => {
         console.log(id);
     };
+    console.log(allProducts);
     return (
         <div className={cx('wrapper')}>
             <p>Gợi ý hôm nay</p>
 
             <div className={cx('list')}>
-                {/* {allProducts
+                {allProducts
                     ? allProducts?.map((item, index) => {
                           return (
                               <div key={index}>
                                   <div onClick={() => viewDetailProduct(item.id)} className={cx('wrapper')}>
                                       <div className={cx('top')}>
-                                          <img src={item.photo ? item.photo : images.product1} alt="" />
+                                          <img src={item.image ? item.image : images.product1} alt="" />
                                           {item.discount > 0 ? (
                                               <div className={cx('sale')}>{`-${item.discount}%`}</div>
                                           ) : (
@@ -68,7 +70,7 @@ function ListProduct(data) {
                                               </div>
                                           </div>
                                           <div className={cx('wrapper-brand')}>
-                                              <div className={cx('brand')}>{item.Brand.title}</div>
+                                              <div className={cx('brand')}>{item.brand}</div>
                                               <div className={cx('sold')}>Đã bán: {item.sold ? item.sold : 0}</div>
                                           </div>
                                           <div className={cx('gift')}>
@@ -83,7 +85,7 @@ function ListProduct(data) {
                               </div>
                           );
                       })
-                    : ''} */}
+                    : ''}
             </div>
         </div>
     );

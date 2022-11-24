@@ -23,8 +23,6 @@ function SaleCarousel(data, sale) {
 
     const [allProduct, setAllProduct] = useState();
     useEffect(() => {
-        console.log(data.data);
-
         if (data.sale === true) {
             if (data.data) {
                 let productSale = data.data.filter((item) => {
@@ -46,8 +44,8 @@ function SaleCarousel(data, sale) {
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
                     infinite: true,
                     dots: true,
                 },
@@ -69,10 +67,7 @@ function SaleCarousel(data, sale) {
             },
         ],
     };
-    console.log(allProduct);
-
     const viewDetailProduct = (id) => {
-        console.log(id);
         navigate(`product-detail/${id}`);
     };
 
@@ -96,7 +91,7 @@ function SaleCarousel(data, sale) {
                                                       className={cx('sale')}
                                                   >{`-${item.discount}%`}</div>
                                               )}
-                                              <span className={cx('unit')}>bộ</span>
+                                              <span className={cx('unit')}>{item.unit}</span>
                                               <div className={cx('event')}>
                                                   <img src={images.eventsale} alt="" />
                                               </div>

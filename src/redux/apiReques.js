@@ -37,6 +37,9 @@ import {
     getCategoryStart,
     getCategorySuccess,
     getCategoryFail,
+    getCategoryStartAdmin,
+    getCategorySuccessAdmin,
+    getCategoryFailAdmin,
     getListCategoryStart,
     getListCategorySuccess,
     getListCategoryFail,
@@ -278,10 +281,28 @@ export const editBrand = async (dispatch, axiosJWT, data, accessToken) => {
     }
 };
 
-export const getAllCategory = async (accessToken, dispatch, axiosJWT, navigate) => {
+export const getAllCategoryAdmin = async (accessToken, dispatch, axiosJWT, navigate) => {
+    dispatch(getCategoryStartAdmin());
+    try {
+        const res = await axiosJWT.get(`/api/getAllCategoryAdmin`, { headers: { token: `Bearer ${accessToken}` } });
+        if (res.data.errCode === 0) {
+            dispatch(getCategorySuccessAdmin(res));
+            return res.data;
+        } else {
+            console.log(res);
+            dispatch(getCategoryFailAdmin());
+        }
+    } catch (e) {
+        console.log(e);
+        navigate(config.routes.loginAdmin);
+        dispatch(getCategoryFailAdmin());
+    }
+};
+
+export const getAllCategory = async (dispatch) => {
     dispatch(getCategoryStart());
     try {
-        const res = await axiosJWT.get(`/api/getAllCategory`, { headers: { token: `Bearer ${accessToken}` } });
+        const res = await request.get(`/api/getAllCategory?limit=${20}`);
         if (res.data.errCode === 0) {
             dispatch(getCategorySuccess(res));
             return res.data;
@@ -291,7 +312,6 @@ export const getAllCategory = async (accessToken, dispatch, axiosJWT, navigate) 
         }
     } catch (e) {
         console.log(e);
-        navigate(config.routes.loginAdmin);
         dispatch(getCategoryFail());
     }
 };
@@ -405,10 +425,10 @@ export const getAllProductLittleInfo = async (dispatch) => {
     }
 };
 
-export const getProductInfoById = async (dispatch, id) => {
+export const getProductInfoAdminById = async (dispatch, id) => {
     dispatch(getProductInfoStart());
     try {
-        const res = await request.get(`/api/getProductInfoById?id=${id}`);
+        const res = await request.get(`/api/getProductInfoAdminById?id=${id}`);
         if (res.data.errCode === 0) {
             dispatch(getProductInfoSuccess(res));
             return res.data.data;

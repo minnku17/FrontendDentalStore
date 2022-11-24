@@ -11,7 +11,14 @@ import styles from './New.module.scss';
 import images from '~/assets/images';
 import CommonUtils from '~/utils/CommonUtlis';
 import config from '~/config';
-import { createNewProduct, getAllBrands, getAllCategory, getAllProduct, getProductInfoById } from '~/redux/apiReques';
+import {
+    createNewProduct,
+    getAllBrands,
+    getAllCategoryAdmin,
+    getAllProduct,
+    getProductInfoAdminById,
+    getProductInfoById,
+} from '~/redux/apiReques';
 import { axiosMiddle } from '~/services/axiosJWT';
 import ModalDescription from '~/admin/components/Modal/modalMarkdown/ModalDescription';
 import ModalSpecification from '~/admin/components/Modal/modalMarkdown/ModalSpecification';
@@ -65,10 +72,10 @@ function NewProduct() {
     useEffect(() => {
         async function fetchData() {
             await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
-            await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
+            await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT, navigate);
 
             if (productId) {
-                let res = await getProductInfoById(dispatch, productId);
+                let res = await getProductInfoAdminById(dispatch, productId);
                 if (res) {
                     if (res.Images) {
                         let arrImage = [];
@@ -361,10 +368,8 @@ function NewProduct() {
                                 onBlur={type.onBlur}
                                 ref={type.ref}
                             >
-                                <option value="0">ss</option>
-                                <option value="1">a</option>
-                                <option value="2">ccss</option>
-                                <option value="3">sssssss</option>
+                                <option value="Hàng chính hãng">Hàng chính hãng</option>
+                                <option value="Hàng Trung Quốc">Hàng Trung Quốc</option>
                             </select>
                         </div>
                         <div className={cx('form-input')}>

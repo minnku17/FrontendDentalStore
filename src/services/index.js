@@ -70,3 +70,12 @@ export const getAllParentCategory = async (accessToken) => {
         console.log(error);
     }
 };
+
+export const getProductInfo = async (id) => {
+    try {
+        const res = await request.get(`/api/getProductInfoById?id=${id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};

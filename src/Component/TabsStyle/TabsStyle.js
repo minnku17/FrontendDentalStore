@@ -1,9 +1,15 @@
 import { styled } from '@mui/system';
+import className from 'classnames/bind';
 import TabsUnstyled from '@mui/base/TabsUnstyled';
 import TabsListUnstyled from '@mui/base/TabsListUnstyled';
 import TabPanelUnstyled from '@mui/base/TabPanelUnstyled';
 import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+import styles from './TabsStyle.module.scss';
+
+const cx = className.bind(styles);
 
 const blue = {
     50: '#F0F7FF',
@@ -92,18 +98,151 @@ const TabsList = styled(TabsListUnstyled)(
 );
 
 function TabsStyle(props) {
-    const { children, value, index, ...other } = props;
+    const { data, children, value, index, ...other } = props;
 
     return (
         <TabsUnstyled defaultValue={0}>
             <TabsList>
                 <Tab>MÔ TẢ</Tab>
-                <Tab>ĐÁNH GIÁ NHA SĨ (46)</Tab>
-                <Tab>HỎI ĐÁP (2)</Tab>
+                {data.Html.specification && <Tab>THÔNG SỐ/THÀNH PHẦN</Tab>}
+                {data.Html.feature && <Tab>ĐẶC ĐIỂM CHÍNH </Tab>}
+                {data.Html.assign && <Tab>CHỈ ĐỊNH </Tab>}
+                {/* <Tab>HỎI ĐÁP (2)</Tab> */}
             </TabsList>
-            <TabPanel value={0}>First page</TabPanel>
-            <TabPanel value={1}>Second page</TabPanel>
-            <TabPanel value={2}>Third page</TabPanel>
+            <TabPanel value={0}>
+                <div className={cx('wrapper')}>
+                    <div className={cx('title')}>{data.title}</div>
+                    <div className={cx('group-info')}>
+                        {data.brand && (
+                            <div className={cx('content')}>
+                                <div className={cx('content-left')}>
+                                    <CheckCircleIcon className={cx('icon')} />
+
+                                    <strong>Xuất xứ:</strong>
+                                </div>
+                                <div className={cx('content-right')}>
+                                    <p>{data.brand}</p>
+                                </div>
+                            </div>
+                        )}
+                        {data.type && (
+                            <div className={cx('content')}>
+                                <div className={cx('content-left')}>
+                                    <CheckCircleIcon className={cx('icon')} />
+
+                                    <strong>Loại:</strong>
+                                </div>
+                                <div className={cx('content-right')}>
+                                    <p>{data.type}</p>
+                                </div>
+                            </div>
+                        )}
+                        {data.unit && (
+                            <div className={cx('content')}>
+                                <div className={cx('content-left')}>
+                                    <CheckCircleIcon className={cx('icon')} />
+
+                                    <strong>Quy cách:</strong>
+                                </div>
+                                <div className={cx('content-right')}>
+                                    <p>{data.unit}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    {data.Html.description && (
+                        <div
+                            className={cx('description')}
+                            dangerouslySetInnerHTML={{
+                                __html: data.Html.description,
+                            }}
+                        ></div>
+                    )}
+                    {data.Html.specification && (
+                        <>
+                            <div className={cx('title')}>THÔNG SỐ/THÀNH PHẦN</div>
+                            <div
+                                className={cx('description')}
+                                dangerouslySetInnerHTML={{
+                                    __html: data.Html.specification,
+                                }}
+                            ></div>
+                        </>
+                    )}
+                    {data.Html.feature && (
+                        <>
+                            {' '}
+                            <div className={cx('title')}>ĐẶC ĐIỂM CHÍNH</div>
+                            <div
+                                className={cx('description')}
+                                dangerouslySetInnerHTML={{
+                                    __html: data.Html.feature,
+                                }}
+                            ></div>
+                        </>
+                    )}
+                    {data.Html.assign && (
+                        <>
+                            {' '}
+                            <div className={cx('title')}>CHỈ ĐỊNH</div>
+                            <div
+                                className={cx('description')}
+                                dangerouslySetInnerHTML={{
+                                    __html: data.Html.assign,
+                                }}
+                            ></div>
+                        </>
+                    )}
+                </div>
+            </TabPanel>
+            {data.Html.specification && (
+                <TabPanel value={1}>
+                    <div className={cx('wrapper')}>
+                        <div className={cx('title')}>THÔNG SỐ/THÀNH PHẦN</div>
+
+                        {data.Html.specification && (
+                            <div
+                                className={cx('description')}
+                                dangerouslySetInnerHTML={{
+                                    __html: data.Html.specification,
+                                }}
+                            ></div>
+                        )}
+                    </div>
+                </TabPanel>
+            )}
+            {data.Html.feature && (
+                <TabPanel value={2}>
+                    <div className={cx('wrapper')}>
+                        <div className={cx('title')}>ĐẶC ĐIỂM CHÍNH</div>
+
+                        {data.Html.feature && (
+                            <div
+                                className={cx('description')}
+                                dangerouslySetInnerHTML={{
+                                    __html: data.Html.feature,
+                                }}
+                            ></div>
+                        )}
+                    </div>
+                </TabPanel>
+            )}
+            {data.Html.assign && (
+                <TabPanel value={3}>
+                    <div className={cx('wrapper')}>
+                        <div className={cx('title')}>CHỈ ĐỊNH</div>
+
+                        {data.Html.assign && (
+                            <div
+                                className={cx('description')}
+                                dangerouslySetInnerHTML={{
+                                    __html: data.Html.assign,
+                                }}
+                            ></div>
+                        )}
+                    </div>
+                </TabPanel>
+            )}
         </TabsUnstyled>
     );
 }

@@ -12,7 +12,7 @@ import {
     editBrand,
     editCategory,
     getAllBrands,
-    getAllCategory,
+    getAllCategoryAdmin,
     getListParentCategory,
 } from '~/redux/apiReques';
 import { toast } from 'react-toastify';
@@ -103,7 +103,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
             let res = await editCategory(dispatch, axiosJWT, obj, user?.accessToken);
             if (res.errCode === 0) {
                 toast.success(res.errMessage);
-                await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
+                await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT, navigate);
                 FuncToggleModal();
             } else {
                 toast.error(res.errMessage);
@@ -120,7 +120,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
             let res = await createNewCategory(obj, user?.accessToken, dispatch, axiosJWT);
             if (res.errCode === 0) {
                 toast.success(res.errMessage);
-                await getAllCategory(user?.accessToken, dispatch, axiosJWT, navigate);
+                await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT, navigate);
                 FuncToggleModal();
             } else {
                 toast.error(res.errMessage);

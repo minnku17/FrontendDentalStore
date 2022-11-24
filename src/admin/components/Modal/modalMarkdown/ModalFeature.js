@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import { getAllParentCategory } from '~/services';
-import { createNewCategory, editBrand, editCategory, getAllBrands, getAllCategory } from '~/redux/apiReques';
+import { createNewCategory, editBrand, editCategory, getAllBrands, getAllCategoryAdmin } from '~/redux/apiReques';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { axiosMiddle } from '~/services/axiosJWT';

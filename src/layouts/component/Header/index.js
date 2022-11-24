@@ -1,12 +1,15 @@
 import className from 'classnames/bind';
 import 'tippy.js/dist/tippy.css';
 import HeadlessTippy from '@tippyjs/react/headless';
+import { NumericFormat } from 'react-number-format';
 
 import SearchIcon from '@mui/icons-material/Search';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Person4Icon from '@mui/icons-material/Person4';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddIcon from '@mui/icons-material/Add';
 
 import styles from './Header.module.scss';
 import images from '~/assets/images';
@@ -14,17 +17,19 @@ import { Wrapper as PopperWrapper } from '~/Component/Popper';
 
 import config from '~/config';
 import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { useEffect, useRef, useState } from 'react';
 import { useDebounce } from '~/hooks';
 import { searchProduct } from '~/redux/apiReques';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Tippy from '@tippyjs/react/headless';
-import { followCursor } from 'tippy.js';
 
 const cx = className.bind(styles);
 
 function Header() {
+    const productCart = useSelector((state) => state.cart.cart?.data);
+
+    console.log('check cart from header', productCart);
+
     const [searchValue, setSearchValue] = useState('');
     const [showResult, setShowResult] = useState(true);
 
@@ -59,6 +64,9 @@ function Header() {
         const searchValue = e.target.value;
         if (!searchValue.startsWith(' ')) {
             setSearchValue(searchValue);
+        } else if (searchValue.startsWith('')) {
+            console.log('searchValue');
+            setSearchResult([]);
         }
     };
     const handleClear = () => {
@@ -176,12 +184,98 @@ function Header() {
                                     <div className={cx('notifi')}>0</div>
                                 </div>
                             </Tippy>
-
-                            <div className={cx('cart')}>
-                                <ShoppingCartIcon className={cx('cart-icon')} />
-                                <div className={cx('notifi')}>0</div>
-                                <div className={cx('pulsing-2')}></div>
-                            </div>
+                            <Tippy
+                                arrow
+                                interactive
+                                followCursor={true}
+                                delay={300}
+                                render={(attrs) => (
+                                    <div className={cx('cart-dropdown')} tabIndex="-1" {...attrs}>
+                                        <PopperWrapper>
+                                            <div className={cx('container')}>
+                                                <p className={cx('title')}>Sản Phẩm Mới Thêm</p>
+                                                <div className={cx('product-item')}>
+                                                    <div className={cx('left')}>
+                                                        <img src={images.noImage} alt="" />
+                                                        <div className={cx('name')}>
+                                                            <span className={cx('top-title')}>
+                                                                Tay khoang nhanh Coxo
+                                                            </span>
+                                                            <span className={cx('price')}>
+                                                                <div className={cx('price-sale')}>
+                                                                    <NumericFormat
+                                                                        className="currency"
+                                                                        type="text"
+                                                                        value="10000"
+                                                                        displayType="text"
+                                                                        thousandSeparator={true}
+                                                                        suffix={'đ'}
+                                                                    />
+                                                                </div>
+                                                                <div className={cx('price-old')}>
+                                                                    <NumericFormat
+                                                                        className="currency"
+                                                                        type="text"
+                                                                        value="10000"
+                                                                        displayType="text"
+                                                                        thousandSeparator={true}
+                                                                        suffix={'đ'}
+                                                                    />
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className={cx('right-count')}>
+                                                        <div className={cx('quality-product')}>
+                                                            <button>
+                                                                {/* onClick={() => handleDecrease()} */}
+                                                                <RemoveIcon />
+                                                            </button>
+                                                            <input readOnly />
+                                                            {/* value={quality} */}
+                                                            <button>
+                                                                {/* onClick={() => handleIncrease()} */}
+                                                                <AddIcon />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className={cx('total')}>
+                                                    <div className={cx('total-left')}>
+                                                        <div className={cx('wrapper-price')}>
+                                                            <p>Tổng tiền: </p>
+                                                            <span>
+                                                                <NumericFormat
+                                                                    className="currency"
+                                                                    type="text"
+                                                                    value="10000"
+                                                                    displayType="text"
+                                                                    thousandSeparator={true}
+                                                                    suffix={'đ'}
+                                                                />
+                                                            </span>
+                                                        </div>
+                                                        <div className={cx('count-product')}>
+                                                            <p className={cx('title-count')}>Sản phẩm: </p>
+                                                            <span className={cx('count')}>2</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className={cx('button-right')}>
+                                                        <button>Đặt hàng</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </PopperWrapper>
+                                    </div>
+                                )}
+                                onClickOutside={handleHideResult}
+                            >
+                                <div className={cx('cart')}>
+                                    <ShoppingCartIcon className={cx('cart-icon')} />
+                                    <div className={cx('notifi')}>0</div>
+                                    <div className={cx('pulsing-2')}></div>
+                                </div>
+                            </Tippy>
                         </div>
                     </div>
                 </div>

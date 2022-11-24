@@ -5,7 +5,7 @@ import { useMovieData } from '@mui/x-data-grid-generator';
 import { useDispatch, useSelector } from 'react-redux';
 import jwt_decode from 'jwt-decode';
 import { getAllParentCategory } from '~/services';
-import { deleteCategory, getAllCategory } from '~/redux/apiReques';
+import { deleteCategory, getAllCategoryAdmin } from '~/redux/apiReques';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { axiosMiddle } from '~/services/axiosJWT';
@@ -168,7 +168,7 @@ function DatatableCategory() {
 
         if (res.errCode === 0) {
             toast.success(res.errMessage);
-            await getAllCategory(user?.accessToken, dispatch, axiosJWT);
+            await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT);
         } else {
             toast.error(res.errMessage);
         }

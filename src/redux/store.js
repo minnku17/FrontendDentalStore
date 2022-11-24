@@ -6,10 +6,11 @@ import userReducer from './userSlice';
 import brandReducer from './brandSlice';
 import categoryReducer from './categorySlice';
 import productReducer from './productSlice';
+import cartReducer from './cartSlice';
 const persistConfig = {
     key: 'rootDental',
     version: 1,
-    whitelist: ['auth'],
+    whitelist: ['auth', 'cart'],
     storage,
 };
 
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
     brands: brandReducer,
     categories: categoryReducer,
     product: productReducer,
+    cart: cartReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
