@@ -4,7 +4,7 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState: {
         cart: {
-            data: [],
+            arrCart: [],
             isFetching: false,
             error: false,
         },
@@ -14,8 +14,9 @@ const cartSlice = createSlice({
             state.cart.isFetching = true;
         },
         addProductSuccess: (state, action) => {
+            console.log(action.payload);
             state.cart.isFetching = false;
-            state.cart.data = action.payload;
+            state.cart.arrCart = action.payload;
             state.cart.error = false;
         },
         addProductFail: (state) => {

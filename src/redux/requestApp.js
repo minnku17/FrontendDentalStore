@@ -1,9 +1,9 @@
 import { addProductStart, addProductSuccess, addProductFail } from './cartSlice';
 
-export const addProductToCart = async (dispatch, data) => {
+export const addProductToCart = async (dispatch, arr) => {
     dispatch(addProductStart());
     try {
-        dispatch(addProductSuccess(data));
+        dispatch(addProductSuccess(arr));
         return {
             errCode: 0,
             errMessage: 'Thêm vào giỏ hàng thành công',

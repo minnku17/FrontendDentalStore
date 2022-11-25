@@ -19,10 +19,11 @@ import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SaleCarousel from '~/Component/SaleCarousel/SaleCarousel';
 import TabsStyle from '~/Component/TabsStyle/TabsStyle';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getProductInfo } from '~/services';
 import { getAllProductLittleInfo } from '~/redux/apiReques';
 import { addProductToCart } from '~/redux/requestApp';
+import { toast } from 'react-toastify';
 const cx = className.bind(styles);
 
 function a11yProps(index) {
@@ -33,9 +34,16 @@ function a11yProps(index) {
 }
 
 function ProductDetail() {
+    const cartRedux = useSelector((state) => state.cartRedux.cart?.arrCart);
+
     const dispatch = useDispatch();
     const { id } = useParams();
+    const idProduct = parseInt(id);
+
+    let [arrCart, setArrCart] = useState([]);
     let [imageProduct, setImageProduct] = useState([]);
+    let [quality, setQuality] = useState(0);
+
     const [state, setState] = useState({
         title: '',
         rate: 4,
@@ -60,6 +68,20 @@ function ProductDetail() {
     let [total, setTotal] = useState(0);
     const [allProduct, setAllProduct] = useState();
     const [comment, setComment] = useState([]);
+    let [productCart, setProductCart] = useState([]);
+
+    useEffect(() => {
+        setArrCart(cartRedux);
+    }, [cartRedux]);
+
+    useEffect(() => {
+        if (productCart.length > 0) {
+            const fetchRedux = async () => {
+                let res = await addProductToCart(dispatch, productCart);
+            };
+            fetchRedux();
+        }
+    }, [productCart]);
 
     useEffect(() => {
         async function fetchApi() {
@@ -109,8 +131,6 @@ function ProductDetail() {
         fetchApi();
     }, []);
 
-    let [quality, setQuality] = useState(0);
-
     const handleIncrease = () => {
         setQuality((quality) => (quality += 1));
         if (state.discount > 0) {
@@ -151,19 +171,41 @@ function ProductDetail() {
     };
 
     const handleAddProductToCart = async () => {
-        let data = {};
-        data.id = id;
-        data.title = state.title;
-        data.quality = quality;
-        data.discount = state.discount;
-        data.price = state.price;
-        data.priceSale = state.priceSale;
-        data.image = imageProduct[0].original;
+        if (quality === 0) return toast.error('Vui lòng chọn số lượng');
 
-        console.log(data);
+        let data = {
+            id: idProduct,
+            title: state.title,
+            quality: quality,
+            unit: state.unit,
+            brand: state.brand,
+            total: total,
+            discount: state.discount,
+            price: state.price,
+            priceSale: state.priceSale,
+            image: imageProduct[0].original,
+            writable: true,
+        };
 
-        let res = await addProductToCart(dispatch, data);
-        console.log(res);
+        let arr = [];
+
+        if (arrCart && arrCart.length > 0) {
+            let arrItem = [...arrCart];
+
+            arrItem.forEach((item, index) => {
+                if (item.id === idProduct) {
+                    arrItem[index] = data;
+                    setProductCart(arrItem);
+                    return;
+                } else {
+                    setProductCart([...arrItem, data]);
+                    return;
+                }
+            });
+        } else {
+            arr.push(data);
+            setProductCart(arr);
+        }
     };
 
     return (
@@ -318,7 +360,7 @@ function ProductDetail() {
                                             <button onClick={() => handleDecrease()}>
                                                 <RemoveIcon />
                                             </button>
-                                            <input value={quality} readOnly />
+                                            <input value={quality} />
                                             <button onClick={() => handleIncrease()}>
                                                 <AddIcon />
                                             </button>

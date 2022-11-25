@@ -12,13 +12,9 @@ const cx = className.bind(styles);
 function ListProduct(data) {
     const [allProducts, setAllProduct] = useState();
     useEffect(() => {
-        console.log(data);
         setAllProduct(data.data);
     }, [data]);
-    const viewDetailProduct = (id) => {
-        console.log(id);
-    };
-    console.log(allProducts);
+    const viewDetailProduct = (id) => {};
     return (
         <div className={cx('wrapper')}>
             <p>Gợi ý hôm nay</p>

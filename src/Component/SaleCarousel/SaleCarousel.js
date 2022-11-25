@@ -68,7 +68,7 @@ function SaleCarousel(data, sale) {
         ],
     };
     const viewDetailProduct = (id) => {
-        navigate(`product-detail/${id}`);
+        navigate(`/product-detail/${id}`);
     };
 
     return (

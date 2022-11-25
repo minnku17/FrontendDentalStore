@@ -16,6 +16,7 @@ import Home from './pages/Home';
 import Dashboard from './admin/pages/home';
 import { DefaultLayout } from './layouts';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
+import CheckOut from './pages/CheckOut/CheckOut';
 
 function App() {
     return (
@@ -118,6 +119,14 @@ function App() {
                             element={
                                 <DefaultLayout>
                                     <ProductDetail />
+                                </DefaultLayout>
+                            }
+                        />
+                        <Route
+                            path={config.routes.check_out}
+                            element={
+                                <DefaultLayout>
+                                    <CheckOut />
                                 </DefaultLayout>
                             }
                         />

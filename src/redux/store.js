@@ -10,7 +10,7 @@ import cartReducer from './cartSlice';
 const persistConfig = {
     key: 'rootDental',
     version: 1,
-    whitelist: ['auth', 'cart'],
+    whitelist: ['auth', 'cartRedux'],
     storage,
 };
 
@@ -20,7 +20,7 @@ const rootReducer = combineReducers({
     brands: brandReducer,
     categories: categoryReducer,
     product: productReducer,
-    cart: cartReducer,
+    cartRedux: cartReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -32,6 +32,7 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
+            immutableCheck: false,
             serializableCheck: false,
         }),
 });

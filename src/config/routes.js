@@ -21,6 +21,7 @@ const routes = {
     customer_login: '/login-customer',
 
     home: '/',
-    product_detail: 'product-detail/:id',
+    product_detail: '/product-detail/:id',
+    check_out: '/check-out',
 };
 export default routes;

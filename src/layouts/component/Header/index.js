@@ -16,19 +16,30 @@ import images from '~/assets/images';
 import { Wrapper as PopperWrapper } from '~/Component/Popper';
 
 import config from '~/config';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { useDebounce } from '~/hooks';
 import { searchProduct } from '~/redux/apiReques';
 import { useDispatch, useSelector } from 'react-redux';
 import Tippy from '@tippyjs/react/headless';
+import { addProductToCart } from '~/redux/requestApp';
 
 const cx = className.bind(styles);
 
 function Header() {
-    const productCart = useSelector((state) => state.cart.cart?.data);
+    const productCart = useSelector((state) => state.cartRedux.cart?.arrCart);
 
-    console.log('check cart from header', productCart);
+    let [listProduct, setListProduct] = useState([]);
+
+    let [render, setRender] = useState(0);
+
+    useEffect(() => {
+        if (productCart.length > 0) {
+            setListProduct(productCart);
+        } else {
+            setRender(render++);
+        }
+    }, [productCart]);
 
     const [searchValue, setSearchValue] = useState('');
     const [showResult, setShowResult] = useState(true);
@@ -39,6 +50,7 @@ function Header() {
     const inputRef = useRef();
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const debounced = useDebounce(searchValue, 700);
 
@@ -69,14 +81,132 @@ function Header() {
             setSearchResult([]);
         }
     };
-    const handleClear = () => {
-        setSearchValue('');
-        setSearchResult([]);
-        inputRef.current.focus();
+
+    const handleIncrease = async (id) => {
+        let arr = [...listProduct];
+
+        arr.map(async (item, index) => {
+            let data = {
+                id: id,
+                title: item.title,
+                quality: item.quality,
+                total: item.total,
+                discount: item.discount,
+                price: item.price,
+                brand: item.brand,
+                unit: item.unit,
+                priceSale: item.priceSale,
+                image: item.image,
+                writable: true,
+            };
+            if (item.id === id) {
+                const increase = () => {
+                    let sum = item.quality;
+                    sum += 1;
+                    return sum;
+                };
+                data.quality = increase();
+
+                if (item.discount > 0) {
+                    const sumPriceSale = () => {
+                        let sum = item.total;
+                        sum += item.priceSale;
+
+                        return sum;
+                    };
+                    data.total = sumPriceSale();
+                    console.log(item.total);
+                } else {
+                    const sumPrice = () => {
+                        let sum = item.total;
+                        sum += item.price;
+
+                        return sum;
+                    };
+                    data.total = sumPrice();
+                }
+                arr[index] = data;
+                await addProductToCart(dispatch, arr);
+                return item;
+            }
+        });
+    };
+
+    const handleDecrease = (id) => {
+        listProduct.map(async (item, index) => {
+            let arr = [...listProduct];
+            let data = {
+                id: id,
+                title: item.title,
+                quality: item.quality,
+                total: item.total,
+                brand: item.brand,
+
+                unit: item.unit,
+                discount: item.discount,
+                price: item.price,
+                priceSale: item.priceSale,
+                image: item.image,
+
+                writable: true,
+            };
+            if (item.id === id) {
+                if (item.quality === 1) {
+                    arr = [...arr.slice(0, index), ...arr.slice(index + 1)];
+                    setListProduct(arr);
+                    await addProductToCart(dispatch, arr);
+                    return;
+                }
+                const decrease = () => {
+                    let sum = item.quality;
+                    sum -= 1;
+                    return sum;
+                };
+                data.quality = decrease();
+
+                if (item.discount > 0) {
+                    const subPriceSale = () => {
+                        let sub = item.total;
+                        sub -= item.priceSale;
+
+                        return sub;
+                    };
+                    data.total = subPriceSale();
+                    console.log(item.total);
+                } else {
+                    const subPrice = () => {
+                        let sub = item.total;
+                        sub -= item.price;
+
+                        return sub;
+                    };
+                    data.total = subPrice();
+                }
+                arr[index] = data;
+                await addProductToCart(dispatch, arr);
+                return item;
+            }
+        });
     };
 
     const handleHideResult = () => {
         setShowResult(false);
+    };
+
+    const handleTotal = () => {
+        let arr = [];
+        listProduct.forEach((item) => {
+            arr.push(item.total);
+        });
+        if (arr.length > 0) {
+            return arr.reduce((a, b) => {
+                return a + b;
+            });
+        }
+    };
+
+    const handleCheckOut = () => {
+        navigate(config.routes.check_out);
     };
 
     return (
@@ -194,52 +324,68 @@ function Header() {
                                         <PopperWrapper>
                                             <div className={cx('container')}>
                                                 <p className={cx('title')}>Sản Phẩm Mới Thêm</p>
-                                                <div className={cx('product-item')}>
-                                                    <div className={cx('left')}>
-                                                        <img src={images.noImage} alt="" />
-                                                        <div className={cx('name')}>
-                                                            <span className={cx('top-title')}>
-                                                                Tay khoang nhanh Coxo
-                                                            </span>
-                                                            <span className={cx('price')}>
-                                                                <div className={cx('price-sale')}>
-                                                                    <NumericFormat
-                                                                        className="currency"
-                                                                        type="text"
-                                                                        value="10000"
-                                                                        displayType="text"
-                                                                        thousandSeparator={true}
-                                                                        suffix={'đ'}
-                                                                    />
+                                                {listProduct &&
+                                                    // listProduct.length > 0 &&
+                                                    listProduct.map((item, index) => {
+                                                        return (
+                                                            <>
+                                                                <div className={cx('product-item')}>
+                                                                    <div className={cx('left')}>
+                                                                        <img
+                                                                            src={
+                                                                                item.image ? item.image : images.noImage
+                                                                            }
+                                                                            alt=""
+                                                                        />
+                                                                        <div className={cx('name')}>
+                                                                            <span className={cx('top-title')}>
+                                                                                {item.title}
+                                                                            </span>
+                                                                            <span className={cx('price')}>
+                                                                                <div className={cx('price-sale')}>
+                                                                                    <NumericFormat
+                                                                                        className="currency"
+                                                                                        type="text"
+                                                                                        value={item.priceSale}
+                                                                                        displayType="text"
+                                                                                        thousandSeparator={true}
+                                                                                        suffix={'đ'}
+                                                                                    />
+                                                                                </div>
+                                                                                <div className={cx('price-old')}>
+                                                                                    <NumericFormat
+                                                                                        className="currency"
+                                                                                        type="text"
+                                                                                        value={item.price}
+                                                                                        displayType="text"
+                                                                                        thousandSeparator={true}
+                                                                                        suffix={'đ'}
+                                                                                    />
+                                                                                </div>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className={cx('right-count')}>
+                                                                        <div className={cx('quality-product')}>
+                                                                            <button
+                                                                                onClick={() => handleDecrease(item.id)}
+                                                                            >
+                                                                                <RemoveIcon />
+                                                                            </button>
+                                                                            <input value={item.quality} readOnly />
+
+                                                                            <button
+                                                                                onClick={() => handleIncrease(item.id)}
+                                                                            >
+                                                                                <AddIcon />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                                <div className={cx('price-old')}>
-                                                                    <NumericFormat
-                                                                        className="currency"
-                                                                        type="text"
-                                                                        value="10000"
-                                                                        displayType="text"
-                                                                        thousandSeparator={true}
-                                                                        suffix={'đ'}
-                                                                    />
-                                                                </div>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div className={cx('right-count')}>
-                                                        <div className={cx('quality-product')}>
-                                                            <button>
-                                                                {/* onClick={() => handleDecrease()} */}
-                                                                <RemoveIcon />
-                                                            </button>
-                                                            <input readOnly />
-                                                            {/* value={quality} */}
-                                                            <button>
-                                                                {/* onClick={() => handleIncrease()} */}
-                                                                <AddIcon />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                            </>
+                                                        );
+                                                    })}
+
                                                 <div className={cx('total')}>
                                                     <div className={cx('total-left')}>
                                                         <div className={cx('wrapper-price')}>
@@ -248,7 +394,7 @@ function Header() {
                                                                 <NumericFormat
                                                                     className="currency"
                                                                     type="text"
-                                                                    value="10000"
+                                                                    value={handleTotal() > 0 ? handleTotal() : 0}
                                                                     displayType="text"
                                                                     thousandSeparator={true}
                                                                     suffix={'đ'}
@@ -257,11 +403,13 @@ function Header() {
                                                         </div>
                                                         <div className={cx('count-product')}>
                                                             <p className={cx('title-count')}>Sản phẩm: </p>
-                                                            <span className={cx('count')}>2</span>
+                                                            <span className={cx('count')}>
+                                                                {listProduct.length > 0 ? listProduct.length : 0}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div className={cx('button-right')}>
-                                                        <button>Đặt hàng</button>
+                                                        <button onClick={() => handleCheckOut()}>Đặt hàng</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -272,7 +420,9 @@ function Header() {
                             >
                                 <div className={cx('cart')}>
                                     <ShoppingCartIcon className={cx('cart-icon')} />
-                                    <div className={cx('notifi')}>0</div>
+                                    <div className={cx('notifi')}>
+                                        {listProduct.length > 0 ? listProduct.length : 0}
+                                    </div>
                                     <div className={cx('pulsing-2')}></div>
                                 </div>
                             </Tippy>
