@@ -1,5 +1,15 @@
-import { loginFail, loginStart, loginSuccess, logoutStart, logoutSuccess, logoutFail } from './authSlice';
-import { login, getAllUsers, getUserInfo } from '~/services/index';
+import {
+    loginFail,
+    loginStart,
+    loginSuccess,
+    logoutStart,
+    logoutSuccess,
+    logoutFail,
+    loginCustomerStart,
+    loginCustomerSuccess,
+    loginCustomerFail,
+} from './authSlice';
+import { login, loginCustomer, getAllUsers, getUserInfo } from '~/services/index';
 import config from '~/config';
 import {
     getUsersFail,
@@ -93,6 +103,25 @@ export const loginUser = async (email, password, dispatch, navigate) => {
         return res;
     } catch (e) {
         dispatch(loginFail);
+    }
+};
+
+export const loginCus = async (dispatch, email, password, navigate) => {
+    dispatch(loginCustomerStart());
+    try {
+        const res = await loginCustomer(email, password);
+        dispatch(loginCustomerSuccess(res));
+        if (res.errCode === 0) {
+            if (res.user.roleId !== 'Admin') {
+                navigate(config.routes.home);
+            } else {
+                navigate(config.routes.customer_login);
+            }
+        }
+
+        return res;
+    } catch (e) {
+        dispatch(loginCustomerFail);
     }
 };
 
@@ -205,6 +234,23 @@ export const createNewUser = async (data, accessToken, dispatch, axiosJWT) => {
             dispatch(createUserFail());
         }
 
+        return res.data;
+    } catch (e) {
+        console.log(e);
+        dispatch(createUserFail());
+    }
+};
+
+export const createNewCustomer = async (dispatch, data) => {
+    dispatch(createUserStart());
+    try {
+        const res = await request.post('/api/registerCustomer', data);
+        if (res.data.errCode === 0) {
+            dispatch(createUserSuccess());
+        } else {
+            console.log(res);
+            dispatch(createUserFail());
+        }
         return res.data;
     } catch (e) {
         console.log(e);

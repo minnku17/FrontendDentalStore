@@ -175,10 +175,13 @@
                     }
 
                     .name {
+                        display: flex;
+                        justify-content: space-between;
+                        gap: 10px;
                         width: 100%;
 
                         input {
-                            width: 100%;
+                            width: 50%;
                         }
                     }
                     .sdt-mail {
@@ -209,16 +212,24 @@
 
             .top-right {
                 display: flex;
+                flex-direction: column;
                 padding: 20px 20px;
                 height: fit-content;
                 width: 100%;
                 border-radius: 8px;
                 background-color: #fff;
+                .message {
+                    margin-left: 5px;
+                    font-size: 15px;
+                    font-weight: bold;
+                    color: #155724;
+                }
                 .coupon {
                     width: 100%;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+                    position: relative;
 
                     input {
                         position: relative;
@@ -233,6 +244,34 @@
                         &:focus {
                             box-shadow: 0 0 0 2px #216daa;
                             outline: none;
+                        }
+                    }
+                    .wobbling-3 {
+                        width: 37px;
+                        height: 12px;
+                        border-radius: 40px;
+                        color: #216daa;
+                        border: 2px solid;
+                        position: absolute;
+                        top: 11px;
+                        right: 100px;
+                    }
+                    .wobbling-3::before {
+                        content: '';
+                        position: absolute;
+                        margin: 2px;
+                        width: 25%;
+                        top: 0;
+                        bottom: 0;
+                        left: 0;
+                        border-radius: inherit;
+                        background: currentColor;
+                        animation: w3 1s infinite linear;
+                    }
+                    @keyframes w3 {
+                        50% {
+                            left: 100%;
+                            transform: translateX(calc(-100% - 4px));
                         }
                     }
 
@@ -307,8 +346,22 @@
                     align-items: center;
                     padding: 12px 22px 14px 22px;
 
-                    span {
-                        color: #d50000;
+                    .red {
+                        span {
+                            color: #d50000 !important;
+                        }
+                    }
+                    .price-old {
+                        font-family: 'Roboto', sans-serif;
+                        font-size: 14px;
+                        padding-left: 6px;
+                        font-weight: normal;
+                        line-height: 1.17;
+                        color: #8d919d;
+                        text-decoration: line-through;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
                 }
 

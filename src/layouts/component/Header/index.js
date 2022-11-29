@@ -2,6 +2,7 @@ import className from 'classnames/bind';
 import 'tippy.js/dist/tippy.css';
 import HeadlessTippy from '@tippyjs/react/headless';
 import { NumericFormat } from 'react-number-format';
+import { toast } from 'react-toastify';
 
 import SearchIcon from '@mui/icons-material/Search';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
@@ -22,21 +23,25 @@ import { useDebounce } from '~/hooks';
 import { searchProduct } from '~/redux/apiReques';
 import { useDispatch, useSelector } from 'react-redux';
 import Tippy from '@tippyjs/react/headless';
-import { addProductToCart } from '~/redux/requestApp';
+import { addProductToCart, addProductToCartRedux } from '~/redux/requestApp';
 
 const cx = className.bind(styles);
 
 function Header() {
     const productCart = useSelector((state) => state.cartRedux.cart?.arrCart);
+    const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
+
+    console.log('check user', currentUser);
 
     let [listProduct, setListProduct] = useState([]);
 
     let [render, setRender] = useState(0);
 
     useEffect(() => {
-        if (productCart.length > 0) {
+        if (productCart) {
             setListProduct(productCart);
         } else {
+            setListProduct(productCart);
             setRender(render++);
         }
     }, [productCart]);
@@ -99,35 +104,47 @@ function Header() {
                 image: item.image,
                 writable: true,
             };
+            let dataCartSe = {
+                user_id: currentUser.id,
+                product_id: id,
+                quantity: item.quality,
+            };
             if (item.id === id) {
                 const increase = () => {
                     let sum = item.quality;
                     sum += 1;
                     return sum;
                 };
-                data.quality = increase();
-
-                if (item.discount > 0) {
-                    const sumPriceSale = () => {
-                        let sum = item.total;
-                        sum += item.priceSale;
-
-                        return sum;
-                    };
-                    data.total = sumPriceSale();
-                    console.log(item.total);
+                dataCartSe.quantity = increase();
+                let res = await addProductToCart(dataCartSe);
+                console.log('check res', res);
+                if (res.errCode === 1) {
+                    toast.warning(res.errMessage);
                 } else {
-                    const sumPrice = () => {
-                        let sum = item.total;
-                        sum += item.price;
+                    data.quality = increase();
 
-                        return sum;
-                    };
-                    data.total = sumPrice();
+                    if (item.discount > 0) {
+                        const sumPriceSale = () => {
+                            let sum = item.total;
+                            sum += item.priceSale;
+
+                            return sum;
+                        };
+                        data.total = sumPriceSale();
+                        console.log(item.total);
+                    } else {
+                        const sumPrice = () => {
+                            let sum = item.total;
+                            sum += item.price;
+
+                            return sum;
+                        };
+                        data.total = sumPrice();
+                    }
+                    arr[index] = data;
+                    await addProductToCartRedux(dispatch, arr);
+                    return item;
                 }
-                arr[index] = data;
-                await addProductToCart(dispatch, arr);
-                return item;
             }
         });
     };
@@ -150,11 +167,23 @@ function Header() {
 
                 writable: true,
             };
+            let dataCartSe = {
+                user_id: currentUser.id,
+                product_id: id,
+                quantity: item.quality,
+            };
             if (item.id === id) {
                 if (item.quality === 1) {
+                    let dataCart = {
+                        user_id: currentUser.id,
+                        product_id: id,
+                        quantity: 0,
+                    };
                     arr = [...arr.slice(0, index), ...arr.slice(index + 1)];
                     setListProduct(arr);
-                    await addProductToCart(dispatch, arr);
+                    await addProductToCartRedux(dispatch, arr);
+                    await addProductToCart(dataCart);
+
                     return;
                 }
                 const decrease = () => {
@@ -163,7 +192,7 @@ function Header() {
                     return sum;
                 };
                 data.quality = decrease();
-
+                dataCartSe.quantity = data.quality;
                 if (item.discount > 0) {
                     const subPriceSale = () => {
                         let sub = item.total;
@@ -183,7 +212,9 @@ function Header() {
                     data.total = subPrice();
                 }
                 arr[index] = data;
-                await addProductToCart(dispatch, arr);
+                await addProductToCartRedux(dispatch, arr);
+                await addProductToCart(dataCartSe);
+
                 return item;
             }
         });
@@ -195,13 +226,15 @@ function Header() {
 
     const handleTotal = () => {
         let arr = [];
-        listProduct.forEach((item) => {
-            arr.push(item.total);
-        });
-        if (arr.length > 0) {
-            return arr.reduce((a, b) => {
-                return a + b;
+        if (listProduct) {
+            listProduct.forEach((item) => {
+                arr.push(item.total);
             });
+            if (arr.length > 0) {
+                return arr.reduce((a, b) => {
+                    return a + b;
+                });
+            }
         }
     };
 
@@ -227,9 +260,13 @@ function Header() {
                         <ul>
                             <li>Hotline: 1900 633 639</li>
                             <li>Lịch sử mua hàng</li>
-                            <Link to={config.routes.customer_login}>
-                                <li>Đăng nhập</li>
-                            </Link>
+                            {currentUser ? (
+                                <li>{`Xin chào ${currentUser.firstName}`}</li>
+                            ) : (
+                                <Link to={config.routes.customer_login}>
+                                    <li>Đăng nhập</li>
+                                </Link>
+                            )}
                         </ul>
                     </div>
                     <div className={cx('bottom')}>
@@ -404,7 +441,9 @@ function Header() {
                                                         <div className={cx('count-product')}>
                                                             <p className={cx('title-count')}>Sản phẩm: </p>
                                                             <span className={cx('count')}>
-                                                                {listProduct.length > 0 ? listProduct.length : 0}
+                                                                {listProduct && listProduct.length > 0
+                                                                    ? listProduct.length
+                                                                    : 0}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -421,7 +460,7 @@ function Header() {
                                 <div className={cx('cart')}>
                                     <ShoppingCartIcon className={cx('cart-icon')} />
                                     <div className={cx('notifi')}>
-                                        {listProduct.length > 0 ? listProduct.length : 0}
+                                        {listProduct && listProduct.length > 0 ? listProduct.length : 0}
                                     </div>
                                     <div className={cx('pulsing-2')}></div>
                                 </div>

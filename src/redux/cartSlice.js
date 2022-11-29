@@ -8,6 +8,10 @@ const cartSlice = createSlice({
             isFetching: false,
             error: false,
         },
+        deleteCart: {
+            isFetching: false,
+            error: false,
+        },
     },
     reducers: {
         addProductStart: (state) => {
@@ -23,9 +27,29 @@ const cartSlice = createSlice({
             state.cart.isFetching = false;
             state.cart.error = true;
         },
+
+        deleteCartStart: (state) => {
+            state.deleteCart.isFetching = true;
+        },
+        deleteCartSuccess: (state) => {
+            state.deleteCart.isFetching = false;
+            state.cart.arrCart = null;
+            state.deleteCart.error = false;
+        },
+        deleteCartFail: (state) => {
+            state.deleteCart.isFetching = false;
+            state.deleteCart.error = true;
+        },
     },
 });
 
-export const { addProductStart, addProductSuccess, addProductFail } = cartSlice.actions;
+export const {
+    addProductStart,
+    addProductSuccess,
+    addProductFail,
+    deleteCartStart,
+    deleteCartSuccess,
+    deleteCartFail,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;

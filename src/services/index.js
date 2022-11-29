@@ -33,6 +33,15 @@ export const login = async (email, password) => {
     }
 };
 
+export const loginCustomer = async (email, password) => {
+    try {
+        const res = await request.post('/api/loginCustomer', { email, password });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const getAllUsers = async (accessToken) => {
     try {
         const res = await request.get(`/api/getAllUsers`, { headers: { token: `Bearer ${accessToken}` } });
@@ -74,6 +83,23 @@ export const getAllParentCategory = async (accessToken) => {
 export const getProductInfo = async (id) => {
     try {
         const res = await request.get(`/api/getProductInfoById?id=${id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const searchCoupon = async (code) => {
+    try {
+        const res = await request.get(`/api/search-coupon?q=${code}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const createOrder = async (data) => {
+    try {
+        const res = await request.post('/api/create-order', data);
         return res;
     } catch (error) {
         console.log(error);

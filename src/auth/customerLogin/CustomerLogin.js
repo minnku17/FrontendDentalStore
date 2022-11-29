@@ -5,10 +5,15 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import GoogleIcon from '@mui/icons-material/Google';
 
 import styles from './CustomerLogin.module.scss';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { createNewCustomer, loginCus } from '~/redux/apiReques';
+import { useDispatch } from 'react-redux';
 
 const cx = classNames.bind(styles);
-function NewProduct() {
+function CustomerLogin() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -16,119 +21,197 @@ function NewProduct() {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = async (data) => {};
+    let [showPass, setShowPass] = useState(false);
+    let [toggleForm, setToggleForm] = useState(true);
+    let [email, setEmail] = useState('');
+    let [password, setPassword] = useState('');
+    let [passwordSignup, setPasswordSignup] = useState('');
+    let [comfirmPassword, setComfirmPassword] = useState('');
+    let [showPassConfirm, setShowPassConfirm] = useState(false);
+
+    const checkValidate = (obj) => {
+        let isValid = true;
+
+        const arrInput = ['firstName', 'lastName', 'email', 'password', 'comfirmPassword'];
+
+        for (let i = 0; i < arrInput.length; i++) {
+            if (!obj[arrInput[i]]) {
+                isValid = false;
+                toast.warning(`Vui lòng nhập đầy đủ thông tin bên dưới!!!`);
+                break;
+            }
+        }
+        return isValid;
+    };
+
+    const onSubmit = async (data) => {
+        let obj = {};
+        obj.firstName = data.firstName;
+        obj.lastName = data.lastName;
+        obj.email = data.email;
+        obj.password = passwordSignup;
+        obj.comfirmPassword = comfirmPassword;
+        obj.positionId = 'None';
+        obj.roleId = 'Customer';
+
+        let check = checkValidate(obj);
+
+        if (check === false) return;
+
+        if (passwordSignup !== comfirmPassword) return toast.warning('Mật khẩu nhập lại không khớp mật khẩu!!!');
+
+        let res = await createNewCustomer(dispatch, obj);
+        if (res.errCode === 0) {
+            toast.success('Tạo tài khoản thành công!!!');
+            setToggleForm(!toggleForm);
+        }
+        console.log(res);
+    };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        if (!email) return toast.warning('Vui lòng nhập email!!!');
+        if (!password) return toast.warning('Vui lòng nhập password!!!');
+
+        const res = await loginCus(dispatch, email, password, navigate);
+        if (res.errCode === 1) {
+            toast.warning('Sai email hoặc mật khẩu!!!, vui lòng nhập lại.');
+        }
+    };
+
+    const toggleEye = () => {
+        setShowPass(!showPass);
+    };
+    const toggleEyeConfirm = () => {
+        setShowPassConfirm(!showPassConfirm);
+    };
+    const toggleFormSign = () => {
+        setToggleForm(!toggleForm);
+    };
+    const handleOnchangeSign = (e, id) => {
+        if (id === 'email') {
+            setEmail(e.target.value);
+        } else if (id === 'password') {
+            setPassword(e.target.value);
+        }
+    };
 
     return (
         <>
             <section className={cx('container')}>
-                <div className={cx('form')}>
-                    <div className="form-content">
-                        <header>Login</header>
+                {toggleForm === true ? (
+                    <>
+                        <div className={cx('form')}>
+                            <div className="form-content">
+                                <header>Đăng Nhập</header>
 
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <div className={cx('field')}>
-                                <input type="email" placeholder="Email" {...register('email', { required: true })} />
-                                {errors.exampleRequired && <p>This field is required</p>}
+                                <form>
+                                    <div className={cx('field')}>
+                                        <input
+                                            value={email}
+                                            onChange={(e) => handleOnchangeSign(e, 'email')}
+                                            type="email"
+                                            placeholder="Email"
+                                        />
+                                    </div>
+                                    <div className={cx('field')}>
+                                        <input
+                                            type={showPass === true ? 'text' : 'password'}
+                                            value={password}
+                                            onChange={(e) => handleOnchangeSign(e, 'password')}
+                                            placeholder="Mật khẩu"
+                                        />
+                                        <span onClick={() => toggleEye()}>
+                                            <VisibilityIcon className={cx('eye-icon')} />
+                                        </span>
+                                    </div>
+                                    <div className={cx('form-link')}>
+                                        <Link to="#" className={cx('forgot-passs')}>
+                                            Bạn quên mật khẩu?
+                                        </Link>
+                                    </div>
+                                    <div className={cx('field')}>
+                                        <button onClick={(e) => handleLogin(e)} className={cx('btnSave')}>
+                                            Login
+                                        </button>
+                                    </div>
+                                    <div className={cx('form-link')}>
+                                        <span>
+                                            Bạn chưa có tại khoản?
+                                            <span onClick={() => toggleFormSign()} className={cx('login-link')}>
+                                                Đăng ký
+                                            </span>
+                                        </span>
+                                    </div>
+                                </form>
                             </div>
-                            <div className={cx('field')}>
-                                <input
-                                    type="password"
-                                    placeholder="password"
-                                    {...register('password', { required: true })}
-                                />
-                                <VisibilityIcon className={cx('eye-icon')} />
-                                {errors.exampleRequired && <p>This field is required</p>}
-                            </div>
-                            <div className={cx('form-link')}>
-                                <Link to="#" className={cx('forgot-passs')}>
-                                    Bạn quên mật khẩu?
-                                </Link>
-                            </div>
-                            <div className={cx('field')}>
-                                <button className={cx('btnSave')} type="submit">
-                                    Login
-                                </button>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className={cx('form')}>
+                            <div className="form-content">
+                                <header>Đăng Ký</header>
 
-                                {errors.exampleRequired && <p>This field is required</p>}
-                            </div>
-                            <div className={cx('form-link')}>
-                                <span>
-                                    Bạn đã có tại khoản?
-                                    <Link to="#" className={cx('signup-link')}>
-                                        Signup
-                                    </Link>
-                                </span>
-                            </div>
-                        </form>
-                    </div>
-                    <div className={cx('line')}></div>
-                    <div className={cx('media-options')}>
-                        <Link to="#" className={cx('google')}>
-                            <GoogleIcon className={cx('google-icon')} />
-                            <span>Đăng nhập với Google</span>
-                        </Link>
-                    </div>
-                </div>
+                                <form onSubmit={handleSubmit(onSubmit)}>
+                                    <div className={cx('field')}>
+                                        <input type="text" placeholder="Tên" {...register('firstName')} />
+                                    </div>
+                                    <div className={cx('field')}>
+                                        <input type="text" placeholder="Họ và tên lót" {...register('lastName')} />
+                                    </div>
+                                    <div className={cx('field')}>
+                                        <input type="email" placeholder="Email" {...register('email')} />
+                                    </div>
+                                    <div className={cx('field')}>
+                                        <input
+                                            type={showPass === true ? 'text' : 'password'}
+                                            placeholder="Mật khẩu"
+                                            value={passwordSignup}
+                                            onChange={(e) => setPasswordSignup(e.target.value)}
+                                        />
+                                        <span onClick={() => toggleEye()}>
+                                            <VisibilityIcon className={cx('eye-icon')} />
+                                        </span>
+                                    </div>
+                                    <div className={cx('field')}>
+                                        <input
+                                            type={showPassConfirm === true ? 'text' : 'password'}
+                                            placeholder="Nhập lại mật khẩu"
+                                            value={comfirmPassword}
+                                            onChange={(e) => setComfirmPassword(e.target.value)}
+                                        />
+                                        <span onClick={() => toggleEyeConfirm()}>
+                                            <VisibilityIcon className={cx('eye-icon')} />
+                                        </span>
+                                    </div>
 
-                <div className={cx('form')}>
-                    <div className="form-content">
-                        <header>Sign Up</header>
+                                    <div className={cx('field')}>
+                                        <button className={cx('btnSave')} type="submit">
+                                            Đăng ký
+                                        </button>
 
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <div className={cx('field')}>
-                                <input type="email" placeholder="Email" {...register('email', { required: true })} />
-                                {errors.exampleRequired && <p>This field is required</p>}
+                                        {errors.exampleRequired && <p>This field is required</p>}
+                                    </div>
+                                    <div className={cx('form-link')}>
+                                        <span>
+                                            Bạn đã có tại khoản?
+                                            <span onClick={() => toggleFormSign()} className={cx('login-link')}>
+                                                Đăng nhập
+                                            </span>
+                                        </span>
+                                    </div>
+                                </form>
                             </div>
-                            <div className={cx('field')}>
-                                <input
-                                    type="password"
-                                    placeholder="password"
-                                    {...register('password', { required: true })}
-                                />
-                                <VisibilityIcon className={cx('eye-icon')} />
-                                {errors.exampleRequired && <p>This field is required</p>}
-                            </div>
-                            <div className={cx('field')}>
-                                <input
-                                    type="password"
-                                    placeholder="password"
-                                    {...register('password', { required: true })}
-                                />
-                                <VisibilityIcon className={cx('eye-icon')} />
-                                {errors.exampleRequired && <p>This field is required</p>}
-                            </div>
-
-                            <div className={cx('field')}>
-                                <button className={cx('btnSave')} type="submit">
-                                    Đăng ký
-                                </button>
-
-                                {errors.exampleRequired && <p>This field is required</p>}
-                            </div>
-                            <div className={cx('form-link')}>
-                                <span>
-                                    Bạn đã có tại khoản?
-                                    <Link to="#" className={cx('login-link')}>
-                                        Đăng nhập
-                                    </Link>
-                                </span>
-                            </div>
-                        </form>
-                    </div>
-                    <div className={cx('line')}></div>
-                    <div className={cx('media-options')}>
-                        <Link to="#" className={cx('google')}>
-                            <GoogleIcon className={cx('google-icon')} />
-                            <span>Đăng nhập với Google</span>
-                        </Link>
-                    </div>
-                </div>
+                        </div>
+                    </>
+                )}
             </section>
         </>
     );
 }
 
-export default NewProduct;
+export default CustomerLogin;
 
 // return (
 //     <>

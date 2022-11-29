@@ -11,29 +11,99 @@ import images from '~/assets/images';
 
 import styles from './CheckOut.module.scss';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import config from '~/config';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProductToCart } from '~/redux/requestApp';
+import { addProductToCart, addProductToCartRedux, deleteCartRedux } from '~/redux/requestApp';
+import { set } from 'react-hook-form';
+import { useDebounce } from '~/hooks';
+import { createOrder, searchCoupon } from '~/services';
 const cx = className.bind(styles);
 
 function CheckOut() {
     const productCart = useSelector((state) => state.cartRedux.cart?.arrCart);
 
+    const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
+    console.log(currentUser);
+
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     let [listProduct, setListProduct] = useState([]);
 
-    console.log(listProduct);
+    let [coupon, setCoupon] = useState('');
+    let [loading, setLoading] = useState(false);
+    let [message, setMessage] = useState('');
+    let [showMessage, setShowMessage] = useState(false);
+    let [couponResult, setCouponResult] = useState();
+
+    let [state, setState] = useState({
+        firstName: '',
+        lastName: '',
+        phonenumber: '',
+        email: '',
+        address: '',
+        note: '',
+    });
+    useEffect(() => {
+        setState({
+            email: currentUser ? currentUser.email : '',
+            firstName: currentUser ? currentUser.firstName : '',
+            lastName: currentUser ? currentUser.lastName : '',
+            phonenumber: currentUser ? currentUser.phonenumber : '',
+            address: currentUser ? currentUser.address : '',
+        });
+    }, []);
+
+    const debounced = useDebounce(coupon, 700);
+
+    useEffect(() => {
+        if (!debounced.trim()) {
+            return;
+        }
+
+        const fetchApi = async () => {
+            setLoading(true);
+            await setTimeout(async () => {
+                const result = await searchCoupon(coupon);
+                // setMessage(result);
+                console.log(result);
+                if (result.errCode === 0) {
+                    setShowMessage(true);
+                    setCouponResult(result.data);
+                }
+                if (result.stock === 0) {
+                    setMessage('Mã giảm giá đã hết');
+                } else if (result.errCode === 0) {
+                    setMessage(`Giảm giá ${result.data.value}%`);
+                } else if (result.errCode === 1) {
+                    setShowMessage(false);
+                    setCouponResult(null);
+
+                    setMessage('Mã giảm giá không tồn tại!!!');
+                }
+                setLoading(false);
+            }, 1000);
+        };
+
+        fetchApi();
+    }, [debounced, coupon]);
 
     let [render, setRender] = useState(0);
 
     useEffect(() => {
-        if (productCart.length > 0) {
+        if (productCart) {
             setListProduct(productCart);
         } else {
             setRender(render++);
         }
     }, [productCart]);
+
+    const handleOnchange = (e) => {
+        const searchCoupon = e.target.value;
+        if (!searchCoupon.startsWith(' ')) {
+            setCoupon(searchCoupon);
+        }
+    };
 
     const handleIncrease = async (id) => {
         let arr = [...listProduct];
@@ -52,6 +122,11 @@ function CheckOut() {
                 image: item.image,
                 writable: true,
             };
+            let dataCartSe = {
+                user_id: currentUser.id,
+                product_id: id,
+                quantity: item.quality,
+            };
             if (item.id === id) {
                 const increase = () => {
                     let sum = item.quality;
@@ -59,27 +134,33 @@ function CheckOut() {
                     return sum;
                 };
                 data.quality = increase();
-
-                if (item.discount > 0) {
-                    const sumPriceSale = () => {
-                        let sum = item.total;
-                        sum += item.priceSale;
-
-                        return sum;
-                    };
-                    data.total = sumPriceSale();
-                    console.log(item.total);
+                dataCartSe.quantity = data.quality;
+                let res = await addProductToCart(dataCartSe);
+                console.log(res);
+                if (res.errCode !== 0) {
+                    toast.warning(res.errMessage);
                 } else {
-                    const sumPrice = () => {
-                        let sum = item.total;
-                        sum += item.price;
+                    if (item.discount > 0) {
+                        const sumPriceSale = () => {
+                            let sum = item.total;
+                            sum += item.priceSale;
 
-                        return sum;
-                    };
-                    data.total = sumPrice();
+                            return sum;
+                        };
+                        data.total = sumPriceSale();
+                    } else {
+                        const sumPrice = () => {
+                            let sum = item.total;
+                            sum += item.price;
+
+                            return sum;
+                        };
+                        data.total = sumPrice();
+                    }
+                    arr[index] = data;
+                    await addProductToCartRedux(dispatch, arr);
                 }
-                arr[index] = data;
-                await addProductToCart(dispatch, arr);
+
                 return item;
             }
         });
@@ -102,11 +183,22 @@ function CheckOut() {
 
                 writable: true,
             };
+            let dataCartSe = {
+                user_id: currentUser.id,
+                product_id: id,
+                quantity: item.quality,
+            };
             if (item.id === id) {
                 if (item.quality === 1) {
+                    let dataCart = {
+                        user_id: currentUser.id,
+                        product_id: id,
+                        quantity: 0,
+                    };
                     arr = [...arr.slice(0, index), ...arr.slice(index + 1)];
                     setListProduct(arr);
-                    await addProductToCart(dispatch, arr);
+                    await addProductToCartRedux(dispatch, arr);
+                    await addProductToCart(dataCart);
                     return;
                 }
                 const decrease = () => {
@@ -115,7 +207,7 @@ function CheckOut() {
                     return sum;
                 };
                 data.quality = decrease();
-
+                dataCartSe.quantity = data.quality;
                 if (item.discount > 0) {
                     const subPriceSale = () => {
                         let sub = item.total;
@@ -135,10 +227,23 @@ function CheckOut() {
                     data.total = subPrice();
                 }
                 arr[index] = data;
-                await addProductToCart(dispatch, arr);
+                await addProductToCartRedux(dispatch, arr);
+                await addProductToCart(dataCartSe);
                 return item;
             }
         });
+    };
+
+    const handleTotalQuantity = () => {
+        let arr = [];
+        listProduct.forEach((item) => {
+            arr.push(item.quality);
+        });
+        if (arr.length > 0) {
+            return arr.reduce((a, b) => {
+                return a + b;
+            });
+        }
     };
 
     const handleTotal = () => {
@@ -151,6 +256,51 @@ function CheckOut() {
                 return a + b;
             });
         }
+    };
+    const inputOnchange = (e, id) => {
+        let value = e.target.value;
+        let copyState = { ...state };
+        copyState[id] = value;
+
+        setState(copyState);
+    };
+    const handleSubmit = async () => {
+        let arrProduct = [];
+        let order_number = `NK${Math.floor(Math.random() * 1000000 + 1)}NMN`;
+
+        listProduct?.map((item) => {
+            let product = {};
+            product.product_id = item.id;
+            product.quantity = item.quality;
+            product.order_number = order_number;
+
+            arrProduct.push(product);
+        });
+
+        let data = {
+            user_id: currentUser.id,
+            product: arrProduct,
+            order_number: order_number,
+            coupon: couponResult ? couponResult.code : null,
+            sub_total: handleTotal(),
+            quantity: handleTotalQuantity(),
+            lastName: state.lastName,
+            firstName: state.firstName,
+            address: state.address,
+            phonenumber: state.phonenumber,
+            email: state.email,
+            note: state.note,
+            action: 'new',
+            status: 'new',
+        };
+        console.log('check data', data);
+        let res = await createOrder(data);
+        if (res.errCode === 0) {
+            await deleteCartRedux(dispatch);
+            toast.success(res.errMessage);
+            navigate(config.routes.home);
+        }
+        console.log('check res order', res);
     };
 
     return (
@@ -220,14 +370,37 @@ function CheckOut() {
                             <h1>Thông tin vận chuyển</h1>
                             <div className={cx('form')}>
                                 <div className={cx('name')}>
-                                    <input placeholder="Họ & Tên người nhận" />
+                                    <input
+                                        value={state.firstName}
+                                        onChange={(e) => inputOnchange(e, 'firstName')}
+                                        placeholder="Tên"
+                                    />
+                                    <input
+                                        onChange={(e) => inputOnchange(e, 'lastName')}
+                                        value={state.lastName}
+                                        placeholder="Họ và tên lót"
+                                    />
                                 </div>
                                 <div className={cx('sdt-mail')}>
-                                    <input className={cx('sdt')} placeholder="Số điện thoại" />
-                                    <input className={cx('email')} placeholder="Email nhận thông tin đơn hàng" />
+                                    <input
+                                        onChange={(e) => inputOnchange(e, 'phonenumber')}
+                                        value={state.phonenumber}
+                                        className={cx('sdt')}
+                                        placeholder="Số điện thoại"
+                                    />
+                                    <input
+                                        onChange={(e) => inputOnchange(e, 'email')}
+                                        value={state.email}
+                                        className={cx('email')}
+                                        placeholder="Email nhận thông tin đơn hàng"
+                                    />
                                 </div>
                                 <div className={cx('address')}>
-                                    <input placeholder="Địa chỉ nhận hàng (ghi cụ thể số nhà, tên đường, thành phố!!!)" />
+                                    <input
+                                        onChange={(e) => inputOnchange(e, 'address')}
+                                        value={state.address}
+                                        placeholder="Địa chỉ nhận hàng (ghi cụ thể số nhà, tên đường, thành phố!!!)"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -235,12 +408,18 @@ function CheckOut() {
                     <div className={cx('content-right')}>
                         <div className={cx('top-right')}>
                             <div className={cx('coupon')}>
-                                <input placeholder="Nhập mã giảm giá (nếu có)" />
+                                <input
+                                    value={coupon}
+                                    onChange={(e) => handleOnchange(e)}
+                                    placeholder="Nhập mã giảm giá (nếu có)"
+                                />
 
                                 <DiscountIcon className={cx('icon')} />
+                                {loading === true && <span className={cx('wobbling-3')}></span>}
 
                                 <button>Áp dụng</button>
                             </div>
+                            {message && <span className={cx('message')}>{message}</span>}
                         </div>
                         <div className={cx('bottom-right')}>
                             <h1>Thông tin đơn hàng</h1>
@@ -257,29 +436,72 @@ function CheckOut() {
                                     />
                                 </span>
                             </div>
+                            {couponResult && (
+                                <div className={cx('total')}>
+                                    <p>Phiếu giảm giá</p>
+                                    <span>{`Phiếu giảm giá ${couponResult.value}%`}</span>
+                                </div>
+                            )}
                             <span className={cx('line')}></span>
+
                             <div className={cx('shipping')}>
                                 <p>Phí vận chuyển (GHTK)</p>
                                 <span>0đ</span>
                             </div>
                             <span className={cx('line-t')}></span>
+                            {showMessage === true ? (
+                                <div className={cx('pay')}>
+                                    <p>Tổng thanh toán</p>
+                                    <span className={cx('red')}>
+                                        <span>
+                                            <NumericFormat
+                                                className="currency"
+                                                type="text"
+                                                value={
+                                                    handleTotal() > 0
+                                                        ? handleTotal() * ((100 - couponResult.value) / 100)
+                                                        : 0
+                                                }
+                                                displayType="text"
+                                                thousandSeparator={true}
+                                                suffix={'đ'}
+                                            />
+                                        </span>
+                                    </span>
+                                    <span className={cx('price-old')}>
+                                        <NumericFormat
+                                            className="currency"
+                                            type="text"
+                                            value={handleTotal() > 0 ? handleTotal() : 0}
+                                            displayType="text"
+                                            thousandSeparator={true}
+                                            suffix={'đ'}
+                                        />
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className={cx('pay')}>
+                                    <p>Tổng thanh toán</p>
 
-                            <div className={cx('pay')}>
-                                <p>Tổng thanh toán</p>
-                                <span className={cx('red')}>
-                                    <NumericFormat
-                                        className="currency"
-                                        type="text"
-                                        value={handleTotal() > 0 ? handleTotal() : 0}
-                                        displayType="text"
-                                        thousandSeparator={true}
-                                        suffix={'đ'}
-                                    />
-                                </span>
-                            </div>
-                            <textarea placeholder="Ghi chú đơn hàng" />
+                                    <span className={cx('red')}>
+                                        <NumericFormat
+                                            className="currency"
+                                            type="text"
+                                            value={handleTotal() > 0 ? handleTotal() : 0}
+                                            displayType="text"
+                                            thousandSeparator={true}
+                                            suffix={'đ'}
+                                        />
+                                    </span>
+                                </div>
+                            )}
+                            <textarea
+                                onChange={(e) => inputOnchange(e, 'note')}
+                                value={state.note}
+                                placeholder="Ghi chú đơn hàng"
+                            />
                             <div className={cx('button')}>
-                                <button>Đặt mua</button>
+                                <button onClick={() => handleSubmit()}>Đặt mua</button>
                             </div>
                         </div>
                     </div>

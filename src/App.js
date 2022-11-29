@@ -104,7 +104,14 @@ function App() {
                     </Route>
                 </Routes>
                 <Routes>
-                    <Route path={config.routes.customer_login} element={<CustomerLogin />} />
+                    <Route
+                        path={config.routes.customer_login}
+                        element={
+                            <DefaultLayout>
+                                <CustomerLogin />
+                            </DefaultLayout>
+                        }
+                    />
                     <Route path={config.routes.home}>
                         <Route
                             index

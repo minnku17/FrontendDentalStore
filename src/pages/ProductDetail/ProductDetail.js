@@ -1,6 +1,6 @@
 import className from 'classnames/bind';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { NumericFormat } from 'react-number-format';
 import 'tippy.js/dist/tippy.css';
 import 'react-image-gallery/styles/scss/image-gallery.scss';
@@ -22,8 +22,9 @@ import TabsStyle from '~/Component/TabsStyle/TabsStyle';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProductInfo } from '~/services';
 import { getAllProductLittleInfo } from '~/redux/apiReques';
-import { addProductToCart } from '~/redux/requestApp';
+import { addProductToCart, addProductToCartRedux } from '~/redux/requestApp';
 import { toast } from 'react-toastify';
+import config from '~/config';
 const cx = className.bind(styles);
 
 function a11yProps(index) {
@@ -35,6 +36,9 @@ function a11yProps(index) {
 
 function ProductDetail() {
     const cartRedux = useSelector((state) => state.cartRedux.cart?.arrCart);
+    const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
+
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
     const { id } = useParams();
@@ -77,7 +81,7 @@ function ProductDetail() {
     useEffect(() => {
         if (productCart.length > 0) {
             const fetchRedux = async () => {
-                let res = await addProductToCart(dispatch, productCart);
+                let res = await addProductToCartRedux(dispatch, productCart);
             };
             fetchRedux();
         }
@@ -173,38 +177,69 @@ function ProductDetail() {
     const handleAddProductToCart = async () => {
         if (quality === 0) return toast.error('Vui lòng chọn số lượng');
 
-        let data = {
-            id: idProduct,
-            title: state.title,
-            quality: quality,
-            unit: state.unit,
-            brand: state.brand,
-            total: total,
-            discount: state.discount,
-            price: state.price,
-            priceSale: state.priceSale,
-            image: imageProduct[0].original,
-            writable: true,
-        };
+        if (currentUser) {
+            let data = {
+                id: idProduct,
+                title: state.title,
+                quality: quality,
+                unit: state.unit,
+                brand: state.brand,
+                total: total,
+                discount: state.discount,
+                price: state.price,
+                priceSale: state.priceSale,
+                image: imageProduct[0].original,
+                writable: true,
+            };
 
-        let arr = [];
+            let itemData = {
+                user_id: currentUser.id,
+                product_id: idProduct,
+                quantity: quality,
+            };
 
-        if (arrCart && arrCart.length > 0) {
-            let arrItem = [...arrCart];
+            let arr = [];
 
-            arrItem.forEach((item, index) => {
-                if (item.id === idProduct) {
-                    arrItem[index] = data;
-                    setProductCart(arrItem);
+            let res = await addProductToCart(itemData);
+            if (res.errCode === 1) {
+                toast.warning(res.errMessage);
+            } else {
+                if (arrCart && arrCart.length > 0) {
+                    let arrItem = [...cartRedux];
+                    console.log(arrItem);
+                    const check = arrItem.find((item) => item.id === idProduct);
+                    if (check) {
+                        arrItem.forEach(async (item, index) => {
+                            if (item.id === idProduct) {
+                                arrItem[index] = data;
+                                setProductCart(arrItem);
+                                return;
+                            }
+                        });
+                    } else if (check === undefined) {
+                        arrItem.forEach(async (item, index) => {
+                            if (item.id !== idProduct) {
+                                setProductCart([...arrItem, data]);
+
+                                return;
+                            }
+                        });
+                    }
+
                     return;
                 } else {
-                    setProductCart([...arrItem, data]);
-                    return;
+                    arr.push(data);
+                    if (res.errCode === 1) {
+                        toast.warning(res.errMessage);
+                    } else {
+                        toast.success('Thêm sản phẩm vào giỏ hàng thành công !!!');
+
+                        setProductCart(arr);
+                    }
                 }
-            });
+            }
         } else {
-            arr.push(data);
-            setProductCart(arr);
+            navigate(config.routes.customer_login);
         }
     };
 
