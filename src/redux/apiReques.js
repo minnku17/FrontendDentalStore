@@ -83,6 +83,7 @@ import {
     LittleInFoAllProductSuccess,
     LittleInFoAllProductFail,
 } from './productSlice';
+import { getAllOrderNewStart, getAllOrderNewSuccess, getAllOrderNewFail } from './orderSlice';
 import request from '~/utils/request';
 
 export const loginUser = async (email, password, dispatch, navigate) => {
@@ -544,5 +545,25 @@ export const searchProduct = async (dispatch, key) => {
     } catch (e) {
         console.log(e);
         dispatch(getProductInfoFail());
+    }
+};
+
+//Api order
+export const getAllOrderNewAdmin = async (dispatch, axiosJWT, action, accessToken) => {
+    dispatch(getAllOrderNewStart());
+    try {
+        const res = await axiosJWT.get('/api/getAllOrderNew?action=' + action.action, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        if (res.data.errCode === 0) {
+            dispatch(getAllOrderNewSuccess(res));
+            return res.data;
+        } else {
+            console.log(res);
+            dispatch(getAllOrderNewFail());
+        }
+    } catch (e) {
+        console.log(e);
+        dispatch(getAllOrderNewFail());
     }
 };

@@ -40,7 +40,6 @@ const customStyles = {
 function ModalCategory({ isOpen, FuncToggleModal, data }) {
     const user = useSelector((state) => state.auth.login?.currentUser);
     const listParentRedux = useSelector((state) => state.auth.login?.currentUser);
-    console.log(data);
     const {
         register,
         handleSubmit,

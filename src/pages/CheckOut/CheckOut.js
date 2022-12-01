@@ -65,19 +65,19 @@ function CheckOut() {
             setLoading(true);
             await setTimeout(async () => {
                 const result = await searchCoupon(coupon);
-                // setMessage(result);
-                console.log(result);
-                if (result.errCode === 0) {
+
+                if (result.errCode === 0 && result.data?.stock > 0) {
                     setShowMessage(true);
                     setCouponResult(result.data);
                 }
-                if (result.stock === 0) {
+                if (result.errCode === 0 && result.data?.stock === 0) {
                     setMessage('Mã giảm giá đã hết');
                 } else if (result.errCode === 0) {
                     setMessage(`Giảm giá ${result.data.value}%`);
-                } else if (result.errCode === 1) {
+                } else {
                     setShowMessage(false);
                     setCouponResult(null);
+                    console.log('check');
 
                     setMessage('Mã giảm giá không tồn tại!!!');
                 }
@@ -264,6 +264,9 @@ function CheckOut() {
 
         setState(copyState);
     };
+
+    console.log(couponResult);
+
     const handleSubmit = async () => {
         let arrProduct = [];
         let order_number = `NK${Math.floor(Math.random() * 1000000 + 1)}NMN`;
@@ -281,8 +284,8 @@ function CheckOut() {
             user_id: currentUser.id,
             product: arrProduct,
             order_number: order_number,
-            coupon: couponResult ? couponResult.code : null,
-            sub_total: handleTotal(),
+            coupon: couponResult ? couponResult.value : null,
+            sub_total: couponResult ? handleTotal() * ((100 - couponResult.value) / 100) : handleTotal(),
             quantity: handleTotalQuantity(),
             lastName: state.lastName,
             firstName: state.firstName,

@@ -17,6 +17,10 @@ const routes = {
     editProduct: 'edit-product/:productId',
     create_product: 'create-product',
 
+    //order
+    order: '/admin/order',
+    order_detail: 'order-detail/:id',
+
     //customer
     customer_login: '/login-customer',
 

@@ -81,11 +81,13 @@ function SideBar() {
                                 <span>Products</span>
                             </li>
                         </Link>
+                        <Link to={config.routes.order}>
+                            <li>
+                                <SummarizeIcon className={cx('icon')} />
+                                <span>Orders</span>
+                            </li>
+                        </Link>
 
-                        <li>
-                            <SummarizeIcon className={cx('icon')} />
-                            <span>Orders</span>
-                        </li>
                         <p className={cx('title')}>USEFUL</p>
 
                         <li>

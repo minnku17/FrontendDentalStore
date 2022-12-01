@@ -17,6 +17,8 @@ import Dashboard from './admin/pages/home';
 import { DefaultLayout } from './layouts';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
 import CheckOut from './pages/CheckOut/CheckOut';
+import Order from './admin/pages/order/Order';
+import OrderDetail from './admin/pages/orderDetail/OrderDetail';
 
 function App() {
     return (
@@ -75,6 +77,7 @@ function App() {
                                 }
                             />
                         </Route>
+
                         <Route path={config.routes.product}>
                             <Route
                                 index
@@ -97,6 +100,25 @@ function App() {
                                 element={
                                     <LayoutAdmin>
                                         <NewProduct />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.order}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <Order />
+                                    </LayoutAdmin>
+                                }
+                            />
+
+                            <Route
+                                path={config.routes.order_detail}
+                                element={
+                                    <LayoutAdmin>
+                                        <OrderDetail />
                                     </LayoutAdmin>
                                 }
                             />

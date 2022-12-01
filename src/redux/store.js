@@ -7,6 +7,7 @@ import brandReducer from './brandSlice';
 import categoryReducer from './categorySlice';
 import productReducer from './productSlice';
 import cartReducer from './cartSlice';
+import orderReducer from './orderSlice';
 const persistConfig = {
     key: 'rootDental',
     version: 1,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
     categories: categoryReducer,
     product: productReducer,
     cartRedux: cartReducer,
+    order: orderReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

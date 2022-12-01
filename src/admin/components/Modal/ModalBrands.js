@@ -35,9 +35,6 @@ const customStyles = {
 
 function ModalBrands({ isOpen, FuncToggleModal, data }) {
     let [image, setImage] = useState();
-
-    console.log(data);
-
     const {
         register,
         handleSubmit,

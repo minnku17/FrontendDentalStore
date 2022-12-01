@@ -105,3 +105,20 @@ export const createOrder = async (data) => {
         console.log(error);
     }
 };
+export const getOrderInfo = async (id) => {
+    try {
+        const res = await request.get(`/api/getDetailOrder?id=${id}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const handleEditStatusOrder = async (data) => {
+    try {
+        const res = await request.PUT(`/api/handleEditStatus`, data);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
