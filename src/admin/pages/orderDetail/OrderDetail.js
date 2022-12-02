@@ -163,11 +163,35 @@ function OrderDetail() {
                             <h3>Trạng thái</h3>
                             <div className={cx('action-t')}>
                                 <div className={cx('form-input')}>
-                                    <select value={selected} onChange={(e) => handleOnChange(e)}>
-                                        <option value="new">Mới</option>
-                                        <option value="process">Chuẩn bị</option>
-                                        <option value="shipping">Vận chuyển</option>
-                                    </select>
+                                    {state.status === 'new' && (
+                                        <select value={selected} onChange={(e) => handleOnChange(e)}>
+                                            <option value="new">Mới</option>
+                                            <option value="process">Chuẩn bị</option>
+                                            <option value="shipping" disabled>
+                                                Vận chuyển
+                                            </option>
+                                        </select>
+                                    )}
+                                    {state.status === 'process' && (
+                                        <select value={selected} onChange={(e) => handleOnChange(e)}>
+                                            <option value="new" disabled>
+                                                Mới
+                                            </option>
+                                            <option value="process">Chuẩn bị</option>
+                                            <option value="shipping">Vận chuyển</option>
+                                        </select>
+                                    )}
+                                    {state.status === 'shipping' && (
+                                        <select value={selected} onChange={(e) => handleOnChange(e)}>
+                                            <option value="new" disabled>
+                                                Mới
+                                            </option>
+                                            <option value="process" disabled>
+                                                Chuẩn bị
+                                            </option>
+                                            <option value="shipping">Vận chuyển</option>
+                                        </select>
+                                    )}
                                 </div>
                                 <button onClick={() => handleSubmit()}>Chỉnh sửa</button>
                             </div>

@@ -24,7 +24,6 @@ function CheckOut() {
     const productCart = useSelector((state) => state.cartRedux.cart?.arrCart);
 
     const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
-    console.log(currentUser);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();

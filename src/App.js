@@ -19,6 +19,7 @@ import ProductDetail from './pages/ProductDetail/ProductDetail';
 import CheckOut from './pages/CheckOut/CheckOut';
 import Order from './admin/pages/order/Order';
 import OrderDetail from './admin/pages/orderDetail/OrderDetail';
+import FilterCategory from './pages/FilterCategory/FilterCategory';
 
 function App() {
     return (
@@ -140,6 +141,14 @@ function App() {
                             element={
                                 <DefaultLayout>
                                     <Home />
+                                </DefaultLayout>
+                            }
+                        />
+                        <Route
+                            path={config.routes.filter_category}
+                            element={
+                                <DefaultLayout>
+                                    <FilterCategory />
                                 </DefaultLayout>
                             }
                         />

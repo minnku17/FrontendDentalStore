@@ -140,15 +140,7 @@ function DatatableOrder(action) {
     };
 
     const handleDelete = async (id) => {
-        let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-        let res = await deleteCategory(dispatch, axiosJWT, id, user?.accessToken);
-
-        if (res.errCode === 0) {
-            toast.success(res.errMessage);
-            await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT);
-        } else {
-            toast.error(res.errMessage);
-        }
+        console.log(id);
     };
 
     return (

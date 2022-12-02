@@ -31,8 +31,6 @@ function Header() {
     const productCart = useSelector((state) => state.cartRedux.cart?.arrCart);
     const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
 
-    console.log('check user', currentUser);
-
     let [listProduct, setListProduct] = useState([]);
 
     let [render, setRender] = useState(0);

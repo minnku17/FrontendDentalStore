@@ -12,6 +12,8 @@ import { getListParentCategory } from '~/redux/apiReques';
 import Tippy from '@tippyjs/react/headless';
 
 import 'tippy.js/dist/tippy.css';
+import { useNavigate } from 'react-router-dom';
+import config from '~/config';
 
 function Sidebar() {
     const cx = className.bind(styles);
@@ -19,6 +21,7 @@ function Sidebar() {
     let [listParent, setListParent] = useState();
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchApi() {
@@ -27,29 +30,33 @@ function Sidebar() {
         }
         fetchApi();
     }, []);
+
+    const viewCategory = (id) => {
+        console.log(id);
+        navigate(config.routes.filter_category);
+    };
     return (
         <aside className={cx('wrapper')}>
             {listParent?.map((item, index) => {
                 return (
-                    <Tippy
-                        className={cx('tippy')}
-                        interactive
-                        delay={300}
-                        render={(attrs) => (
-                            <div className={cx('category-dropdown')} tabIndex="-1" {...attrs}>
-                                <PopperWrapper className={cx('popper-wrapper')}>
-                                    <>hello</>
-                                </PopperWrapper>
-                            </div>
-                        )}
-                    >
-                        <div className={cx('row-item')}>
-                            <div className={cx('title')}>{item.title}</div>
-                            <div className={cx('icon')}>
-                                <KeyboardArrowRightIcon />
-                            </div>
+                    // <Tippy
+                    //     className={cx('tippy')}
+                    //     interactive
+                    //     delay={300}
+                    //     render={(attrs) => (
+                    //         <div className={cx('category-dropdown')} tabIndex="-1" {...attrs}>
+                    //             <PopperWrapper className={cx('popper-wrapper')}>
+                    //                 <>hello</>
+                    //             </PopperWrapper>
+                    //         </div>
+                    //     )}
+                    <div onClick={() => viewCategory(item.id)} className={cx('row-item')}>
+                        <div className={cx('title')}>{item.title}</div>
+                        <div className={cx('icon')}>
+                            <KeyboardArrowRightIcon />
                         </div>
-                    </Tippy>
+                    </div>
+                    // ></Tippy>
                 );
             })}
         </aside>
