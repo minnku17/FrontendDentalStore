@@ -11,6 +11,8 @@ import { getAllUsersRedux } from '~/redux/apiReques';
 import { useNavigate } from 'react-router-dom';
 import config from '~/config';
 import { axiosMiddle } from '~/services/axiosJWT';
+import Featured from '~/admin/components/featured/Featured';
+import Chart from '~/admin/components/chart/Chart';
 
 const cx = classNames.bind(styles);
 
@@ -41,6 +43,10 @@ function Dashboard() {
                 <Widget type="order" />
                 <Widget type="earning" />
                 <Widget type="balance" />
+            </div>
+            <div className={cx('charts')}>
+                <Featured />
+                <Chart />
             </div>
         </>
     );

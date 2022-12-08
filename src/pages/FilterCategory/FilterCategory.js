@@ -8,24 +8,134 @@ import { NumericFormat } from 'react-number-format';
 import images from '~/assets/images';
 
 import styles from './FilterCategory.module.scss';
-import { toast } from 'react-toastify';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { getAllBrandFilter, getAllParentCategory, getProductFilter } from '~/services';
+import { getListParentCategory } from '~/redux/apiReques';
 const cx = className.bind(styles);
 
+const rangePriceArr = [
+    {
+        id: 1,
+        priceA: 0,
+        priceB: 419999,
+    },
+    {
+        id: 2,
+        priceA: 420000,
+        priceB: 3199999,
+    },
+    {
+        id: 3,
+        priceA: 3200000,
+        priceB: 8352999,
+    },
+    {
+        id: 4,
+        priceA: 8353000,
+        priceB: 39999999,
+    },
+];
+
 function FilterCategory() {
-    const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
+    const dispatch = useDispatch();
+
+    const { id } = useParams();
+
     let [toggleCategory, setToggleCategory] = useState(true);
     let [togglePrice, setTogglePrice] = useState(true);
     let [toggleBrand, setToggleBrand] = useState(true);
     let [loadMore, setLoadMore] = useState(false);
     let [loadPrice, setLoadPrice] = useState(false);
-    let [loadBrand, setLoadBrand] = useState(false);
+    let [selected, setSelected] = useState('trend');
+    let [arrFilterCat, setArrFilterCat] = useState(null);
+    let [arrFilterBrand, setArrFilterBrand] = useState(null);
+    let [arrFilterPrice, setArrFilterPrice] = useState(null);
 
-    const viewDetailProduct = (id) => {};
+    let [listCategory, setListCategory] = useState([]);
+    let [listBrand, setLisBrand] = useState([]);
+    let [listProduct, setListProduct] = useState([]);
+
+    useEffect(() => {
+        const fetchApi = async () => {
+            const res = await getListParentCategory(dispatch);
+            const brands = await getAllBrandFilter();
+
+            if (id) {
+                let data = {};
+                data.action = 'trend';
+                data.id = +id;
+                const products = await getProductFilter(data);
+                if (products.errCode === 0) {
+                    setListProduct(products.data);
+                }
+            }
+            if (res.errCode === 0 && res.data.length > 0) {
+                let catCurrent = res.data.find((item) => {
+                    return item.id === +id;
+                });
+                setArrFilterCat(catCurrent);
+                setListCategory(res.data);
+                setLisBrand(brands.data);
+            }
+        };
+
+        fetchApi();
+    }, []);
+
+    useEffect(() => {
+        let data = {};
+        data.action = selected;
+        data.id = arrFilterCat ? arrFilterCat.id : null;
+        data.brand_id = arrFilterBrand ? arrFilterBrand.id : null;
+        data.priceA = arrFilterPrice ? arrFilterPrice.priceA : null;
+        data.priceB = arrFilterPrice ? arrFilterPrice.priceB : null;
+
+        const fetchApi = async () => {
+            const products = await getProductFilter(data);
+            if (products && products.errCode === 0) {
+                setListProduct(products.data);
+            } else {
+                setListProduct([]);
+            }
+        };
+        fetchApi();
+    }, [arrFilterCat, arrFilterPrice, arrFilterBrand, selected]);
+
+    const chooseCategory = (item, id) => {
+        if (id === 'cat') {
+            if (arrFilterCat && arrFilterCat.id === item.id) {
+                setArrFilterCat(null);
+            } else {
+                setArrFilterCat(item);
+            }
+        } else if (id === 'price') {
+            if (arrFilterPrice && arrFilterPrice.priceA === item.priceA) {
+                setArrFilterPrice(null);
+            } else {
+                setArrFilterPrice(item);
+            }
+        } else {
+            if (arrFilterBrand && arrFilterBrand.title === item.title) {
+                setArrFilterBrand(null);
+            } else {
+                setArrFilterBrand(item);
+            }
+        }
+    };
+    const navigate = useNavigate();
+    const viewDetailProduct = (id) => {
+        navigate(`/product-detail/${id}`);
+    };
+
+    const handleDelete = () => {
+        setArrFilterCat(null);
+        setArrFilterPrice(null);
+        setArrFilterBrand(null);
+    };
 
     return (
         <>
@@ -37,20 +147,49 @@ function FilterCategory() {
                     <div className={cx('sidebar')}>
                         <div className={cx('filter')}>
                             <div className={cx('top')}>
-                                <h3>Bộ lọc (2)</h3>
-                                <button>Xóa hết</button>
+                                <h3>Bộ lọc</h3>
+                                <button onClick={() => handleDelete()}>Xóa hết</button>
                             </div>
-                            <div className={cx('selectedCate')}>
-                                <p>
-                                    Cements <span>x</span>
-                                </p>
-                                <p>
-                                    Cementsjhaijdhjahdjajdahjk <span>x</span>
-                                </p>
-                                <p>
-                                    Cements <span>x</span>
-                                </p>
-                            </div>
+                            {arrFilterCat && (
+                                <div onClick={() => setArrFilterCat(null)} className={cx('selectedCate')}>
+                                    <p>
+                                        {`${arrFilterCat.title} `} <span>x</span>
+                                    </p>
+                                </div>
+                            )}
+                            {arrFilterBrand && (
+                                <div onClick={() => setArrFilterBrand(null)} className={cx('selectedCate')}>
+                                    <p>
+                                        {`${arrFilterBrand.title} `} <span>x</span>
+                                    </p>
+                                </div>
+                            )}
+                            {arrFilterPrice && (
+                                <div onClick={() => setArrFilterPrice(null)} className={cx('selectedCate')}>
+                                    <div className={cx('filter-price')}>
+                                        <NumericFormat
+                                            className="currency"
+                                            type="text"
+                                            // value={item.price * ((100 - item.discount) / 100)}
+                                            value={arrFilterPrice.priceA}
+                                            displayType="text"
+                                            thousandSeparator={true}
+                                            suffix={'đ'}
+                                        />{' '}
+                                        -
+                                        <NumericFormat
+                                            className="currency"
+                                            type="text"
+                                            // value={item.price * ((100 - item.discount) / 100)}
+                                            value={arrFilterPrice.priceB}
+                                            displayType="text"
+                                            thousandSeparator={true}
+                                            suffix={'đ'}
+                                        />{' '}
+                                        <div className={cx('x')}>x</div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                         <span className={cx('line')}></span>
                         <div className={cx('wrapper-list-category')}>
@@ -67,46 +206,28 @@ function FilterCategory() {
                                             height: loadMore === false ? '126px' : 'fit-content',
                                         }}
                                     >
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
+                                        {listCategory &&
+                                            listCategory.length > 0 &&
+                                            listCategory.map((item, index) => {
+                                                return (
+                                                    <>
+                                                        <div key={index}>
+                                                            <label className={cx('container')}>
+                                                                <input
+                                                                    onClick={() => chooseCategory(item, 'cat')}
+                                                                    type="checkbox"
+                                                                    readOnly
+                                                                    checked={
+                                                                        arrFilterCat?.id === item.id ? true : false
+                                                                    }
+                                                                />
+                                                                <span className={cx('checkmark')}>{item.title}</span>
+                                                            </label>
+                                                        </div>
+                                                    </>
+                                                );
+                                            })}
+
                                         <button
                                             onClick={() => {
                                                 setLoadMore(!loadMore);
@@ -145,66 +266,44 @@ function FilterCategory() {
                                             height: loadPrice === false ? '126px' : 'fit-content',
                                         }}
                                     >
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <label className={cx('container')}>
-                                            <input type="checkbox" />
-                                            <span className={cx('checkmark')}></span>
-                                            Two
-                                        </label>
-                                        <button
-                                            onClick={() => {
-                                                setLoadPrice(!loadPrice);
-                                            }}
-                                        >
-                                            Thu gọn
-                                            <span>
-                                                {loadPrice === true ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-                                            </span>
-                                        </button>
+                                        {rangePriceArr.map((item, index) => {
+                                            return (
+                                                <div key={index}>
+                                                    <label className={cx('container')}>
+                                                        <input
+                                                            onClick={(e) => {
+                                                                chooseCategory(item, 'price');
+                                                            }}
+                                                            checked={arrFilterPrice?.id === item.id}
+                                                            type="checkbox"
+                                                            readOnly
+                                                        />
+                                                        <span className={cx('checkmark')}>
+                                                            <NumericFormat
+                                                                className="currency"
+                                                                type="text"
+                                                                // value={item.price * ((100 - item.discount) / 100)}
+                                                                value={item.priceA}
+                                                                displayType="text"
+                                                                thousandSeparator={true}
+                                                                suffix={'đ'}
+                                                            />{' '}
+                                                            -{' '}
+                                                            <NumericFormat
+                                                                className="currency"
+                                                                type="text"
+                                                                // value={item.price * ((100 - item.discount) / 100)}
+                                                                value={item.priceB}
+                                                                displayType="text"
+                                                                thousandSeparator={true}
+                                                                suffix={'đ'}
+                                                            />
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                    <button
-                                        style={{ display: loadPrice === true ? 'none' : 'block' }}
-                                        onClick={() => {
-                                            setLoadPrice(!loadPrice);
-                                        }}
-                                    >
-                                        Xem thêm
-                                        <span>{loadPrice === true ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}</span>
-                                    </button>
                                 </div>
                             )}
                         </div>
@@ -217,13 +316,19 @@ function FilterCategory() {
                             {toggleBrand === true && (
                                 <div className={cx('list-brand')}>
                                     <div className={cx('item')}>
-                                        <img src={images.noImage} alt="" />
-                                        <img src={images.noImage} alt="" />
-                                        <img src={images.noImage} alt="" />
-                                        <img src={images.noImage} alt="" />
-                                        <img src={images.noImage} alt="" />
-                                        <img src={images.noImage} alt="" />
-                                        <img src={images.noImage} alt="" />
+                                        {listBrand &&
+                                            listBrand.length > 0 &&
+                                            listBrand.map((item, index) => {
+                                                return (
+                                                    <div key={index}>
+                                                        <img
+                                                            onClick={() => chooseCategory(item, 'brand')}
+                                                            src={item.Image.photo ? item.Image.photo : images.noImage}
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                );
+                                            })}
                                     </div>
                                 </div>
                             )}
@@ -233,17 +338,44 @@ function FilterCategory() {
                         <div className={cx('header-list')}>
                             <div className={cx('top')}>
                                 <p>Nha khoa tổng quát</p>
-                                <span>(80 trên 80 sản phẩm)</span>
+                                <span>{`(${listProduct ? listProduct.length : 0} trên ${
+                                    listProduct ? listProduct.length : 0
+                                } sản phẩm)`}</span>
                             </div>
                             <div className={cx('bottom')}>
                                 <div className={cx('bot-left')}>
                                     <span className={cx('text')}>Sắp xếp theo: </span>
                                     <div className={cx('list-btn')}>
-                                        <button>Phổ biến</button>
-                                        <button>Bán chạy</button>
-                                        <button>Giảm giá nhiều</button>
-                                        <button>Giá thấp</button>
-                                        <button>Giá cao</button>
+                                        <button
+                                            onClick={() => setSelected('trend')}
+                                            className={selected === 'trend' ? cx('btn-active') : ''}
+                                        >
+                                            Phổ biến
+                                        </button>
+                                        <button
+                                            onClick={() => setSelected('sold')}
+                                            className={selected === 'sold' ? cx('btn-active') : ''}
+                                        >
+                                            Bán chạy
+                                        </button>
+                                        <button
+                                            onClick={() => setSelected('discount')}
+                                            className={selected === 'discount' ? cx('btn-active') : ''}
+                                        >
+                                            Giảm giá nhiều
+                                        </button>
+                                        <button
+                                            onClick={() => setSelected('priceLow')}
+                                            className={selected === 'priceLow' ? cx('btn-active') : ''}
+                                        >
+                                            Giá thấp
+                                        </button>
+                                        <button
+                                            onClick={() => setSelected('priceHigh')}
+                                            className={selected === 'priceHigh' ? cx('btn-active') : ''}
+                                        >
+                                            Giá cao
+                                        </button>
                                     </div>
                                 </div>
 
@@ -252,73 +384,79 @@ function FilterCategory() {
                         </div>
                         <div className={cx('main-content')}>
                             {/* <div className={cx('wrapper')}> */}
-                            {/* <div key={index}> */}
-                            <div>
-                                <div onClick={() => viewDetailProduct()} className={cx('wrapper')}>
-                                    <div className={cx('top')}>
-                                        {/* <img src={item.image ? item.image : images.product1} alt="" /> */}
-                                        <img src={images.product1} alt="" />
-                                        <div style={{ display: 'none' }} className={cx('sale')}>
-                                            0
-                                        </div>
-                                        {/* {item.discount > 0 ? (
-                                                <div className={cx('sale')}>{`-${item.discount}%`}</div>
-                                            ) : (
-                                                <div
-                                                    style={{ display: 'none' }}
-                                                    className={cx('sale')}
-                                                >{`-${item.discount}%`}</div>
-                                            )} */}
-                                        <span className={cx('unit')}>bộ</span>
-                                        <div className={cx('event')}>
-                                            <img src={images.eventsale} alt="" />
-                                        </div>
-                                    </div>
+                            {listProduct &&
+                                listProduct.length > 0 &&
+                                listProduct.map((item, index) => {
+                                    return (
+                                        <div key={index} onClick={() => viewDetailProduct(item.id)}>
+                                            <div className={cx('wrapper')}>
+                                                <div className={cx('top')}>
+                                                    <img
+                                                        src={
+                                                            item.Images[0].photo
+                                                                ? item.Images[0].photo
+                                                                : images.product1
+                                                        }
+                                                        alt=""
+                                                    />
 
-                                    <div className={cx('bottom')}>
-                                        {/* <p>{item.title}</p> */}
-                                        <p>aaaaaaaaaaaaaaaaaaaaaa</p>
-                                        <div className={cx('wrapper-price')}>
-                                            <div className={cx('price')}>
-                                                <NumericFormat
-                                                    className="currency"
-                                                    type="text"
-                                                    // value={item.price * ((100 - item.discount) / 100)}
-                                                    value="10"
-                                                    displayType="text"
-                                                    thousandSeparator={true}
-                                                    suffix={'đ'}
-                                                />
+                                                    {item.discount > 0 ? (
+                                                        <div className={cx('sale')}>{`-${item.discount}%`}</div>
+                                                    ) : (
+                                                        <div
+                                                            style={{ display: 'none' }}
+                                                            className={cx('sale')}
+                                                        >{`-${item.discount}%`}</div>
+                                                    )}
+                                                    <span className={cx('unit')}>bộ</span>
+                                                    <div className={cx('event')}>
+                                                        <img src={images.eventsale} alt="" />
+                                                    </div>
+                                                </div>
+
+                                                <div className={cx('bottom')}>
+                                                    <p>{item.title}</p>
+                                                    <div className={cx('wrapper-price')}>
+                                                        <div className={cx('price')}>
+                                                            <NumericFormat
+                                                                className="currency"
+                                                                type="text"
+                                                                value={item.price * ((100 - item.discount) / 100)}
+                                                                displayType="text"
+                                                                thousandSeparator={true}
+                                                                suffix={'đ'}
+                                                            />
+                                                        </div>
+                                                        <div className={cx('old-price')}>
+                                                            <NumericFormat
+                                                                className="currency"
+                                                                type="text"
+                                                                value={item.price}
+                                                                displayType="text"
+                                                                thousandSeparator={true}
+                                                                suffix={'đ'}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className={cx('wrapper-brand')}>
+                                                        <div className={cx('brand')}>{item?.Brand.title}</div>
+                                                        <div className={cx('sold')}>
+                                                            Đã bán: {item.sold ? item.sold : 0}
+                                                        </div>
+                                                    </div>
+                                                    <div className={cx('gift')}>
+                                                        <CardGiftcardIcon className={cx('icon')} />
+                                                        <span>
+                                                            Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling + Trâm máy
+                                                            - PROTAPER + Côn Protaper Gapadent (SL có hạn)
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className={cx('old-price')}>
-                                                <NumericFormat
-                                                    className="currency"
-                                                    type="text"
-                                                    // value={item.price}
-                                                    value="12212222"
-                                                    displayType="text"
-                                                    thousandSeparator={true}
-                                                    suffix={'đ'}
-                                                />
-                                            </div>
+                                            {/* </div> */}
                                         </div>
-                                        <div className={cx('wrapper-brand')}>
-                                            {/* <div className={cx('brand')}>{item.brand}</div> */}
-                                            <div className={cx('brand')}>coxo</div>
-                                            {/* <div className={cx('sold')}>Đã bán: {item.sold ? item.sold : 0}</div> */}
-                                            <div className={cx('sold')}>Đã bán: 0</div>
-                                        </div>
-                                        <div className={cx('gift')}>
-                                            <CardGiftcardIcon className={cx('icon')} />
-                                            <span>
-                                                Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling + Trâm máy - PROTAPER +
-                                                Côn Protaper Gapadent (SL có hạn)
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* </div> */}
-                            </div>
+                                    );
+                                })}
                         </div>
                     </div>
                 </div>

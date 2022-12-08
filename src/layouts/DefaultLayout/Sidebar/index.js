@@ -33,7 +33,7 @@ function Sidebar() {
 
     const viewCategory = (id) => {
         console.log(id);
-        navigate(config.routes.filter_category);
+        navigate(`/category/${id}`);
     };
     return (
         <aside className={cx('wrapper')}>

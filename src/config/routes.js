@@ -27,6 +27,6 @@ const routes = {
     home: '/',
     product_detail: '/product-detail/:id',
     check_out: '/check-out',
-    filter_category: '/category',
+    filter_category: '/category/:id',
 };
 export default routes;

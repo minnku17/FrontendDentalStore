@@ -48,7 +48,7 @@ function SideBar() {
                 <hr />
                 <div className={cx('center')}>
                     <ul>
-                        <p className={cx('title')}>MAIN</p>
+                        <p className={cx('title')}>CHÍNH</p>
                         <Link to={config.routes.dashboard}>
                             <li>
                                 <DashboardIcon className={cx('icon')} />
@@ -56,7 +56,7 @@ function SideBar() {
                             </li>
                         </Link>
 
-                        <p className={cx('title')}>LISTS</p>
+                        <p className={cx('title')}>DANH MỤC</p>
                         <Link to={config.routes.users}>
                             <li>
                                 <PersonIcon className={cx('icon')} />
@@ -66,29 +66,29 @@ function SideBar() {
                         <Link to={config.routes.brands}>
                             <li>
                                 <StorefrontIcon className={cx('icon')} />
-                                <span>Brands</span>
+                                <span>Hãng</span>
                             </li>
                         </Link>
                         <Link to={config.routes.category}>
                             <li>
                                 <StorefrontIcon className={cx('icon')} />
-                                <span>Category</span>
+                                <span>Danh mục</span>
                             </li>
                         </Link>
                         <Link to={config.routes.product}>
                             <li>
                                 <AddBusinessIcon className={cx('icon')} />
-                                <span>Products</span>
+                                <span>Sản phẩm</span>
                             </li>
                         </Link>
                         <Link to={config.routes.order}>
                             <li>
                                 <SummarizeIcon className={cx('icon')} />
-                                <span>Orders</span>
+                                <span>Đơn hàng</span>
                             </li>
                         </Link>
 
-                        <p className={cx('title')}>USEFUL</p>
+                        <p className={cx('title')}>DANH MỤC CHO BÁC SĨ </p>
 
                         <li>
                             <QueryStatsIcon className={cx('icon')} />

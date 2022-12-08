@@ -71,6 +71,15 @@ export const refreshToken = async () => {
     }
 };
 
+export const getAllBrandFilter = async () => {
+    try {
+        const res = await request.get('/api/getAllBrands');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const getAllParentCategory = async (accessToken) => {
     try {
         const res = await request.get('/api/getAllParentCategory', { headers: { token: `Bearer ${accessToken}` } });
@@ -84,6 +93,69 @@ export const getProductInfo = async (id) => {
     try {
         const res = await request.get(`/api/getProductInfoById?id=${id}`);
         return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getTurnover = async (date) => {
+    try {
+        const res = await request.get(`/api/getTurnover?date=${date}`);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getTurnoverWeek = async () => {
+    try {
+        const res = await request.get(`/api/getTurnoverWeek`);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getProductFilter = async (data) => {
+    try {
+        if (data.id && !data.brand_id) {
+            if (data.priceB) {
+                const res = await request.get(
+                    `/api/getProductByCategory?action=${data.action}&id=${data.id}&priceA=${data.priceA}&priceB=${data.priceB}`,
+                );
+                return res;
+            } else {
+                const res = await request.get(`/api/getProductByCategory?action=${data.action}&id=${data.id}`);
+                return res;
+            }
+        }
+        if (data.id === null && data.brand_id) {
+            if (data.priceB) {
+                console.log('check has');
+                const res = await request.get(
+                    `/api/getProductByCategory?action=${data.action}&brand_id=${data.brand_id}&priceA=${data.priceA}&priceB=${data.priceB}`,
+                );
+                return res;
+            } else {
+                const res = await request.get(
+                    `/api/getProductByCategory?action=${data.action}&brand_id=${data.brand_id}`,
+                );
+                return res;
+            }
+        }
+        if (data.id && data.brand_id) {
+            if (data.priceB) {
+                const res = await request.get(
+                    `/api/getProductByCategory?action=${data.action}&id=${data.id}&brand_id=${data.brand_id}&priceA=${data.priceA}&priceB=${data.priceB}`,
+                );
+                return res;
+            } else {
+                const res = await request.get(
+                    `/api/getProductByCategory?action=${data.action}&id=${data.id}&brand_id=${data.brand_id}`,
+                );
+                return res;
+            }
+        }
     } catch (error) {
         console.log(error);
     }

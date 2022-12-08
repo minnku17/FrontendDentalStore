@@ -33,6 +33,7 @@
             .filter {
                 display: flex;
                 flex-direction: column;
+                gap: 5px;
 
                 .top {
                     display: flex;
@@ -60,7 +61,8 @@
                     width: fit-content;
                     display: flex;
                     flex-wrap: wrap;
-                    gap: 4px;
+                    padding: 0 0px;
+                    /* gap: 0px; */
                     cursor: pointer;
 
                     p {
@@ -68,6 +70,9 @@
                         border-radius: 9px;
 
                         background-color: #216daa;
+                        .currency {
+                            background-color: #216daa;
+                        }
 
                         span {
                             border-radius: 50%;
@@ -75,6 +80,38 @@
                             color: #216daa;
                             padding: 2px 4px;
                             padding-bottom: 3px;
+                            background-color: #fff;
+                        }
+
+                        .x {
+                            border-radius: 50%;
+                            font-weight: bold;
+                            color: #216daa;
+                            padding: 2px 4px;
+                            padding-bottom: 3px;
+                            background-color: #fff;
+                        }
+                    }
+                    .filter-price {
+                        display: flex;
+                        align-items: center;
+                        padding: 0px 3px;
+                        border-radius: 9px;
+                        background-color: #216daa;
+
+                        span {
+                            font-weight: bold;
+                            color: #fff;
+                            padding: 2px 4px;
+                            padding-bottom: 3px;
+                        }
+
+                        .x {
+                            border-radius: 50%;
+                            font-weight: bold;
+                            color: #216daa;
+                            padding: 0px 6px;
+                            /* padding-bottom: 3px; */
                             background-color: #fff;
                         }
                     }
@@ -151,6 +188,7 @@
                         justify-content: start;
                         align-items: center;
                         img {
+                            cursor: pointer;
                             width: 40px;
                             height: 40px;
                         }
@@ -234,6 +272,11 @@
                                     background-color: #188aeb;
                                     color: white;
                                 }
+                            }
+
+                            .btn-active {
+                                background-color: #216daa;
+                                color: white;
                             }
                         }
                     }
