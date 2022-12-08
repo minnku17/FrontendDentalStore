@@ -366,7 +366,7 @@ export const getAllCategory = async (dispatch) => {
 export const getListParentCategory = async (dispatch) => {
     dispatch(getListCategoryStart());
     try {
-        const res = await request.get(`/api/getAllParentCategory`);
+        const res = await request.get(`/api/getAllParentCategory?limit=${14}`);
         if (res.data.errCode === 0) {
             dispatch(getListCategorySuccess(res));
             return res.data;

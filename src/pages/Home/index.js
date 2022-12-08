@@ -1,15 +1,18 @@
 import className from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import 'tippy.js/dist/tippy.css';
 import images from '~/assets/images';
 import Banner from '~/Component/Banner/Banner';
 import BookingSchedules from '~/Component/BookingSchedules/BookingSchedules';
 import CategoryFeature from '~/Component/CategoryFeature/CategoryFeature';
 import ListProduct from '~/Component/ListProduct/ListProduct';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+
 import SaleCarousel from '~/Component/SaleCarousel/SaleCarousel';
 import Sidebar from '~/layouts/DefaultLayout/Sidebar';
-import { getAllProductLittleInfo } from '~/redux/apiReques';
+import { getAllProductLittleInfo, getListParentCategory } from '~/redux/apiReques';
 
 import styles from './Home.module.scss';
 

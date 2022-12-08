@@ -20,12 +20,15 @@ import CheckOut from './pages/CheckOut/CheckOut';
 import Order from './admin/pages/order/Order';
 import OrderDetail from './admin/pages/orderDetail/OrderDetail';
 import FilterCategory from './pages/FilterCategory/FilterCategory';
+import HeaderCustomer from './layouts/component/HeaderCustomer/HeaderCustomer';
 
 function App() {
     return (
         <Router>
             <div>
                 <Routes>
+                    <Route path={`/de`} element={<HeaderCustomer />} />
+
                     <Route path={config.routes.loginAdmin} element={<LoginAdmin />} />
                     <Route path={config.routes.dashboard}>
                         <Route
