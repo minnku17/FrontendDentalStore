@@ -93,13 +93,13 @@ export const loginUser = async (email, password, dispatch, navigate) => {
         dispatch(loginSuccess(res));
 
         console.log('check res login>>>', res);
-        if (res.errCode === 0) {
-            if (res.user.roleId !== 'Admin') {
-                navigate(config.routes.profile);
-            } else {
-                navigate(config.routes.dashboard);
-            }
-        }
+        // if (res.errCode === 0) {
+        //     if (res.user.roleId !== 'Admin') {
+        //         navigate(config.routes.profile);
+        //     } else {
+        //         navigate(config.routes.dashboard);
+        //     }
+        // }
 
         return res;
     } catch (e) {

@@ -194,3 +194,25 @@ export const handleEditStatusOrder = async (data) => {
         console.log(error);
     }
 };
+
+export const getDetailInfoDoctor = (id) => {
+    return request.get(`/api/get-detail-doctor-by-id?id=${id}`);
+};
+export const getScheduleDoctorByDate = (doctorId, date) => {
+    return request.get(`/api/get-schedule-doctor-by-date?doctorId=${doctorId}&date=${date}`);
+};
+export const postPatientBookAppointment = (data) => {
+    return request.post('/api/patient-book-appointment', data);
+};
+export const getAllCodeService = (inputData) => {
+    return request.get(`/api/allcodes?type=${inputData}`);
+};
+export const getProfileDoctorById = (id) => {
+    return request.get(`/api/get-profile-doctor-by-id?doctorId=${id}`);
+};
+export const getExtraInfoDoctorById = (id) => {
+    return request.get(`/api/get-extra-info-doctor-by-id?doctorId=${id}`);
+};
+export const getTopDoctorsService = (limit) => {
+    return request.get(`/api/top-doctor-home?limit=${limit}`);
+};

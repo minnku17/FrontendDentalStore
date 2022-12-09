@@ -407,7 +407,11 @@ function Header() {
                                                                             >
                                                                                 <RemoveIcon />
                                                                             </button>
-                                                                            <input value={item.quality} readOnly />
+                                                                            <input
+                                                                                className="text-black"
+                                                                                value={item.quality}
+                                                                                readOnly
+                                                                            />
 
                                                                             <button
                                                                                 onClick={() => handleIncrease(item.id)}

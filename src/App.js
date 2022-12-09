@@ -21,6 +21,9 @@ import Order from './admin/pages/order/Order';
 import OrderDetail from './admin/pages/orderDetail/OrderDetail';
 import FilterCategory from './pages/FilterCategory/FilterCategory';
 import HeaderCustomer from './layouts/component/HeaderCustomer/HeaderCustomer';
+import ListDoctor from './pages/ListDoctor/ListDoctor';
+import DoctorDetail from './admin/pages/doctor/DoctorDetail/DoctorDetail';
+import ManageDoctor from './admin/pages/doctor/ManageDoctor/ManageDoctor';
 
 function App() {
     return (
@@ -81,7 +84,6 @@ function App() {
                                 }
                             />
                         </Route>
-
                         <Route path={config.routes.product}>
                             <Route
                                 index
@@ -127,6 +129,16 @@ function App() {
                                 }
                             />
                         </Route>
+                        <Route path={config.routes.manage_doctor}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <ManageDoctor />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
                     </Route>
                 </Routes>
                 <Routes>
@@ -148,6 +160,24 @@ function App() {
                             }
                         />
                         <Route
+                            path={config.routes.list_doctor}
+                            element={
+                                <DefaultLayout>
+                                    <ListDoctor />
+                                </DefaultLayout>
+                            }
+                        />
+                        <Route path={config.routes.detail_doctor}>
+                            <Route
+                                index
+                                element={
+                                    <DefaultLayout>
+                                        <DoctorDetail />
+                                    </DefaultLayout>
+                                }
+                            />
+                        </Route>
+                        <Route
                             path={config.routes.filter_category}
                             element={
                                 <DefaultLayout>
@@ -155,6 +185,7 @@ function App() {
                                 </DefaultLayout>
                             }
                         />
+
                         <Route
                             path={config.routes.product_detail}
                             element={

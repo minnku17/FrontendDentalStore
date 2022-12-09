@@ -33,6 +33,9 @@ module.exports = {
                     800: '#991b1b',
                     900: '#7f1d1d',
                 },
+                red_liner: {
+                    1: 'linear-gradient(0deg,#e06720 0%,#e02220 100%)',
+                },
             },
             fontFamily: {
                 body: [

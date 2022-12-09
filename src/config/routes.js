@@ -5,6 +5,9 @@ const routes = {
     new: 'new',
     users: '/admin/users',
     single: 'details/:id',
+    manage_doctor: '/admin/manage-doctor',
+
+    //doctor
 
     //brands
     brands: '/admin/brands',
@@ -26,6 +29,9 @@ const routes = {
 
     home: '/',
     product_detail: '/product-detail/:id',
+    list_doctor: '/list-doctor',
+    detail_doctor: '/detail-doctor/:id',
+
     check_out: '/check-out',
     filter_category: '/category/:id',
 };

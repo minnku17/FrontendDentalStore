@@ -48,81 +48,93 @@ function SideBar() {
                 <hr />
                 <div className={cx('center')}>
                     <ul>
-                        <p className={cx('title')}>CHÍNH</p>
-                        <Link to={config.routes.dashboard}>
-                            <li>
-                                <DashboardIcon className={cx('icon')} />
-                                <span>Dashboard</span>
-                            </li>
-                        </Link>
+                        {user.user.roleId == 'Admin' && (
+                            <>
+                                <p className={cx('title')}>CHÍNH</p>
+                                <Link to={config.routes.dashboard}>
+                                    <li>
+                                        <DashboardIcon className={cx('icon')} />
+                                        <span>Dashboard</span>
+                                    </li>
+                                </Link>
 
-                        <p className={cx('title')}>DANH MỤC</p>
+                                <p className={cx('title')}>DANH MỤC</p>
+
+                                <Link to={config.routes.brands}>
+                                    <li>
+                                        <StorefrontIcon className={cx('icon')} />
+                                        <span>Hãng</span>
+                                    </li>
+                                </Link>
+                                <Link to={config.routes.category}>
+                                    <li>
+                                        <StorefrontIcon className={cx('icon')} />
+                                        <span>Danh mục</span>
+                                    </li>
+                                </Link>
+                                <p className={cx('title')}>SẢN PHẨM</p>
+
+                                <Link to={config.routes.product}>
+                                    <li>
+                                        <AddBusinessIcon className={cx('icon')} />
+                                        <span>Sản phẩm</span>
+                                    </li>
+                                </Link>
+                                <p className={cx('title')}>ĐƠN HÀNG</p>
+
+                                <Link to={config.routes.order}>
+                                    <li>
+                                        <SummarizeIcon className={cx('icon')} />
+                                        <span>Đơn hàng</span>
+                                    </li>
+                                </Link>
+                            </>
+                        )}
+                        {user.user.roleId === 'Doctor' && (
+                            <>
+                                <p className={cx('title')}>DANH MỤC CHO BÁC SĨ </p>
+
+                                <li>
+                                    <QueryStatsIcon className={cx('icon')} />
+                                    <span>Stats</span>
+                                </li>
+                                <li>
+                                    <LocalShippingIcon className={cx('icon')} />
+                                    <span>Delivery</span>
+                                </li>
+                                <li>
+                                    <CircleNotificationsIcon className={cx('icon')} />
+                                    <span>Notifications</span>
+                                </li>
+                            </>
+                        )}
+                        <p className={cx('title')}>USER</p>
                         <Link to={config.routes.users}>
                             <li>
                                 <PersonIcon className={cx('icon')} />
                                 <span>User</span>
                             </li>
                         </Link>
-                        <Link to={config.routes.brands}>
+                        <Link to={config.routes.users}>
                             <li>
-                                <StorefrontIcon className={cx('icon')} />
-                                <span>Hãng</span>
-                            </li>
-                        </Link>
-                        <Link to={config.routes.category}>
-                            <li>
-                                <StorefrontIcon className={cx('icon')} />
-                                <span>Danh mục</span>
-                            </li>
-                        </Link>
-                        <Link to={config.routes.product}>
-                            <li>
-                                <AddBusinessIcon className={cx('icon')} />
-                                <span>Sản phẩm</span>
-                            </li>
-                        </Link>
-                        <Link to={config.routes.order}>
-                            <li>
-                                <SummarizeIcon className={cx('icon')} />
-                                <span>Đơn hàng</span>
+                                <HubIcon className={cx('icon')} />
+                                <span>QUẢN LÝ BÁC SĨ</span>
                             </li>
                         </Link>
 
-                        <p className={cx('title')}>DANH MỤC CHO BÁC SĨ </p>
-
-                        <li>
-                            <QueryStatsIcon className={cx('icon')} />
-                            <span>Stats</span>
-                        </li>
-                        <li>
-                            <LocalShippingIcon className={cx('icon')} />
-                            <span>Delivery</span>
-                        </li>
-                        <li>
-                            <CircleNotificationsIcon className={cx('icon')} />
-                            <span>Notifications</span>
-                        </li>
-                        <p className={cx('title')}>SERVICE</p>
-
-                        <li>
-                            <MedicalInformationIcon className={cx('icon')} />
-                            <span>System Health</span>
-                        </li>
-                        <li>
-                            <HubIcon className={cx('icon')} />
-                            <span>Logs</span>
-                        </li>
                         <li>
                             <SettingsIcon className={cx('icon')} />
                             <span>Settings</span>
                         </li>
                         <p className={cx('title')}>USER</p>
-
-                        <li>
-                            <AccountBoxIcon className={cx('icon')} />
-                            <span>Profile</span>
-                        </li>
-
+                        {user.user.roleId === 'Doctor' && (
+                            <Link to={`/admin/detail-doctor/${user.user.id}`}>
+                                <li>
+                                    <AccountBoxIcon className={cx('icon')} />
+                                    <span>Thông tin của bạn</span>
+                                </li>
+                            </Link>
+                        )}
                         <li onClick={() => handleLogout()}>
                             <LogoutIcon className={cx('icon')} />
                             <span>Logout</span>

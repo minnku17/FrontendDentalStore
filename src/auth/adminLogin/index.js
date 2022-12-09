@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '~/redux/apiReques';
 import { useDispatch } from 'react-redux';
+import routes from '~/config/routes';
+import config from '~/config';
 
 const cx = className.bind(styles);
 
@@ -28,15 +30,20 @@ function LoginAdmin() {
         e.preventDefault();
 
         let res = await loginUser(email, password, dispatch, navigate);
+        console.log('check res from login:>>>', res);
 
         if (res && res.errCode === 3) {
             setMessage(res.errMessage);
         } else if (res && res.errCode === 1) {
             setMessage(res.errMessage);
+        } else if (res && res.errCode === 0 && res.user.roleId === 'Doctor') {
+            navigate(config.routes.dashboard);
+        } else if (res && res.errCode === 0 && res.user.roleId === 'Admin') {
+            navigate(config.routes.dashboard);
         }
 
         if (!res) {
-            setMessage('An error occurred, please try again later!!!');
+            setMessage('An error occurred, please try again laterhaha!!!');
         }
 
         console.log('check res from login:>>>', res);

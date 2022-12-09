@@ -32,22 +32,37 @@ function Dashboard() {
         fetchAllUser();
         if (!user) {
             navigate(config.routes.loginAdmin);
-        } else if (user.user.roleId !== 'Admin') {
+        } else if (user.user.roleId !== 'Admin' && user.user.roleId !== 'Doctor') {
             navigate(config.routes.profile);
         }
     }, []);
     return (
         <>
-            <div className={cx('widgets')}>
-                <Widget type="user" />
-                <Widget type="order" />
-                <Widget type="earning" />
-                <Widget type="balance" />
-            </div>
-            <div className={cx('charts')}>
-                <Featured />
-                <Chart />
-            </div>
+            {user.user.roleId === 'Admin' && (
+                <>
+                    <div className={cx('widgets')}>
+                        <Widget type="user" />
+                        <Widget type="order" />
+                        <Widget type="earning" />
+                        <Widget type="balance" />
+                    </div>
+                    <div className={cx('charts')}>
+                        <Featured />
+                        <Chart />
+                    </div>
+                </>
+            )}
+            {user.user.roleId === 'Doctor' && (
+                <>
+                    <div className="w-full flex relative items-center justify-center ">
+                        <h1 className="font-medium absolute inset-x-0 shadow-xl bg-white w-3/4 md:w-2/5 mx-auto -mt-1 rounded-lg rounded-t-none">
+                            {`Xin chào bác sĩ: `}
+                            <span className="text-red-400">{`${user.user.lastName} ${user.user.firstName}`}</span>
+                            {` ^^`}
+                        </h1>
+                    </div>
+                </>
+            )}
         </>
     );
 }
