@@ -10,9 +10,12 @@ import { dataScheduleTimeContext } from './DoctorSchedule';
 import _ from 'lodash';
 import moment from 'moment';
 import { getProfileDoctorById } from '~/services';
+import images from '~/assets/images';
 
-function ProfileDoctor({ language, isShowDescriptionDoctor }) {
+function ProfileDoctor({ isShowDescriptionDoctor }) {
     const dataContext = useContext(dataScheduleTimeContext);
+
+    console.log('check datacontext', dataContext);
 
     let [dataProfile, setDataProfile] = useState({});
 
@@ -29,6 +32,7 @@ function ProfileDoctor({ language, isShowDescriptionDoctor }) {
         let result = {};
         if (id) {
             let res = await getProfileDoctorById(id);
+            console.log('check resssss', res);
             if (res && res.errCode === 0) {
                 result = res.data;
             }
@@ -43,7 +47,6 @@ function ProfileDoctor({ language, isShowDescriptionDoctor }) {
         nameEn = '';
     if (dataProfile && dataProfile.positionData) {
         nameVi = `${dataProfile.positionData.valueVi}, ${dataProfile.lastName} ${dataProfile.firstName}`;
-        nameEn = `${dataProfile.positionData.valueEn}, ${dataProfile.firstName} ${dataProfile.lastName}`;
     }
 
     const renderTimeBooking = (dataTime) => {
@@ -63,12 +66,13 @@ function ProfileDoctor({ language, isShowDescriptionDoctor }) {
         }
         return <></>;
     };
+    console.log('check profile', dataProfile);
     return (
         <>
             <div className="profile-doctor-container">
                 <div className="intro-doctor">
                     <div className="content-left">
-                        <img src={dataProfile.image} alt="" />
+                        <img src={dataProfile.Image?.photo ? dataProfile.Image.photo : images.noImage} alt="" />
                     </div>
                     <div className="content-right">
                         <div className="up">{nameVi}</div>

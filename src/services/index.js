@@ -216,3 +216,31 @@ export const getExtraInfoDoctorById = (id) => {
 export const getTopDoctorsService = (limit) => {
     return request.get(`/api/top-doctor-home?limit=${limit}`);
 };
+export const getAllDoctors = () => {
+    return request.get(`/api/get-all-doctors`);
+};
+export const getAllSpecialty = () => {
+    return request.get(`/api/get-specialty`);
+};
+export const getAllClinic = () => {
+    return request.get(`/api/get-clinic`);
+};
+export const saveDetailDoctorService = (data) => {
+    return request.post('/api/save-info-doctors', data);
+};
+export const saveBulkScheduleDoctor = (data) => {
+    return request.post('/api/bulk-create-schedule', data);
+};
+export const postVerifyBookAppointment = (data) => {
+    return request.post('/api/verify-book-appointment', data);
+};
+
+export const getScheduleDoctorById = (id, date, action) => {
+    return request.get(`/api/get-schedule-doctor-by-id?id=${id}&date=${date}&action=${action}`);
+};
+export const editBookAppointment = (data) => {
+    return request.PUT(`/api/edit-book-appointment`, data);
+};
+export const getAllOrderOfUser = (id) => {
+    return request.get(`/api/get-all-order-of-user?id=${id}`);
+};

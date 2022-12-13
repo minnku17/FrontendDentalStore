@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Modal } from 'reactstrap';
-import { connect } from 'react-redux';
 import './BookingModal.scss';
 import { useEffect } from 'react';
 import Select from 'react-select';
@@ -11,8 +9,27 @@ import _ from 'lodash';
 import { DatePicker } from '~/Component/Input';
 import { getAllCodeService, postPatientBookAppointment } from '~/services';
 import ProfileDoctor from '../ProfileDoctor';
+import Modal from 'react-modal';
 
-function BookingModal({ language, isOpenModal, closeBookingModal, dataScheduleTimeModal }) {
+const customStyles = {
+    content: {
+        height: '500px',
+        width: '900px',
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+    },
+};
+let subtitle;
+
+const afterOpenModal = () => {
+    subtitle.style.color = '#f00';
+};
+
+function BookingModal({ isOpenModal, closeBookingModal, dataScheduleTimeModal }) {
     let [state, setState] = useState({
         fullName: '',
         phoneNumber: '',
@@ -46,7 +63,7 @@ function BookingModal({ language, isOpenModal, closeBookingModal, dataScheduleTi
             doctorId: +id,
             timeType: dataScheduleTimeModal.timeType,
         });
-    }, [language, dataScheduleTimeModal]);
+    }, [dataScheduleTimeModal]);
 
     const buildDataGender = (data) => {
         let result = [];
@@ -84,7 +101,6 @@ function BookingModal({ language, isOpenModal, closeBookingModal, dataScheduleTi
     };
 
     let handleConfirmBooking = async () => {
-        let date = new Date(state.birthday).getTime().toString();
         let timeString = buildTimeBooking(dataScheduleTimeModal);
         let doctorName = buildDoctorName(dataScheduleTimeModal);
         let res = await postPatientBookAppointment({
@@ -93,7 +109,7 @@ function BookingModal({ language, isOpenModal, closeBookingModal, dataScheduleTi
             email: state.email,
             address: state.address,
             reason: state.reason,
-            date: date,
+            date: timeString,
             selectedGender: state.selectedGender.value,
             doctorId: state.doctorId,
             timeType: state.timeType,
@@ -102,24 +118,24 @@ function BookingModal({ language, isOpenModal, closeBookingModal, dataScheduleTi
         });
         if (res && res.errCode === 0) {
             toast.success(res.errMessage);
-            closeBookingModal();
+            // closeBookingModal();
         } else {
             toast.error(res.errMessage);
         }
     };
     const buildDoctorName = (dataTime) => {
         if (dataTime && !_.isEmpty(dataTime)) {
-            let name = language === `${dataTime.doctorData.lastName} ${dataTime.doctorData.firstName}`;
+            let name = `${dataTime.doctorData.lastName} ${dataTime.doctorData.firstName}`;
             return name;
         }
         return '';
     };
     const buildTimeBooking = (dataTime) => {
         if (dataTime && !_.isEmpty(dataTime)) {
-            let time = language === dataTime.timeTypeData.valueVi;
+            let time = dataTime.timeTypeData.valueVi;
 
-            let data = language === moment.unix(+dataTime.date / 1000).format('dddd - DD/MM/YYYY');
-            return ` ${time} ${data}`;
+            let data = moment.unix(+dataTime.date / 1000).format('YYYY-MM-DD');
+            return `${data}`;
         }
         return '';
     };
@@ -128,10 +144,10 @@ function BookingModal({ language, isOpenModal, closeBookingModal, dataScheduleTi
         <>
             <Modal
                 isOpen={isOpenModal}
-                // toggle={}
-                className={'booking-modal-container'}
-                size="lg"
-                centered
+                onAfterOpen={afterOpenModal}
+                onRequestClose={closeBookingModal}
+                style={customStyles}
+                contentLabel="Example Modal"
             >
                 <div className="booking-modal-content">
                     <div className="booking-modal-header">
@@ -204,11 +220,17 @@ function BookingModal({ language, isOpenModal, closeBookingModal, dataScheduleTi
                             </div>
                         </div>
                     </div>
-                    <div className="booking-modal-footer">
-                        <button className="btn-booking-confirm" onClick={() => handleConfirmBooking()}>
+                    <div className="booking-modal-footer flex gap-3">
+                        <button
+                            className="btn-booking-confirm cursor-pointer border rounded-lg py-1 px-2 bg-amber-400 hover:bg-amber-600"
+                            onClick={() => handleConfirmBooking()}
+                        >
                             Xác nhận
                         </button>
-                        <button className="btn-booking-cancel" onClick={closeBookingModal}>
+                        <button
+                            className="btn-booking-cancel cursor-pointer border rounded-lg py-1 px-2 bg-amber-400 hover:bg-amber-600"
+                            onClick={closeBookingModal}
+                        >
                             Hủy
                         </button>
                     </div>

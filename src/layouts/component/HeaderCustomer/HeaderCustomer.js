@@ -26,6 +26,9 @@ function HeaderCustomer() {
     const [allProduct, setAllProduct] = useState();
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+        document.title = `Nhà Cung Cấp Thiết Bị Vật Liệu Phòng Khám Nha Khoa Giá Sỉ, Rẻ Hcm`;
+
         async function fetchApi() {
             let res = await getListParentCategory(dispatch);
             let sss = await getAllProductLittleInfo(dispatch);
@@ -44,6 +47,8 @@ function HeaderCustomer() {
     const viewListDoctor = () => {
         navigate(config.routes.list_doctor);
     };
+
+    console.log('check lost', listParent);
     return (
         <>
             {/* <div className={cx('wrapper')}> */}

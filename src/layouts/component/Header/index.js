@@ -23,7 +23,7 @@ import { useDebounce } from '~/hooks';
 import { searchProduct } from '~/redux/apiReques';
 import { useDispatch, useSelector } from 'react-redux';
 import Tippy from '@tippyjs/react/headless';
-import { addProductToCart, addProductToCartRedux } from '~/redux/requestApp';
+import { addProductToCart, addProductToCartRedux, logoutCustomer } from '~/redux/requestApp';
 
 const cx = className.bind(styles);
 
@@ -239,6 +239,17 @@ function Header() {
     const handleCheckOut = () => {
         navigate(config.routes.check_out);
     };
+    const viewDetailProduct = (id) => {
+        navigate(`/product-detail/${id}`);
+    };
+
+    const handleLogout = async () => {
+        let res = await logoutCustomer(dispatch);
+
+        if (res && res.errCode === 0) {
+            navigate(config.routes.home);
+        }
+    };
 
     return (
         <header className={cx('wrapper')}>
@@ -257,9 +268,30 @@ function Header() {
                     <div className={cx('top')}>
                         <ul>
                             <li>Hotline: 1900 633 639</li>
-                            <li>Lịch sử mua hàng</li>
+                            <li>
+                                <Link to={config.routes.order_history}>Lịch sử mua hàng</Link>
+                            </li>
                             {currentUser ? (
-                                <li>{`Xin chào ${currentUser.firstName}`}</li>
+                                <Tippy
+                                    arrow
+                                    interactive
+                                    delay={300}
+                                    render={(attrs) => (
+                                        <div className={cx('loyalty-dropdown')} tabIndex="-1" {...attrs}>
+                                            <PopperWrapper className="hover:bg-[#7590a6] ">
+                                                <p
+                                                    onClick={() => handleLogout()}
+                                                    className="cursor-pointer text-black hover:text-gray-300 px-2 pb-[0.75rem] pt-0"
+                                                >
+                                                    Đăng xuất
+                                                </p>
+                                            </PopperWrapper>
+                                        </div>
+                                    )}
+                                    onClickOutside={handleHideResult}
+                                >
+                                    <li className="cursor-pointer hover:text-[#ed780b]">{`Xin chào ${currentUser.firstName}`}</li>
+                                </Tippy>
                             ) : (
                                 <Link to={config.routes.customer_login}>
                                     <li>Đăng nhập</li>
@@ -277,7 +309,10 @@ function Header() {
                                         <h4 className={cx('key-search')}>Bạn đang tìm: {searchValue}</h4>
                                         {searchResult.map((result) => (
                                             <>
-                                                <div className={cx('search-item')}>
+                                                <div
+                                                    onClick={() => viewDetailProduct(result.id)}
+                                                    className={cx('search-item')}
+                                                >
                                                     <img src={result.photo ? result.photo : images.noImage} alt="" />
                                                     <span>{result.title}</span>
                                                 </div>

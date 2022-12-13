@@ -61,6 +61,8 @@ function FilterCategory() {
 
     useEffect(() => {
         const fetchApi = async () => {
+            window.scrollTo(0, 0);
+            document.title = `Mua online sản phẩm Hàng Việt Nam giá tốt & khuyến mãi hấp dẫn | Sàn Nha Khoa Lớn Nhất VN`;
             const res = await getListParentCategory(dispatch);
             const brands = await getAllBrandFilter();
 

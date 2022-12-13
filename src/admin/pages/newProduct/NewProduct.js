@@ -8,7 +8,6 @@ import jwt_decode from 'jwt-decode';
 import classNames from 'classnames/bind';
 
 import styles from './New.module.scss';
-import images from '~/assets/images';
 import CommonUtils from '~/utils/CommonUtlis';
 import config from '~/config';
 import {
@@ -24,10 +23,7 @@ import ModalDescription from '~/admin/components/Modal/modalMarkdown/ModalDescri
 import ModalSpecification from '~/admin/components/Modal/modalMarkdown/ModalSpecification';
 import ModalFeature from '~/admin/components/Modal/modalMarkdown/ModalFeature';
 import ModalAssign from '~/admin/components/Modal/modalMarkdown/ModalAssign';
-import ReactImageGallery from 'react-image-gallery';
-import { Buffer } from 'buffer';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import ImageViewer from 'react-simple-image-viewer';
 
 const cx = classNames.bind(styles);
 function NewProduct() {

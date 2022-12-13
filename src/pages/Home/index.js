@@ -24,6 +24,8 @@ function Home() {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+        document.title = `Nhà Cung Cấp Thiết Bị Vật Liệu Phòng Khám Nha Khoa Giá Sỉ, Rẻ Hcm`;
         async function fetchApi() {
             let res = await getAllProductLittleInfo(dispatch);
             setAllProduct(res);

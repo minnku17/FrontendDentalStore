@@ -6,13 +6,9 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
-import { getAllParentCategory } from '~/services';
-import { createNewCategory, editBrand, editCategory, getAllBrands, getAllCategoryAdmin } from '~/redux/apiReques';
-import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { axiosMiddle } from '~/services/axiosJWT';
 import { CKEditor } from 'ckeditor4-react';
-import { HtmlRounded } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
@@ -54,9 +50,9 @@ function ModalSpecification({ spec, isOpen, FuncToggleModal, handleGetDateFromCh
         subtitle.style.color = '#f00';
     };
 
-    const onSubmit = async (category) => {
-        let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-    };
+    // const onSubmit = async (category) => {
+    //     let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+    // };
     const handleOnchange = (e) => {
         setHtml(e.editor.getData());
     };

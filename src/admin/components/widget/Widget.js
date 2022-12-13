@@ -7,14 +7,42 @@ import {
     PersonOutlineOutlined,
     ShoppingCartOutlined,
 } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
+
 import config from '~/config';
+import { useEffect } from 'react';
+import { getAllOrderNewAdmin } from '~/redux/apiReques';
+import { axiosMiddle } from '~/services/axiosJWT';
+import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 function Widget({ type }) {
+    const user = useSelector((state) => state.auth.login?.currentUser);
+
+    let [allOrder, setAllOrder] = useState([]);
+
     let allUsers = useSelector((state) => state.user.users.allUsers?.data);
     let data;
+    const dispatch = useDispatch();
+    console.log('check allOrder', allOrder);
+
+    useEffect(() => {
+        const fetchApi = async () => {
+            let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+
+            const action = { action: 'new' };
+
+            let res = await getAllOrderNewAdmin(dispatch, axiosJWT, action, user?.accessToken);
+            if (res && res.data.length > 0) {
+                setAllOrder(res.data);
+            } else {
+                setAllOrder([]);
+            }
+        };
+        fetchApi();
+    }, []);
 
     const amount = 100;
     const diff = 20;
@@ -24,7 +52,7 @@ function Widget({ type }) {
             data = {
                 title: 'USERS',
                 isMoney: false,
-                link: <Link to={config.routes.users}>See all users</Link>,
+                link: <Link to={config.routes.users}>Xem tất cả</Link>,
                 icon: (
                     <PersonOutlineOutlined
                         className={cx('icon')}
@@ -35,9 +63,9 @@ function Widget({ type }) {
             break;
         case 'order':
             data = {
-                title: 'ORDERS',
+                title: 'ĐƠN HÀNG MỚI',
                 isMoney: false,
-                link: 'See all orders',
+                link: <Link to={config.routes.order}>Xem tất cả</Link>,
                 icon: (
                     <ShoppingCartOutlined
                         className={cx('icon')}
@@ -80,9 +108,16 @@ function Widget({ type }) {
             <div className={cx('widget')}>
                 <div className={cx('left')}>
                     <span className={cx('title')}>{data.title}</span>
-                    <span className={cx('counter')}>
-                        {data.isMoney && '$'} {data.title === 'USERS' ? allUsers?.length : amount}
-                    </span>
+                    {type === 'user' && (
+                        <span className={cx('counter')}>
+                            {data.isMoney && '$'} {data.title === 'USERS' ? allUsers?.length : amount}
+                        </span>
+                    )}
+                    {type === 'order' && (
+                        <span className={cx('counter')}>
+                            {data.isMoney && '$'} {data.title === 'ĐƠN HÀNG MỚI' ? allOrder?.length : amount}
+                        </span>
+                    )}
                     <span className={cx('link')}>{data.link}</span>
                 </div>
                 <div className={cx('right')}>

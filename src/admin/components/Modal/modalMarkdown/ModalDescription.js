@@ -2,17 +2,9 @@ import styles from '../ModalBrands.module.scss';
 import classNames from 'classnames/bind';
 import Modal from 'react-modal';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
-import { getAllParentCategory } from '~/services';
-import { createNewCategory, editBrand, editCategory, getAllBrands, getAllCategoryAdmin } from '~/redux/apiReques';
-import { toast } from 'react-toastify';
+
 import { useForm } from 'react-hook-form';
-import { axiosMiddle } from '~/services/axiosJWT';
 import { CKEditor } from 'ckeditor4-react';
-import { HtmlRounded } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
@@ -30,9 +22,9 @@ const customStyles = {
 };
 
 function ModalDescription({ desc, isOpen, FuncToggleModal, handleGetDateFromChildren }) {
-    const user = useSelector((state) => state.auth.login?.currentUser);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+    // const user = useSelector((state) => state.auth.login?.currentUser);
+    // const dispatch = useDispatch();
+    // const navigate = useNavigate();
     let [html, setHtml] = useState();
 
     useEffect(() => {
@@ -54,9 +46,9 @@ function ModalDescription({ desc, isOpen, FuncToggleModal, handleGetDateFromChil
         subtitle.style.color = '#f00';
     };
 
-    const onSubmit = async (category) => {
-        let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-    };
+    // const onSubmit = async (category) => {
+    //     let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+    // };
     const handleOnchange = (e) => {
         setHtml(e.editor.getData());
     };

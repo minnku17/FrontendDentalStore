@@ -24,14 +24,17 @@ import HeaderCustomer from './layouts/component/HeaderCustomer/HeaderCustomer';
 import ListDoctor from './pages/ListDoctor/ListDoctor';
 import DoctorDetail from './admin/pages/doctor/DoctorDetail/DoctorDetail';
 import ManageDoctor from './admin/pages/doctor/ManageDoctor/ManageDoctor';
+import ManageSchedule from './admin/pages/doctor/ManageSchedule';
+import VerifyEmail from './admin/pages/doctor/VerifyEmail';
+import DoctorSchedule from './admin/pages/doctor/DoctorSchedule';
+import ListScheduleDoctor from './admin/pages/listScheduleDoctor/ListScheduleDoctor';
+import OrderHistory from './pages/OrderHistory/OrderHistory';
 
 function App() {
     return (
         <Router>
             <div>
                 <Routes>
-                    <Route path={`/de`} element={<HeaderCustomer />} />
-
                     <Route path={config.routes.loginAdmin} element={<LoginAdmin />} />
                     <Route path={config.routes.dashboard}>
                         <Route
@@ -139,8 +142,49 @@ function App() {
                                 }
                             />
                         </Route>
+                        <Route path={config.routes.manage_schedule}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <ManageSchedule />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.doctor_schedule}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <ListScheduleDoctor data={'none'} />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.doctor_history}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <ListScheduleDoctor data={'history'} />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.verify_email}>
+                            <Route
+                                index
+                                element={
+                                    <DefaultLayout>
+                                        <VerifyEmail />
+                                    </DefaultLayout>
+                                }
+                            />
+                        </Route>
                     </Route>
                 </Routes>
+
                 <Routes>
                     <Route
                         path={config.routes.customer_login}
@@ -151,14 +195,7 @@ function App() {
                         }
                     />
                     <Route path={config.routes.home}>
-                        <Route
-                            index
-                            element={
-                                <DefaultLayout>
-                                    <Home />
-                                </DefaultLayout>
-                            }
-                        />
+                        <Route index element={<HeaderCustomer />} />
                         <Route
                             path={config.routes.list_doctor}
                             element={
@@ -199,6 +236,14 @@ function App() {
                             element={
                                 <DefaultLayout>
                                     <CheckOut />
+                                </DefaultLayout>
+                            }
+                        />
+                        <Route
+                            path={config.routes.order_history}
+                            element={
+                                <DefaultLayout>
+                                    <OrderHistory />
                                 </DefaultLayout>
                             }
                         />

@@ -7,14 +7,12 @@ import SummarizeIcon from '@mui/icons-material/Summarize';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
-import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import HubIcon from '@mui/icons-material/Hub';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import config from '~/config';
-import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,12 +27,14 @@ function SideBar() {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-        console.log(idUser);
+        if (user) {
+            let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
+            console.log(idUser);
 
-        if (idUser) {
-            let res = await logoutUser(dispatch, axiosJWT, idUser, user?.accessToken, navigate);
-            console.log(res);
+            if (idUser) {
+                let res = await logoutUser(dispatch, axiosJWT, idUser, user?.accessToken, navigate);
+                console.log(res);
+            }
         }
     };
     return (
@@ -48,7 +48,7 @@ function SideBar() {
                 <hr />
                 <div className={cx('center')}>
                     <ul>
-                        {user.user.roleId == 'Admin' && (
+                        {user.user.roleId === 'Admin' && (
                             <>
                                 <p className={cx('title')}>CHÍNH</p>
                                 <Link to={config.routes.dashboard}>
@@ -88,9 +88,16 @@ function SideBar() {
                                         <span>Đơn hàng</span>
                                     </li>
                                 </Link>
+                                <p className={cx('title')}>USER</p>
+                                <Link to={config.routes.users}>
+                                    <li>
+                                        <PersonIcon className={cx('icon')} />
+                                        <span>User</span>
+                                    </li>
+                                </Link>
                             </>
                         )}
-                        {user.user.roleId === 'Doctor' && (
+                        {user && user.user.roleId === 'Doctor' && (
                             <>
                                 <p className={cx('title')}>DANH MỤC CHO BÁC SĨ </p>
 
@@ -108,32 +115,39 @@ function SideBar() {
                                 </li>
                             </>
                         )}
-                        <p className={cx('title')}>USER</p>
-                        <Link to={config.routes.users}>
-                            <li>
-                                <PersonIcon className={cx('icon')} />
-                                <span>User</span>
-                            </li>
-                        </Link>
-                        <Link to={config.routes.users}>
-                            <li>
-                                <HubIcon className={cx('icon')} />
-                                <span>QUẢN LÝ BÁC SĨ</span>
-                            </li>
-                        </Link>
 
-                        <li>
-                            <SettingsIcon className={cx('icon')} />
-                            <span>Settings</span>
-                        </li>
                         <p className={cx('title')}>USER</p>
-                        {user.user.roleId === 'Doctor' && (
-                            <Link to={`/admin/detail-doctor/${user.user.id}`}>
-                                <li>
-                                    <AccountBoxIcon className={cx('icon')} />
-                                    <span>Thông tin của bạn</span>
-                                </li>
-                            </Link>
+                        {user && user.user.roleId === 'Doctor' && (
+                            <>
+                                <Link to={config.routes.manage_doctor}>
+                                    <li>
+                                        <AccountBoxIcon className={cx('icon')} />
+
+                                        <span>QUẢN LÝ BÁC SĨ</span>
+                                    </li>
+                                </Link>
+                                <Link to={config.routes.manage_schedule}>
+                                    <li>
+                                        <SettingsIcon className={cx('icon')} />
+                                        <span>Chọn lịch khám</span>
+                                    </li>
+                                </Link>
+
+                                <Link to={`/admin/doctor-schedule/${user.user.id}`}>
+                                    <li>
+                                        <HubIcon className={cx('icon')} />
+
+                                        <span>Lịch hẹn khám của bạn</span>
+                                    </li>
+                                </Link>
+                                <Link to={`/admin/doctor-history/${user.user.id}`}>
+                                    <li>
+                                        <HubIcon className={cx('icon')} />
+
+                                        <span>Lịch sử khám bệnh</span>
+                                    </li>
+                                </Link>
+                            </>
                         )}
                         <li onClick={() => handleLogout()}>
                             <LogoutIcon className={cx('icon')} />
@@ -141,10 +155,10 @@ function SideBar() {
                         </li>
                     </ul>
                 </div>
-                <div className={cx('bottom')}>
+                {/* <div className={cx('bottom')}>
                     <div className={cx('colorOption')}></div>
                     <div className={cx('colorOption')}></div>
-                </div>
+                </div> */}
             </div>
         </>
     );

@@ -7,7 +7,8 @@ import {
     deleteCartSuccess,
     deleteCartFail,
 } from './cartSlice';
-
+import { logoutCustomerStart, logoutCustomerSuccess, logoutCustomerFail } from './authSlice';
+import config from '~/config';
 export const addProductToCartRedux = async (dispatch, arr) => {
     dispatch(addProductStart());
     try {
@@ -37,5 +38,21 @@ export const addProductToCart = async (data) => {
         return res.data;
     } catch (e) {
         console.log(e);
+    }
+};
+
+export const logoutCustomer = async (dispatch) => {
+    try {
+        console.log('cjecllll');
+
+        dispatch(logoutCustomerSuccess());
+        return {
+            errCode: 0,
+        };
+    } catch (e) {
+        console.log(e);
+        dispatch(logoutCustomerFail());
+
+        // navigate(config.routes.loginAdmin);
     }
 };

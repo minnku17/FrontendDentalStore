@@ -44,6 +44,8 @@ function CheckOut() {
         note: '',
     });
     useEffect(() => {
+        window.scrollTo(0, 0);
+        document.title = `Thanh toán`;
         setState({
             email: currentUser ? currentUser.email : '',
             firstName: currentUser ? currentUser.firstName : '',

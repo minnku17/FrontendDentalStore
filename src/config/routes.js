@@ -6,6 +6,12 @@ const routes = {
     users: '/admin/users',
     single: 'details/:id',
     manage_doctor: '/admin/manage-doctor',
+    manage_schedule: '/admin/manage_schedule',
+
+    verify_email: '/admin/verify-booking',
+
+    doctor_schedule: '/admin/doctor-schedule/:id',
+    doctor_history: '/admin/doctor-history/:id',
 
     //doctor
 
@@ -34,5 +40,7 @@ const routes = {
 
     check_out: '/check-out',
     filter_category: '/category/:id',
+
+    order_history: '/order-history',
 };
 export default routes;

@@ -34,7 +34,6 @@ function Featured() {
                 });
             }
             if (week.errCode === 0) {
-                console.log('check week: ', week);
                 week.data.forEach((item) => {
                     arrWeek.push(item.sub_total);
 

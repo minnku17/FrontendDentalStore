@@ -75,28 +75,14 @@ function ProductDetail() {
     let [productCart, setProductCart] = useState([]);
 
     useEffect(() => {
-        setArrCart(cartRedux);
-    }, [cartRedux]);
-
-    useEffect(() => {
-        if (productCart.length > 0) {
-            const fetchRedux = async () => {
-                let res = await addProductToCartRedux(dispatch, productCart);
-            };
-            fetchRedux();
-        }
-    }, [productCart]);
-
-    useEffect(() => {
         async function fetchApi() {
-            let res = await getAllProductLittleInfo(dispatch);
-            setAllProduct(res);
-        }
-        fetchApi();
-    }, []);
-    useEffect(() => {
-        async function fetchApi() {
+            window.scrollTo(0, 0);
+
             let res = await getProductInfo(id);
+            document.title = `${res.data.dataProduct.title} | Sàn Nha Khoa Lớn Nhất VN`;
+
+            console.log('check product', res);
+
             let dataProduct = res.data.dataProduct;
             let infoUser = res.data.InfoUserReview;
             if (dataProduct.Images) {
@@ -131,6 +117,28 @@ function ProductDetail() {
                 feature: dataProduct.Markdown.featureHtml,
                 specification: dataProduct.Markdown.specificationHtml,
             });
+        }
+        fetchApi();
+    }, []);
+
+    useEffect(() => {
+        setArrCart(cartRedux);
+    }, [cartRedux]);
+
+    useEffect(() => {
+        if (productCart.length > 0) {
+            const fetchRedux = async () => {
+                let res = await addProductToCartRedux(dispatch, productCart);
+            };
+            fetchRedux();
+        }
+    }, [productCart]);
+
+    useEffect(() => {
+        async function fetchApi() {
+            let res = await getAllProductLittleInfo(dispatch);
+
+            setAllProduct(res);
         }
         fetchApi();
     }, []);

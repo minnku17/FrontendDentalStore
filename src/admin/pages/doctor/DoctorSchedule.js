@@ -127,9 +127,14 @@ function DoctorSchedule() {
             </div>
             <BookingModal
                 isOpenModal={isOpenModalBooking}
-                closeBookingModal={closeBookingModal}
+                closeBookingModal={() => closeBookingModal()}
                 dataScheduleTimeModal={dataScheduleTimeModal}
             />
+            {/* <BookingModal
+                isOpenModal={isOpenModalBooking}
+                closeBookingModal={closeBookingModal}
+                dataScheduleTimeModal={}
+            /> */}
         </dataScheduleTimeContext.Provider>
     );
 }

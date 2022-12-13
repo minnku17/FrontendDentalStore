@@ -25,6 +25,9 @@ function Dashboard() {
         navigate(config.routes.loginAdmin);
     }
     useEffect(() => {
+        window.scrollTo(0, 0);
+        document.title = `Nhà Cung Cấp Thiết Bị Vật Liệu Phòng Khám Nha Khoa Giá Sỉ, Rẻ Hcm`;
+
         async function fetchAllUser() {
             let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
             await getAllUsersRedux(user?.accessToken, dispatch, axiosJWT, navigate);
@@ -38,7 +41,7 @@ function Dashboard() {
     }, []);
     return (
         <>
-            {user.user.roleId === 'Admin' && (
+            {user && user.user.roleId === 'Admin' && (
                 <>
                     <div className={cx('widgets')}>
                         <Widget type="user" />
@@ -52,7 +55,7 @@ function Dashboard() {
                     </div>
                 </>
             )}
-            {user.user.roleId === 'Doctor' && (
+            {user && user.user.roleId === 'Doctor' && (
                 <>
                     <div className="w-full flex relative items-center justify-center ">
                         <h1 className="font-medium absolute inset-x-0 shadow-xl bg-white w-3/4 md:w-2/5 mx-auto -mt-1 rounded-lg rounded-t-none">
