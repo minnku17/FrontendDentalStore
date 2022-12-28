@@ -4,26 +4,15 @@ import { NumericFormat } from 'react-number-format';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 
-// import Slider from 'react-slick';
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
-
 import styles from './SaleCarousel.module.scss';
 import images from '~/assets/images';
-import Product from '../Product/Product';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductLittleInfo } from '~/redux/apiReques';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
-import { useNavigate } from 'react-router-dom';
-import config from '~/config';
-import { Buffer } from 'buffer';
+import { Link, useNavigate } from 'react-router-dom';
+import { handleAverage, handleStarAverage } from '~/utils/Star';
 
 const cx = className.bind(styles);
 
 function SaleCarousel(data, sale) {
-    console.log('checkd data', data);
-    const navigate = useNavigate();
-
     const [allProduct, setAllProduct] = useState();
     useEffect(() => {
         if (data.sale === true) {
@@ -37,11 +26,6 @@ function SaleCarousel(data, sale) {
             setAllProduct(data.data);
         }
     }, [data, sale]);
-
-    const viewDetailProduct = (id) => {
-        navigate(`/product-detail/${id}`);
-    };
-
     return (
         <>
             <div className="border rounded-lg w-full flex flex-col py-1 px-2">
@@ -92,68 +76,82 @@ function SaleCarousel(data, sale) {
                                         allProduct.map((item, index) => {
                                             return (
                                                 <Slide index={index}>
-                                                    <div
-                                                        onClick={() => viewDetailProduct(item.id)}
-                                                        className="flex flex-col z-0 h-[333px] py-[2px] cursor-pointer hover:shadow-lg hover:shadow-indigo-500/40 px-[4px] border rounded-lg sm:w-auto md:w-[191px]"
-                                                    >
-                                                        <div className=" relative w-full">
-                                                            <img
-                                                                src={item.image ? item.image : images.product1}
-                                                                alt=""
-                                                                className="object-cover object-center border rounded-lg "
-                                                            />
-                                                            {item.discount > 0 ? (
-                                                                <div className="absolute top-0 left-0 text-[12px] text-[#fff] py-[1px] px-2 border rounded-lg bg-[#e02220]">{`-${item.discount}%`}</div>
-                                                            ) : (
-                                                                <div
-                                                                    style={{ display: 'none' }}
-                                                                    className="absolute"
-                                                                >{`-${item.discount}%`}</div>
-                                                            )}
-                                                            <span className="absolute text-[12px] border rounded-lg bg-[#dbdada] bottom-0 left-0">
-                                                                {item.unit}
-                                                            </span>
-                                                        </div>
+                                                    <Link to={`/product-detail/${item.id}`}>
+                                                        <div className="flex flex-col z-0 h-[333px] py-[2px] cursor-pointer hover:shadow-lg hover:shadow-indigo-500/40 px-[4px] border rounded-lg sm:w-auto md:w-[191px]">
+                                                            <div className=" relative w-full">
+                                                                <img
+                                                                    src={item.image ? item.image : images.product1}
+                                                                    alt=""
+                                                                    className="object-cover object-center border rounded-lg "
+                                                                />
+                                                                {item.discount > 0 ? (
+                                                                    <div className="absolute top-0 left-0 text-[12px] text-[#fff] py-[1px] px-2 border rounded-lg bg-[#e02220]">{`-${item.discount}%`}</div>
+                                                                ) : (
+                                                                    <div
+                                                                        style={{ display: 'none' }}
+                                                                        className="absolute"
+                                                                    >{`-${item.discount}%`}</div>
+                                                                )}
+                                                                <span className="absolute text-[12px] border rounded-lg bg-[#dbdada] bottom-0 left-0">
+                                                                    {item.unit}
+                                                                </span>
+                                                            </div>
 
-                                                        <div className="w-full">
-                                                            <p className="h-[40px] w-full text-[#155383] text-[13px] font-medium overflow-hidden">
-                                                                {item.title}
-                                                            </p>
-                                                        </div>
-                                                        <div className="flex gap-1 items-center">
-                                                            <NumericFormat
-                                                                className="text-[14px] font-medium text-[#d50000]"
-                                                                type="text"
-                                                                value={item.price * ((100 - item.discount) / 100)}
-                                                                displayType="text"
-                                                                thousandSeparator={true}
-                                                                suffix={'đ'}
-                                                            />
-                                                            <NumericFormat
-                                                                className="text-[12px] font-normal line-through text-[#8d919d]"
-                                                                type="text"
-                                                                value={item.price}
-                                                                displayType="text"
-                                                                thousandSeparator={true}
-                                                                suffix={'đ'}
-                                                            />
-                                                        </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="text-[13px] text-[#8d919d]">
-                                                                {item.brand}
+                                                            <div className="w-full">
+                                                                <p className="h-[40px] w-full text-[#155383] text-[13px] font-medium overflow-hidden">
+                                                                    {item.title}
+                                                                </p>
                                                             </div>
-                                                            <div className="text-[13px] text-[#8d919d]">
-                                                                Đã bán: {item.sold ? item.sold : 0}
+                                                            <div className="flex gap-1 items-center">
+                                                                <NumericFormat
+                                                                    className="text-[14px] font-medium text-[#d50000]"
+                                                                    type="text"
+                                                                    value={item.price * ((100 - item.discount) / 100)}
+                                                                    displayType="text"
+                                                                    thousandSeparator={true}
+                                                                    suffix={'đ'}
+                                                                />
+                                                                <NumericFormat
+                                                                    className="text-[12px] font-normal line-through text-[#8d919d]"
+                                                                    type="text"
+                                                                    value={item.price}
+                                                                    displayType="text"
+                                                                    thousandSeparator={true}
+                                                                    suffix={'đ'}
+                                                                />
                                                             </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[#fab313]">
+                                                                    {handleStarAverage(handleAverage(item.reviews))}
+                                                                </span>
+                                                                <span className="text-[#8d919d] text-[10px]">
+                                                                    {item.reviews && item.reviews.length > 0
+                                                                        ? `(${item?.reviews.length})`
+                                                                        : ''}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="text-[13px] text-[#8d919d]">
+                                                                    {item.brand}
+                                                                </div>
+                                                                <div className="text-[13px] text-[#8d919d]">
+                                                                    Đã bán: {item.sold ? item.sold : 0}
+                                                                </div>
+                                                            </div>
+                                                            {item.reviews && item.reviews.length > 0 ? (
+                                                                <></>
+                                                            ) : (
+                                                                <div className="flex gap-1 items-center h-[25px] text-ellipsis overflow-hidden bg-[#ffe2e2]">
+                                                                    <CardGiftcardIcon className="text-[#d50000]" />
+                                                                    <span className="text-[12px] text-[#d50000] pt-1 h-full w-full ">
+                                                                        Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling
+                                                                        + Trâm máy - PROTAPER + Côn Protaper Gapadent
+                                                                        (SL có hạn)
+                                                                    </span>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        <div className="flex gap-1 items-center h-[25px] text-ellipsis overflow-hidden bg-[#ffe2e2]">
-                                                            <CardGiftcardIcon className="text-[#d50000]" />
-                                                            <span className="text-[12px] text-[#d50000] pt-1 h-full w-full ">
-                                                                Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling + Trâm
-                                                                máy - PROTAPER + Côn Protaper Gapadent (SL có hạn)
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                                    </Link>
                                                 </Slide>
                                             );
                                         })
@@ -225,68 +223,82 @@ function SaleCarousel(data, sale) {
                                         allProduct.map((item, index) => {
                                             return (
                                                 <Slide index={index}>
-                                                    <div
-                                                        onClick={() => viewDetailProduct(item.id)}
-                                                        className="flex flex-col h-[333px] py-[2px] cursor-pointer hover:shadow-lg hover:shadow-indigo-500/40 px-[4px] border rounded-lg sm:w-auto md:w-[191px]"
-                                                    >
-                                                        <div className=" relative w-full">
-                                                            <img
-                                                                src={item.image ? item.image : images.product1}
-                                                                alt=""
-                                                                className="object-cover object-center border rounded-lg "
-                                                            />
-                                                            {item.discount > 0 ? (
-                                                                <div className="absolute top-0 left-0 text-[12px] text-[#fff] py-[1px] px-2 border rounded-lg bg-[#e02220]">{`-${item.discount}%`}</div>
-                                                            ) : (
-                                                                <div
-                                                                    style={{ display: 'none' }}
-                                                                    className="absolute"
-                                                                >{`-${item.discount}%`}</div>
-                                                            )}
-                                                            <span className="absolute text-[12px] border rounded-lg bg-[#dbdada] bottom-0 left-0">
-                                                                {item.unit}
-                                                            </span>
-                                                        </div>
+                                                    <Link to={`/product-detail/${item.id}`}>
+                                                        <div className="flex flex-col h-fit py-[2px] cursor-pointer hover:shadow-lg hover:shadow-indigo-500/40 px-[4px] border rounded-lg sm:w-auto md:w-[191px]">
+                                                            <div className=" relative w-full">
+                                                                <img
+                                                                    src={item.image ? item.image : images.product1}
+                                                                    alt=""
+                                                                    className="object-cover object-center border rounded-lg "
+                                                                />
+                                                                {item.discount > 0 ? (
+                                                                    <div className="absolute top-0 left-0 text-[12px] text-[#fff] py-[1px] px-2 border rounded-lg bg-[#e02220]">{`-${item.discount}%`}</div>
+                                                                ) : (
+                                                                    <div
+                                                                        style={{ display: 'none' }}
+                                                                        className="absolute"
+                                                                    >{`-${item.discount}%`}</div>
+                                                                )}
+                                                                <span className="absolute text-[12px] border rounded-lg bg-[#dbdada] bottom-0 left-0">
+                                                                    {item.unit}
+                                                                </span>
+                                                            </div>
 
-                                                        <div className="w-full">
-                                                            <p className="h-[40px] w-full text-[#155383] text-[13px] font-medium overflow-hidden">
-                                                                {item.title}
-                                                            </p>
-                                                        </div>
-                                                        <div className="flex gap-1 items-center">
-                                                            <NumericFormat
-                                                                className="text-[14px] font-medium text-[#d50000]"
-                                                                type="text"
-                                                                value={item.price * ((100 - item.discount) / 100)}
-                                                                displayType="text"
-                                                                thousandSeparator={true}
-                                                                suffix={'đ'}
-                                                            />
-                                                            <NumericFormat
-                                                                className="text-[12px] font-normal line-through text-[#8d919d]"
-                                                                type="text"
-                                                                value={item.price}
-                                                                displayType="text"
-                                                                thousandSeparator={true}
-                                                                suffix={'đ'}
-                                                            />
-                                                        </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <div className="text-[13px] text-[#8d919d]">
-                                                                {item.brand}
+                                                            <div className="w-full">
+                                                                <p className="h-[40px] w-full text-[#155383] text-[13px] font-medium overflow-hidden">
+                                                                    {item.title}
+                                                                </p>
                                                             </div>
-                                                            <div className="text-[13px] text-[#8d919d]">
-                                                                Đã bán: {item.sold ? item.sold : 0}
+                                                            <div className="flex gap-1 items-center">
+                                                                <NumericFormat
+                                                                    className="text-[14px] font-medium text-[#d50000]"
+                                                                    type="text"
+                                                                    value={item.price * ((100 - item.discount) / 100)}
+                                                                    displayType="text"
+                                                                    thousandSeparator={true}
+                                                                    suffix={'đ'}
+                                                                />
+                                                                <NumericFormat
+                                                                    className="text-[12px] font-normal line-through text-[#8d919d]"
+                                                                    type="text"
+                                                                    value={item.price}
+                                                                    displayType="text"
+                                                                    thousandSeparator={true}
+                                                                    suffix={'đ'}
+                                                                />
                                                             </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-[#fab313]">
+                                                                    {handleStarAverage(handleAverage(item.reviews))}
+                                                                </span>
+                                                                <span className="text-[#8d919d] text-[10px]">
+                                                                    {item.reviews && item.reviews.length > 0
+                                                                        ? `(${item?.reviews.length})`
+                                                                        : ''}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="text-[13px] text-[#8d919d]">
+                                                                    {item.brand}
+                                                                </div>
+                                                                <div className="text-[13px] text-[#8d919d]">
+                                                                    Đã bán: {item.sold ? item.sold : 0}
+                                                                </div>
+                                                            </div>
+                                                            {item.reviews && item.reviews.length > 0 ? (
+                                                                <></>
+                                                            ) : (
+                                                                <div className="flex gap-1 items-center h-[25px] text-ellipsis overflow-hidden bg-[#ffe2e2]">
+                                                                    <CardGiftcardIcon className="text-[#d50000]" />
+                                                                    <span className="text-[12px] text-[#d50000] pt-1 h-full w-full ">
+                                                                        Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling
+                                                                        + Trâm máy - PROTAPER + Côn Protaper Gapadent
+                                                                        (SL có hạn)
+                                                                    </span>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        <div className="flex gap-1 items-center h-[25px] text-ellipsis overflow-hidden bg-[#ffe2e2]">
-                                                            <CardGiftcardIcon className="text-[#d50000]" />
-                                                            <span className="text-[12px] text-[#d50000] pt-1 h-full w-full ">
-                                                                Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling + Trâm
-                                                                máy - PROTAPER + Côn Protaper Gapadent (SL có hạn)
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                                    </Link>
                                                 </Slide>
                                             );
                                         })

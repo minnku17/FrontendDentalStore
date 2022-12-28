@@ -61,7 +61,7 @@
                     align-items: center;
                     color: #fab313;
 
-                    .icon {
+                    svg {
                         width: 21px;
                         height: 22px;
                     }
@@ -304,6 +304,11 @@
         height: fit-content;
         background-color: white;
         border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        svg {
+            font-size: 36px;
+        }
         h1 {
             font-size: 20px;
             color: #155383;
@@ -313,6 +318,9 @@
             padding: 18px 0 12px 18px;
         }
         .wrapper {
+            svg {
+                font-size: 16px;
+            }
             .content-bottom {
                 display: flex;
                 flex-direction: column;

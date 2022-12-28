@@ -14,17 +14,20 @@ import Header from '../Header';
 import CategoryFeature from '~/Component/CategoryFeature/CategoryFeature';
 import ListProduct from '~/Component/ListProduct/ListProduct';
 import config from '~/config';
+import { getAllBanner } from '~/services';
 
 const cx = className.bind(styles);
 
 function HeaderCustomer() {
     let [listParent, setListParent] = useState();
+    let [bannerFour, setBannerFour] = useState([]);
+    let [mainBanner, setMainBanners] = useState('');
+    let [bannerLong, setBannerLong] = useState('');
 
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
     const [allProduct, setAllProduct] = useState();
-
     useEffect(() => {
         window.scrollTo(0, 0);
         document.title = `Nhà Cung Cấp Thiết Bị Vật Liệu Phòng Khám Nha Khoa Giá Sỉ, Rẻ Hcm`;
@@ -38,7 +41,21 @@ function HeaderCustomer() {
             }
         }
         fetchApi();
+        fetchBanner();
     }, []);
+
+    const fetchBanner = async () => {
+        const res = await getAllBanner();
+        if (res.data && res.data.length > 0) {
+            setMainBanners(res.data[0].Image.photo);
+            setBannerFour(
+                res.data.filter((item, index) => {
+                    return index > 0 && index < 5;
+                }),
+            );
+            setBannerLong(res.data[5].Image.photo);
+        }
+    };
 
     const viewCategory = (id) => {
         console.log(id);
@@ -48,7 +65,6 @@ function HeaderCustomer() {
         navigate(config.routes.list_doctor);
     };
 
-    console.log('check lost', listParent);
     return (
         <>
             {/* <div className={cx('wrapper')}> */}
@@ -78,13 +94,29 @@ function HeaderCustomer() {
                         </aside>
                     </div>
                     <div className="flex-initial col-span-12 py-4  md:col-span-5 ">
-                        <img className="bg-no-repeat rounded-lg" src={images.banner} alt="images" />
+                        <img
+                            className="bg-no-repeat rounded-lg"
+                            src={mainBanner ? mainBanner : images.banner}
+                            alt="images"
+                        />
                     </div>
                     <div className="hidden  flex-initial col-span-12  md:col-span-4  md:grid md:grid-cols-2 gap-1">
-                        <img src={images.banner1} className="w-full" alt="" />
-                        <img src={images.banner2} className="w-full" alt="" />
-                        <img src={images.banner3} className="w-full" alt="" />
-                        <img src={images.banner4} className="w-full" alt="" />
+                        {bannerFour && bannerFour.length === 4 ? (
+                            bannerFour.map((item, index) => {
+                                return (
+                                    <div key={index}>
+                                        <img src={item.Image.photo} className="w-full" alt="" />
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <>
+                                <img src={images.banner1} className="w-full" alt="" />
+                                <img src={images.banner2} className="w-full" alt="" />
+                                <img src={images.banner3} className="w-full" alt="" />
+                                <img src={images.banner4} className="w-full" alt="" />
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className="h-fit w-full rounded-lg bg-[#aae5ff] gap-3 py-5 px-5 flex flex-col justify-around items-center">
@@ -127,7 +159,7 @@ function HeaderCustomer() {
                     </button>
                 </div>
 
-                <img className="w-full rounded-lg" src={images.bannerSale} alt="" />
+                <img className="w-full rounded-lg" src={bannerLong ? bannerLong : images.bannerSale} alt="" />
 
                 <div className="w-full flex gap-3 justify-between">
                     <div className="flex-1">

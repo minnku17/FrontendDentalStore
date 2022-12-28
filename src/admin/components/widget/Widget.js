@@ -22,11 +22,11 @@ function Widget({ type }) {
     const user = useSelector((state) => state.auth.login?.currentUser);
 
     let [allOrder, setAllOrder] = useState([]);
+    let [loadOrder, setLoadOrder] = useState(false);
 
     let allUsers = useSelector((state) => state.user.users.allUsers?.data);
     let data;
     const dispatch = useDispatch();
-    console.log('check allOrder', allOrder);
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -37,8 +37,10 @@ function Widget({ type }) {
             let res = await getAllOrderNewAdmin(dispatch, axiosJWT, action, user?.accessToken);
             if (res && res.data.length > 0) {
                 setAllOrder(res.data);
+                setLoadOrder(true);
             } else {
                 setAllOrder([]);
+                setLoadOrder(true);
             }
         };
         fetchApi();
@@ -108,16 +110,22 @@ function Widget({ type }) {
             <div className={cx('widget')}>
                 <div className={cx('left')}>
                     <span className={cx('title')}>{data.title}</span>
-                    {type === 'user' && (
-                        <span className={cx('counter')}>
-                            {data.isMoney && '$'} {data.title === 'USERS' ? allUsers?.length : amount}
-                        </span>
-                    )}
-                    {type === 'order' && (
-                        <span className={cx('counter')}>
-                            {data.isMoney && '$'} {data.title === 'ĐƠN HÀNG MỚI' ? allOrder?.length : amount}
-                        </span>
-                    )}
+                    {type === 'user' &&
+                        (allUsers && allUsers.length > 0 ? (
+                            <span className={cx('counter')}>
+                                {data.isMoney && '$'} {data.title === 'USERS' ? allUsers?.length : amount}
+                            </span>
+                        ) : (
+                            <div className={cx('continuous-1')}></div>
+                        ))}
+                    {type === 'order' &&
+                        (loadOrder === false ? (
+                            <div className={cx('continuous-1')}></div>
+                        ) : (
+                            <span className={cx('counter')}>
+                                {data.isMoney && '$'} {data.title === 'ĐƠN HÀNG MỚI' ? allOrder?.length : amount}
+                            </span>
+                        ))}
                     <span className={cx('link')}>{data.link}</span>
                 </div>
                 <div className={cx('right')}>

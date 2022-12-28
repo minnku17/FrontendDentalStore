@@ -2,19 +2,19 @@ import styles from './Datatable.module.scss';
 import classNames from 'classnames/bind';
 import { DataGrid } from '@mui/x-data-grid';
 import { useMovieData } from '@mui/x-data-grid-generator';
-import { useDispatch, useSelector } from 'react-redux';
-import images from '~/assets/images';
 import jwt_decode from 'jwt-decode';
-import { deleteBrand, getAllBrands } from '~/redux/apiReques';
-import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import ModalBrands from '../Modal/ModalBrands';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { getAllCoupon, handleDeleteCoupon } from '~/services';
+import ModalCoupon from '../Modal/ModalCoupon';
 import { axiosMiddle } from '~/services/axiosJWT';
 
 const cx = classNames.bind(styles);
-function DatatableBrands() {
-    let allBrands = useSelector((state) => state.brands.allBrand.brands?.data.data);
+function DatatableCoupon() {
     const user = useSelector((state) => state.auth.login?.currentUser);
+    const dispatch = useDispatch();
 
     let [rows, setRows] = useState([]);
     let [checkBoxSelection, setCheckBoxSelection] = useState(false);
@@ -31,52 +31,60 @@ function DatatableBrands() {
     };
     useEffect(() => {
         setLoading(true);
+        fetchApi();
+    }, [isOpen]);
+    const fetchApi = async () => {
+        const res = await getAllCoupon();
+        let arr = [];
+        if (res.errCode === 0 && res.data.length > 0) {
+            res.data.forEach((item) => {
+                let obj = {};
+                obj.id = item.id;
+                obj.code = item.code;
+                obj.value = item.value;
+                obj.stock = item.stock;
+                obj.status = item.status;
 
-        if (allBrands) {
-            let allBrand = allBrands.map((item) => {
-                return {
-                    id: item.id,
-                    title: item.title,
-                    photo: item.Image?.photo,
-                    status: item.status,
-                };
+                arr.push(obj);
+
+                return arr;
             });
             setLoading(false);
 
-            setRows(allBrand);
+            setRows(arr);
+        } else {
+            setLoading(false);
+
+            setRows([]);
         }
-    }, [allBrands]);
+    };
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         {
-            field: 'title',
-            headerName: 'Title',
+            field: 'code',
+            headerName: 'Mã',
             width: 230,
-            renderCell: (params) => {
-                return (
-                    <>
-                        <div className={cx('cellWithImg')}>
-                            <img
-                                className={cx('cellImg')}
-                                src={params.row.photo ? params.row.photo : images.noImage}
-                                alt="avatar"
-                            />
-                            {params.row.title}
-                        </div>
-                    </>
-                );
-            },
+        },
+        {
+            field: 'value',
+            headerName: 'Giá trị',
+            width: 200,
+        },
+        {
+            field: 'stock',
+            headerName: 'Số lượng',
+            width: 200,
         },
         {
             field: 'status',
-            headerName: 'Status',
+            headerName: 'Trạng thái',
             width: 200,
             renderCell: (params) => {
                 return (
                     <>
                         <div className={cx('status')}>
-                            {params.row.status === true ? (
+                            {params.row.status === 'active' ? (
                                 <div className={cx('active')}>Active</div>
                             ) : (
                                 <div className={cx('disable')}>Disable</div>
@@ -86,20 +94,19 @@ function DatatableBrands() {
                 );
             },
         },
-
         {
-            field: 'action',
-            headerName: 'Action',
+            field: '',
+            headerName: 'Hành động',
             width: 200,
             renderCell: (params) => {
                 return (
                     <>
                         <div className={cx('cell-action')}>
                             <div className={cx('view-button')} onClick={() => handleSubmit(params.row)}>
-                                Edit
+                                Sửa
                             </div>
-                            <div className={cx('delete-button')} onClick={() => handleDeleteUser(params.row.id)}>
-                                Delete
+                            <div className={cx('delete-button')} onClick={() => handleDelete(params.row.id)}>
+                                Xóa
                             </div>
                         </div>
                     </>
@@ -108,34 +115,32 @@ function DatatableBrands() {
         },
     ];
 
-    const dispatch = useDispatch();
-    let [idBrand, setIdBrand] = useState(0);
-    const handleSubmit = (id) => {
-        setIdBrand(id);
+    let [dataCoupon, setDataCoupon] = useState();
+    const handleSubmit = (data) => {
+        setDataCoupon(data);
         setIsOpen(true);
     };
 
-    const handleDeleteUser = async (id) => {
+    const handleDelete = async (id) => {
         setLoadingDelete(true);
-
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
 
-        let res = await deleteBrand(dispatch, axiosJWT, id, user?.accessToken);
+        let res = await handleDeleteCoupon(axiosJWT, id, user?.accessToken);
 
-        if (res.errCode === 0) {
+        if (res.data.errCode === 0) {
+            fetchApi();
             setLoadingDelete(false);
 
-            await getAllBrands(user?.accessToken, dispatch, axiosJWT);
-            toast.success(res.errMessage);
+            toast.success(res.data.errMessage);
         } else {
             setLoadingDelete(false);
 
-            toast.error(res.errMessage);
+            toast.error(res.data.errMessage);
         }
     };
 
     const OpenModal = () => {
-        setIdBrand(null);
+        setDataCoupon(null);
         setIsOpen(true);
     };
     const toggleModal = () => {
@@ -146,12 +151,13 @@ function DatatableBrands() {
         <>
             <div className={cx('datatable')}>
                 <div className={cx('datatable-title')}>
-                    List Brands
+                    Danh sách mã giảm giá
                     <div className={cx('link')} onClick={() => OpenModal()}>
-                        Add New Brand
+                        Thêm mã giảm giá
                     </div>
                 </div>
                 {loadingDelete === true && <div class={cx('spinner-4')}></div>}
+
                 {loading === true ? (
                     <div class={cx('spinner-3')}></div>
                 ) : (
@@ -165,10 +171,10 @@ function DatatableBrands() {
                         rowsPerPageOptions={[9]}
                     />
                 )}
-                <ModalBrands data={idBrand} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
+                <ModalCoupon data={dataCoupon} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
             </div>
         </>
     );
 }
 
-export default DatatableBrands;
+export default DatatableCoupon;

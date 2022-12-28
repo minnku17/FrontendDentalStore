@@ -10,6 +10,8 @@ import images from '~/assets/images';
 import styles from './ProductDetail.module.scss';
 import ImageGallery from 'react-image-gallery';
 import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
@@ -20,11 +22,13 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import SaleCarousel from '~/Component/SaleCarousel/SaleCarousel';
 import TabsStyle from '~/Component/TabsStyle/TabsStyle';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProductInfo } from '~/services';
+import { getAllGiftActive, getProductInfo } from '~/services';
 import { getAllProductLittleInfo } from '~/redux/apiReques';
 import { addProductToCart, addProductToCartRedux } from '~/redux/requestApp';
 import { toast } from 'react-toastify';
 import config from '~/config';
+import ModalReviews from '~/Component/Modal/ModalReview';
+import { handleAverage, handleStarAverage } from '~/utils/Star';
 const cx = className.bind(styles);
 
 function a11yProps(index) {
@@ -39,6 +43,8 @@ function ProductDetail() {
     const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
 
     const navigate = useNavigate();
+
+    let [isOpen, setIsOpen] = useState(false);
 
     const dispatch = useDispatch();
     const { id } = useParams();
@@ -72,54 +78,78 @@ function ProductDetail() {
     let [total, setTotal] = useState(0);
     const [allProduct, setAllProduct] = useState();
     const [comment, setComment] = useState([]);
+    const [gifts, setGifts] = useState([]);
     let [productCart, setProductCart] = useState([]);
 
-    useEffect(() => {
-        async function fetchApi() {
-            window.scrollTo(0, 0);
-
-            let res = await getProductInfo(id);
-            document.title = `${res.data.dataProduct.title} | Sàn Nha Khoa Lớn Nhất VN`;
-
-            console.log('check product', res);
-
-            let dataProduct = res.data.dataProduct;
-            let infoUser = res.data.InfoUserReview;
-            if (dataProduct.Images) {
-                let arr = [];
-
-                dataProduct.Images.map((item) => {
-                    let obj = {};
-                    obj.original = item.photo;
-                    obj.thumbnail = item.photo;
-
-                    arr.push(obj);
-                    setImageProduct(arr);
-                });
-            }
-            setComment(res.data.InfoUserReview);
-            setState({
-                ...state,
-                title: dataProduct.title,
-                rate: infoUser[0]?.Review.rate,
-                allReviews: dataProduct.Reviews,
-                brand: dataProduct.Brand.title,
-                sold: dataProduct.sold,
-                price: dataProduct.price,
-                priceSale: dataProduct.price * ((100 - dataProduct.discount) / 100),
-                unit: dataProduct.unit_of_product,
-                discount: dataProduct.discount,
-                type: dataProduct.type,
+    const handleAveragedRate = (arr) => {
+        if (arr && arr.length > 0) {
+            let a = arr.reduce((acc, item) => {
+                return acc + item;
             });
-            setStateHtml({
-                description: dataProduct.Markdown.descriptionHtml,
-                assign: dataProduct.Markdown.assignHtml,
-                feature: dataProduct.Markdown.featureHtml,
-                specification: dataProduct.Markdown.specificationHtml,
+
+            return a / 5;
+        }
+    };
+
+    useEffect(() => {
+        fetchApiProduct();
+    }, []);
+    async function fetchApiProduct() {
+        window.scrollTo(0, 0);
+
+        let res = await getProductInfo(id);
+        document.title = `${res.data.dataProduct.title} | Sàn Nha Khoa Lớn Nhất VN`;
+        let gift = await getAllGiftActive();
+
+        let dataProduct = res.data.dataProduct;
+
+        let arrReviews = [];
+
+        if (dataProduct.Reviews && dataProduct.Reviews.length > 0) {
+            dataProduct.Reviews.forEach((item) => {
+                arrReviews.push(item.rate);
+
+                return arrReviews;
             });
         }
-        fetchApi();
-    }, []);
+        if (dataProduct.Images) {
+            let arr = [];
+
+            dataProduct.Images.map((item) => {
+                let obj = {};
+                obj.original = item.photo;
+                obj.thumbnail = item.photo;
+
+                arr.push(obj);
+                setImageProduct(arr);
+            });
+        }
+        if (gift && gift.length > 0) {
+            setGifts(gift.data);
+        } else {
+            setGifts(gift.data);
+        }
+        setComment(dataProduct.Reviews);
+        setState({
+            ...state,
+            title: dataProduct.title,
+            rate: handleAveragedRate(arrReviews),
+            allReviews: dataProduct.Reviews,
+            brand: dataProduct.Brand.title,
+            sold: dataProduct.sold,
+            price: dataProduct.price,
+            priceSale: dataProduct.price * ((100 - dataProduct.discount) / 100),
+            unit: dataProduct.unit_of_product,
+            discount: dataProduct.discount,
+            type: dataProduct.type,
+        });
+        setStateHtml({
+            description: dataProduct.Markdown.descriptionHtml,
+            assign: dataProduct.Markdown.assignHtml,
+            feature: dataProduct.Markdown.featureHtml,
+            specification: dataProduct.Markdown.specificationHtml,
+        });
+    }
 
     useEffect(() => {
         setArrCart(cartRedux);
@@ -170,17 +200,70 @@ function ProductDetail() {
         type: state.type,
         unit: state.unit,
     };
+    // const handleAverage = () => {
+    //     if (comment && comment.length > 0) {
+    //         let arr = [];
+    //         comment.forEach((item) => {
+    //             arr.push(item.rate);
 
-    const handleStar = (star) => {
-        if (star) {
-            let arr = [];
+    //             return arr;
+    //         });
+    //         let sumPoint = arr.reduce((arr, item) => {
+    //             return arr + item;
+    //         });
+    //         return (sumPoint / comment.length).toFixed(1);
+    //     } else {
+    //         return 0;
+    //     }
+    // };
 
-            for (let i = 1; i <= star; i++) {
-                arr.push(<StarIcon />);
-            }
-            return arr;
-        }
-    };
+    // const handleStarAverage = (star) => {
+    //     const starS = star;
+    //     const starRound = Math.round(starS);
+    //     let arrStar = [];
+    //     const handleStar = (starRound, starS) => {
+    //         let arr = [];
+    //         for (let i = 1; i <= starRound; i++) {
+    //             arr.push(<StarIcon />);
+    //         }
+    //         if (starRound % starS !== 0) {
+    //             arr.splice(-1, 1, <StarHalfIcon />);
+    //         }
+    //         for (let j = starRound + 1; j < 6; j++) {
+    //             arr.push(<StarBorderIcon />);
+    //         }
+    //         return arr;
+    //     };
+    //     if (starS) {
+    //         switch (starRound) {
+    //             case 1:
+    //                 for (let i = 1; i <= starRound; i++) {
+    //                     arrStar.push(<StarIcon />);
+    //                 }
+    //                 if (starS < 1) {
+    //                     arrStar.splice(0, 1, <StarHalfIcon />);
+    //                 }
+    //                 for (let j = starRound + 1; j < 6; j++) {
+    //                     arrStar.push(<StarBorderIcon />);
+    //                 }
+    //                 break;
+    //             case 2:
+    //                 arrStar = [...handleStar(starRound, starS)];
+    //                 break;
+    //             case 3:
+    //                 arrStar = [...handleStar(starRound, starS)];
+    //                 break;
+    //             case 4:
+    //                 arrStar = [...handleStar(starRound, starS)];
+    //                 break;
+    //             case 5:
+    //                 arrStar = [...handleStar(starRound, starS)];
+    //                 break;
+    //             default:
+    //         }
+    //     }
+    //     return arrStar;
+    // };
 
     const handleAddProductToCart = async () => {
         if (quality === 0) return toast.error('Vui lòng chọn số lượng');
@@ -251,6 +334,23 @@ function ProductDetail() {
         }
     };
 
+    const loginCustomer = () => {
+        navigate(config.routes.customer_login);
+    };
+
+    const OpenModal = () => {
+        setIsOpen(true);
+    };
+    const toggleModal = () => {
+        setIsOpen(!isOpen);
+        fetchApiProduct();
+    };
+
+    const dataReview = {
+        product_id: id,
+        user_id: currentUser?.id,
+    };
+
     return (
         <>
             <div className={cx('wrapper')}>
@@ -267,19 +367,13 @@ function ProductDetail() {
                         <div className={cx('title')}>{`${state.title} - ${state.brand} - ${state.unit}`}</div>
                         <div className={cx('brand')}>
                             Xuất xứ:
-                            <Link to="#">
+                            <Link to={`/category/${id}`}>
                                 <span>{` ${state.brand} `}</span>
                             </Link>
                         </div>
                         <div className={cx('rate-all')}>
-                            <div className={cx('rating')}>
-                                <StarIcon className={cx('icon')} />
-                                <StarIcon className={cx('icon')} />
-                                <StarIcon className={cx('icon')} />
-                                <StarIcon className={cx('icon')} />
-                                <StarIcon className={cx('icon')} />
-                            </div>
-                            <div className={cx('rate-number')}>{`${comment.length} đánh giá`}</div>
+                            <div className={cx('rating')}>{handleStarAverage(handleAverage(comment))}</div>
+                            <div className={cx('rate-number')}>{`${state.allReviews.length} đánh giá`}</div>
                             <span> | </span>
                             <div className={cx('sold')}>{`Đã bán ${state.sold ? state.sold : 0}`}</div>
                         </div>
@@ -328,54 +422,18 @@ function ProductDetail() {
                                 <LocalShippingIcon className={cx('icon')} />
                                 <span className={cx('title')}>Cho đơn hàng từ 2.000.000đ</span>
                             </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
-                            <div className={cx('gift')}>
-                                <CheckCircleIcon className={cx('icon')} />
-                                <span className={cx('title')}>
-                                    Tặng Chỉ khâu không tiêu Black Silk đơn từ 3.000.000đ
-                                </span>
-                            </div>
+                            {gifts && gifts.length > 0 ? (
+                                gifts.map((item, index) => {
+                                    return (
+                                        <div key={index} className={cx('gift')}>
+                                            <CheckCircleIcon className={cx('icon')} />
+                                            <span className={cx('title')}>{item.title}</span>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <></>
+                            )}
                         </div>
                         <div className={cx('table-price')}>
                             <div className={cx('table-wrapper')}>
@@ -441,33 +499,80 @@ function ProductDetail() {
                 <div className={cx('description')}>
                     <TabsStyle data={dataTabs} />
                 </div>
+                <ModalReviews data={dataReview} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
                 <div className={cx('review')}>
                     <h1>ĐÁNH GIÁ NHA SĨ</h1>
-                    <div className={cx('wrapper')}>
-                        <div className={cx('content-top')}></div>
-                        <div className={cx('content-bottom')}>
-                            {comment &&
-                                comment?.map((item, index) => {
-                                    return (
-                                        <>
-                                            <div key={index} className={cx('comment')}>
-                                                <div className={cx('left')}>
-                                                    <img
-                                                        src={item.Image.photo ? item.Image.photo : images.noImage}
-                                                        alt=""
-                                                    />
-                                                </div>
-                                                <div className={cx('right')}>
-                                                    <span>{`*** ${item.firstName} - ${item.Review.title}`}</span>
-                                                    <div className={cx('star')}>{handleStar(item.Review.rate)}</div>
-                                                    <div className={cx('desc')}>{item.Review.description}</div>
-                                                    <div className={cx('line')}></div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    );
-                                })}
+                    <div className="flex  justify-center gap-5 h-[196px] w-full">
+                        <div className="flex flex-col items-center justify-center h-full w-[200px]">
+                            <p className="text-[#222222] text-[14px] font-medium">Đánh giá trung bình</p>
+                            <div className="p-0 text-[#222222] text-[42px] font-bold">{`${handleAverage(
+                                comment,
+                            )}/5`}</div>
+                            <span className="text-[#fab313] font-bold">
+                                {handleStarAverage(handleAverage(comment))}
+                            </span>
+                            <p className="text-[#8d919d] text-[14px]">{`(${comment ? comment.length : 0} đánh giá)`}</p>
                         </div>
+                        <div className="flex flex-col gap-3 items-center justify-center  h-full">
+                            <p className="text-[#222222]">Chia sẻ nhận xét về sản phẩm</p>
+                            {currentUser ? (
+                                <button
+                                    onClick={() => OpenModal()}
+                                    className="rounded-lg px-3 py-1 text-white font-bold bg-[#216DAA] hover:bg-[#188aeb]"
+                                >
+                                    Viết nhận xét
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => loginCustomer()}
+                                    className="rounded-lg px-3 py-1 text-white font-bold bg-[#216DAA] hover:bg-[#188aeb]"
+                                >
+                                    Vui lòng đăng nhập!
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    <div className={cx('wrapper')}>
+                        {comment && comment.length > 0 ? (
+                            <>
+                                <div className={cx('content-top')}></div>
+                                <div className={cx('content-bottom')}>
+                                    {comment &&
+                                        comment?.map((item, index) => {
+                                            return (
+                                                <>
+                                                    <div key={index} className={cx('comment')}>
+                                                        <div className={cx('left')}>
+                                                            <img
+                                                                src={
+                                                                    item.User?.Image.photo
+                                                                        ? item.User?.Image.photo
+                                                                        : images.noImage
+                                                                }
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <div className={cx('right')}>
+                                                            <span>{`*** ${
+                                                                item.User && item.User.firstName
+                                                                    ? item.User.firstName
+                                                                    : 'Vô danh'
+                                                            } - ${item.title}`}</span>
+                                                            <div className={cx('star')}>
+                                                                {handleStarAverage(item.rate)}
+                                                            </div>
+                                                            <div className={cx('desc')}>{item.description}</div>
+                                                            <div className={cx('line')}></div>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            );
+                                        })}
+                                </div>
+                            </>
+                        ) : (
+                            <></>
+                        )}
                     </div>
                 </div>
             </div>

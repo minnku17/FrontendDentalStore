@@ -11,6 +11,7 @@ import Person4Icon from '@mui/icons-material/Person4';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import styles from './Header.module.scss';
 import images from '~/assets/images';
@@ -23,7 +24,8 @@ import { useDebounce } from '~/hooks';
 import { searchProduct } from '~/redux/apiReques';
 import { useDispatch, useSelector } from 'react-redux';
 import Tippy from '@tippyjs/react/headless';
-import { addProductToCart, addProductToCartRedux, logoutCustomer } from '~/redux/requestApp';
+import { addProductToCart, addProductToCartRedux, deleteCartRedux, logoutCustomer } from '~/redux/requestApp';
+import { getAllGiftActive } from '~/services';
 
 const cx = className.bind(styles);
 
@@ -32,10 +34,12 @@ function Header() {
     const currentUser = useSelector((state) => state.auth.loginCustomer?.currentCustomer?.user);
 
     let [listProduct, setListProduct] = useState([]);
+    const [gifts, setGifts] = useState([]);
 
     let [render, setRender] = useState(0);
 
     useEffect(() => {
+        fetchGifts();
         if (productCart) {
             setListProduct(productCart);
         } else {
@@ -43,6 +47,15 @@ function Header() {
             setRender(render++);
         }
     }, [productCart]);
+
+    const fetchGifts = async () => {
+        let gift = await getAllGiftActive();
+        if (gift && gift.length > 0) {
+            setGifts(gift.data);
+        } else {
+            setGifts(gift.data);
+        }
+    };
 
     const [searchValue, setSearchValue] = useState('');
     const [showResult, setShowResult] = useState(true);
@@ -199,7 +212,6 @@ function Header() {
                         return sub;
                     };
                     data.total = subPriceSale();
-                    console.log(item.total);
                 } else {
                     const subPrice = () => {
                         let sub = item.total;
@@ -247,6 +259,8 @@ function Header() {
         let res = await logoutCustomer(dispatch);
 
         if (res && res.errCode === 0) {
+            await deleteCartRedux(dispatch);
+
             navigate(config.routes.home);
         }
     };
@@ -373,7 +387,21 @@ function Header() {
                                 render={(attrs) => (
                                     <div className={cx('gift-dropdown')} tabIndex="-1" {...attrs}>
                                         <PopperWrapper className={cx('popper-wrapper')}>
-                                            <>hello</>
+                                            {gifts && gifts.length > 0 ? (
+                                                gifts.map((item, index) => {
+                                                    return (
+                                                        <div
+                                                            key={index}
+                                                            className="flex items-center justify-start gap-3 px-2 cursor-pointer hover:bg-[#e7f3fd]"
+                                                        >
+                                                            <CheckCircleIcon className="text-[#78ca32]" />
+                                                            <span className={cx('title')}>{item.title}</span>
+                                                        </div>
+                                                    );
+                                                })
+                                            ) : (
+                                                <></>
+                                            )}
                                         </PopperWrapper>
                                     </div>
                                 )}
@@ -381,7 +409,7 @@ function Header() {
                             >
                                 <div className={cx('gift')}>
                                     <CardGiftcardIcon className={cx('gift-icon')} />
-                                    <div className={cx('notifi')}>0</div>
+                                    <div className={cx('notifi')}>{gifts && gifts.length > 0 ? gifts.length : 0}</div>
                                 </div>
                             </Tippy>
                             <Tippy

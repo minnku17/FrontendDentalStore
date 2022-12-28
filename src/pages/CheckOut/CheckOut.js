@@ -78,7 +78,6 @@ function CheckOut() {
                 } else {
                     setShowMessage(false);
                     setCouponResult(null);
-                    console.log('check');
 
                     setMessage('Mã giảm giá không tồn tại!!!');
                 }
@@ -269,42 +268,44 @@ function CheckOut() {
     console.log(couponResult);
 
     const handleSubmit = async () => {
-        let arrProduct = [];
-        let order_number = `NK${Math.floor(Math.random() * 1000000 + 1)}NMN`;
+        if (currentUser) {
+            let arrProduct = [];
+            let order_number = `NK${Math.floor(Math.random() * 1000000 + 1)}NMN`;
 
-        listProduct?.map((item) => {
-            let product = {};
-            product.product_id = item.id;
-            product.quantity = item.quality;
-            product.order_number = order_number;
+            listProduct?.map((item) => {
+                let product = {};
+                product.product_id = item.id;
+                product.quantity = item.quality;
+                product.order_number = order_number;
 
-            arrProduct.push(product);
-        });
+                arrProduct.push(product);
+            });
 
-        let data = {
-            user_id: currentUser.id,
-            product: arrProduct,
-            order_number: order_number,
-            coupon: couponResult ? couponResult.value : null,
-            sub_total: couponResult ? handleTotal() * ((100 - couponResult.value) / 100) : handleTotal(),
-            quantity: handleTotalQuantity(),
-            lastName: state.lastName,
-            firstName: state.firstName,
-            address: state.address,
-            phonenumber: state.phonenumber,
-            email: state.email,
-            note: state.note,
-            action: 'new',
-            status: 'new',
-        };
-        console.log('check data', data);
-        let res = await createOrder(data);
-        if (res.errCode === 0) {
-            await deleteCartRedux(dispatch);
-            toast.success(res.errMessage);
-            navigate(config.routes.home);
+            let data = {
+                user_id: currentUser.id,
+                product: arrProduct,
+                order_number: order_number,
+                coupon: couponResult ? couponResult.code : null,
+                sub_total: couponResult ? handleTotal() * ((100 - couponResult.value) / 100) : handleTotal(),
+                quantity: handleTotalQuantity(),
+                lastName: state.lastName,
+                firstName: state.firstName,
+                address: state.address,
+                phonenumber: state.phonenumber,
+                email: state.email,
+                note: state.note,
+                action: 'new',
+                status: 'new',
+            };
+            let res = await createOrder(data);
+            if (res.errCode === 0) {
+                await deleteCartRedux(dispatch);
+                toast.success(res.errMessage);
+                navigate(config.routes.home);
+            }
+        } else {
+            navigate(config.routes.customer_login);
         }
-        console.log('check res order', res);
     };
 
     return (

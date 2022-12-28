@@ -172,7 +172,6 @@ function FilterCategory() {
                                         <NumericFormat
                                             className="currency"
                                             type="text"
-                                            // value={item.price * ((100 - item.discount) / 100)}
                                             value={arrFilterPrice.priceA}
                                             displayType="text"
                                             thousandSeparator={true}
@@ -182,7 +181,6 @@ function FilterCategory() {
                                         <NumericFormat
                                             className="currency"
                                             type="text"
-                                            // value={item.price * ((100 - item.discount) / 100)}
                                             value={arrFilterPrice.priceB}
                                             displayType="text"
                                             thousandSeparator={true}
@@ -325,7 +323,7 @@ function FilterCategory() {
                                                     <div key={index}>
                                                         <img
                                                             onClick={() => chooseCategory(item, 'brand')}
-                                                            src={item.Image.photo ? item.Image.photo : images.noImage}
+                                                            src={item.Image?.photo ? item.Image.photo : images.noImage}
                                                             alt=""
                                                         />
                                                     </div>

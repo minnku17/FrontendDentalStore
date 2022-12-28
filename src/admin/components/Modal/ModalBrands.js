@@ -35,6 +35,7 @@ const customStyles = {
 
 function ModalBrands({ isOpen, FuncToggleModal, data }) {
     let [image, setImage] = useState();
+    let [loading, setLoading] = useState(false);
     const {
         register,
         handleSubmit,
@@ -46,7 +47,7 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
         setBrand(data);
         let defaultValues = {};
         defaultValues.title = data?.title ? data?.title : '';
-        defaultValues.status = data?.status ? data?.status : 0;
+        defaultValues.status = data?.status ? data?.status : 1;
         setImage(data?.photo);
         reset({ ...defaultValues });
     }, [data]);
@@ -63,6 +64,8 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
     };
 
     const onSubmit = async (brand) => {
+        setLoading(true);
+
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
 
         if (data) {
@@ -74,10 +77,14 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
             };
             let res = await editBrand(dispatch, axiosJWT, obj, user?.accessToken);
             if (res.errCode === 0) {
+                setLoading(false);
+
                 toast.success(res.errMessage);
                 await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
                 FuncToggleModal();
             } else {
+                setLoading(false);
+
                 toast.error(res.errMessage);
             }
         } else {
@@ -88,10 +95,14 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
             };
             let res = await createNewBrand(obj, user?.accessToken, dispatch, axiosJWT);
             if (res.errCode === 0) {
+                setLoading(false);
+
                 toast.success(res.errMessage);
                 await getAllBrands(user?.accessToken, dispatch, axiosJWT, navigate);
                 FuncToggleModal();
             } else {
+                setLoading(false);
+
                 toast.error(res.errMessage);
             }
         }
@@ -125,6 +136,7 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
                         <>{brand ? <h1>Edit New Brand</h1> : <h1>Add New Brand</h1>}</>
                     </div>
                     <div className={cx('bottom')}>
+                        {loading === true && <div className={cx('spinner-3')}></div>}
                         <div className={cx('left')}>
                             <img src={image ? image : images.noImage} alt="" />
                         </div>
@@ -151,8 +163,8 @@ function ModalBrands({ isOpen, FuncToggleModal, data }) {
                                 <div className={cx('form-input')}>
                                     <label>Status</label>
                                     <select {...register('status')}>
-                                        <option value="1">Active</option>
-                                        <option value="0">Disable</option>
+                                        <option value={1}>Active</option>
+                                        <option value={0}>Disable</option>
                                     </select>
                                 </div>
                                 <input className={cx('btnSave')} type="submit" />

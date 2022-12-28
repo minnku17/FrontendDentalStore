@@ -48,7 +48,7 @@ function SideBar() {
                 <hr />
                 <div className={cx('center')}>
                     <ul>
-                        {user.user.roleId === 'Admin' && (
+                        {user && user.user.roleId === 'Admin' && (
                             <>
                                 <p className={cx('title')}>CHÍNH</p>
                                 <Link to={config.routes.dashboard}>
@@ -70,6 +70,24 @@ function SideBar() {
                                     <li>
                                         <StorefrontIcon className={cx('icon')} />
                                         <span>Danh mục</span>
+                                    </li>
+                                </Link>
+                                <Link to={config.routes.manage_coupon}>
+                                    <li>
+                                        <StorefrontIcon className={cx('icon')} />
+                                        <span>Mã giảm giá</span>
+                                    </li>
+                                </Link>
+                                <Link to={config.routes.manage_banner}>
+                                    <li>
+                                        <StorefrontIcon className={cx('icon')} />
+                                        <span>Banner</span>
+                                    </li>
+                                </Link>
+                                <Link to={config.routes.manage_gift}>
+                                    <li>
+                                        <StorefrontIcon className={cx('icon')} />
+                                        <span>Quà tặng</span>
                                     </li>
                                 </Link>
                                 <p className={cx('title')}>SẢN PHẨM</p>

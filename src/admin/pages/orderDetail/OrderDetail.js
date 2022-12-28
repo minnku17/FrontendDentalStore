@@ -43,7 +43,7 @@ function OrderDetail() {
 
             if (res) {
                 setState({
-                    order_number: res.data.order_number,
+                    order_number: res.data?.order_number,
                     name: `${res.data.lastName} ${res.data.firstName}`,
                     phonenumber: res.data.phonenumber,
                     note: res.data.note,

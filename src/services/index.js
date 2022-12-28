@@ -1,5 +1,4 @@
 import * as request from '~/utils/request';
-import axios from 'axios';
 
 export const search = async (q, type = 'less') => {
     try {
@@ -97,7 +96,108 @@ export const getProductInfo = async (id) => {
         console.log(error);
     }
 };
-
+export const updateBanner = async (data) => {
+    try {
+        const res = await request.PUT('/api/update-banner', data);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getAllBanner = async () => {
+    try {
+        const res = await request.get('/api/get-all-banner');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const handleAddCoupon = async (axiosJWT, data, accessToken) => {
+    try {
+        const res = await axiosJWT.post('/api/add-coupon', data, { headers: { token: `Bearer ${accessToken}` } });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const handleDeleteCoupon = async (axiosJWT, id, accessToken) => {
+    try {
+        const res = await axiosJWT.delete(`/api/delete-coupon?id=${id}`, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getAllCoupon = async () => {
+    try {
+        const res = await request.get('/api/get-all-coupon');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const handleUpdateCoupon = async (axiosJWT, data, accessToken) => {
+    try {
+        const res = await axiosJWT.put('/api/update-coupon', data, { headers: { token: `Bearer ${accessToken}` } });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+//review
+export const handleSubmitReview = async (data) => {
+    try {
+        const res = await request.post('/api/handleReviewProduct', data);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+//Gift
+export const handleAddGift = async (axiosJWT, data, accessToken) => {
+    try {
+        const res = await axiosJWT.post('/api/add-gift', data, { headers: { token: `Bearer ${accessToken}` } });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getAllGift = async () => {
+    try {
+        const res = await request.get('/api/get-all-gift');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getAllGiftActive = async () => {
+    try {
+        const res = await request.get('/api/get-all-gift-active');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const handleUpdateGift = async (axiosJWT, data, accessToken) => {
+    try {
+        const res = await axiosJWT.put('/api/edit-gift', data, { headers: { token: `Bearer ${accessToken}` } });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const handleDeleteGift = async (axiosJWT, id, accessToken) => {
+    try {
+        const res = await axiosJWT.delete(`/api/handle-delete-gift?id=${id}`, {
+            headers: { token: `Bearer ${accessToken}` },
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
 export const getTurnover = async (date) => {
     try {
         const res = await request.get(`/api/getTurnover?date=${date}`);

@@ -2,16 +2,20 @@ import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import classNames from 'classnames/bind';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import GoogleIcon from '@mui/icons-material/Google';
 
 import styles from './CustomerLogin.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { createNewCustomer, loginCus } from '~/redux/apiReques';
 import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 
 const cx = classNames.bind(styles);
 function CustomerLogin() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        document.title = `Đăng nhập | Sàn Nha Khoa`;
+    });
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const {

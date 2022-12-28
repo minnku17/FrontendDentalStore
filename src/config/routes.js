@@ -8,6 +8,10 @@ const routes = {
     manage_doctor: '/admin/manage-doctor',
     manage_schedule: '/admin/manage_schedule',
 
+    manage_coupon: '/admin/manage-coupon',
+    manage_banner: '/admin/manage-banner',
+    manage_gift: '/admin/manage-gift',
+
     verify_email: '/admin/verify-booking',
 
     doctor_schedule: '/admin/doctor-schedule/:id',

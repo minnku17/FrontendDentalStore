@@ -17,7 +17,7 @@ function OrderHistory() {
         document.title = `Lịch Sử Đơn Hàng Của Bạn`;
         const fetchApi = async () => {
             let res = await getAllOrderOfUser(currentUser.id);
-            if (res && res.data.length > 0) {
+            if (res && res.data && res.data.length > 0) {
                 setAllProduct(res.data);
             } else {
                 setAllProduct([]);

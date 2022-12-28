@@ -20,6 +20,11 @@ module.exports = {
             },
         },
         extend: {
+            variants: {
+                extend: {
+                    display: ['group-hover'],
+                },
+            },
             colors: {
                 primary: {
                     50: '#fef2f2',

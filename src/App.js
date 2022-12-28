@@ -29,6 +29,9 @@ import VerifyEmail from './admin/pages/doctor/VerifyEmail';
 import DoctorSchedule from './admin/pages/doctor/DoctorSchedule';
 import ListScheduleDoctor from './admin/pages/listScheduleDoctor/ListScheduleDoctor';
 import OrderHistory from './pages/OrderHistory/OrderHistory';
+import Coupon from './admin/pages/coupon/Coupon';
+import Banner from './admin/pages/banner/Banner';
+import Gift from './admin/pages/gift/Gift';
 
 function App() {
     return (
@@ -73,6 +76,36 @@ function App() {
                                 element={
                                     <LayoutAdmin>
                                         <Brands />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.manage_coupon}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <Coupon />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.manage_banner}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <Banner />
+                                    </LayoutAdmin>
+                                }
+                            />
+                        </Route>
+                        <Route path={config.routes.manage_gift}>
+                            <Route
+                                index
+                                element={
+                                    <LayoutAdmin>
+                                        <Gift />
                                     </LayoutAdmin>
                                 }
                             />

@@ -39,7 +39,6 @@ const customStyles = {
 
 function ModalCategory({ isOpen, FuncToggleModal, data }) {
     const user = useSelector((state) => state.auth.login?.currentUser);
-    const listParentRedux = useSelector((state) => state.auth.login?.currentUser);
     const {
         register,
         handleSubmit,
@@ -49,16 +48,16 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
     let [category, setCategory] = useState('');
     let [valueParent, setValueParent] = useState();
     let [listParent, setListParent] = useState();
-    let [reviewImage, setReviewImage] = useState();
     let [image, setImage] = useState();
+    let [loading, setLoading] = useState(false);
     useEffect(() => {
         setCategory(data);
         let defaultValues = {};
         defaultValues.title = data?.title ? data?.title : '';
         defaultValues.summary = data?.summary ? data?.summary : '';
-        defaultValues.parent_id = data?.parent_id ? data?.parent_id : '';
-        defaultValues.is_parent = data?.is_parent ? data?.is_parent : '1';
-        defaultValues.status = data?.status ? data?.status : '1';
+        defaultValues.parent_id = data?.parent_id ? data?.parent_id : 0;
+        defaultValues.is_parent = data?.is_parent ? data?.is_parent : 1;
+        defaultValues.status = data?.status ? data?.status : 1;
         setImage(data?.photo ? data.photo : images.noImage);
 
         reset({ ...defaultValues });
@@ -66,8 +65,6 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
 
     useEffect(() => {
         async function fetchApi() {
-            let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
-
             let res = await getListParentCategory(dispatch);
             setListParent(res.data);
         }
@@ -86,6 +83,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
     const onSubmit = async (category) => {
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
         console.log(image);
+        setLoading(true);
         if (data) {
             let obj = {
                 id: data.id,
@@ -101,10 +99,13 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
             }
             let res = await editCategory(dispatch, axiosJWT, obj, user?.accessToken);
             if (res.errCode === 0) {
+                setLoading(false);
                 toast.success(res.errMessage);
                 await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT, navigate);
                 FuncToggleModal();
             } else {
+                setLoading(false);
+
                 toast.error(res.errMessage);
             }
         } else {
@@ -118,10 +119,14 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
             };
             let res = await createNewCategory(obj, user?.accessToken, dispatch, axiosJWT);
             if (res.errCode === 0) {
+                setLoading(false);
                 toast.success(res.errMessage);
                 await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT, navigate);
+
                 FuncToggleModal();
             } else {
+                setLoading(false);
+
                 toast.error(res.errMessage);
             }
         }
@@ -135,6 +140,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
             setImage(base64);
         }
     };
+    console.log('check loading', loading);
     return (
         <>
             <div>
@@ -155,6 +161,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
                         <>{category ? <h1>Edit New Category</h1> : <h1>Add New Category</h1>}</>
                     </div>
                     <div className={cx('bottom')}>
+                        {loading === true && <div className={cx('spinner-3')}></div>}
                         <div className={cx('left')}>
                             <img src={image ? image : images.noImage} alt="" />
                         </div>
@@ -192,8 +199,8 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
                                             },
                                         })}
                                     >
-                                        <option value="1">Is parent</option>
-                                        <option value="0">Children</option>
+                                        <option value={1}>Is parent</option>
+                                        <option value={0}>Children</option>
                                     </select>
                                 </div>
                                 {valueParent === '0' ? (
@@ -202,7 +209,7 @@ function ModalCategory({ isOpen, FuncToggleModal, data }) {
                                         <select {...register('parent_id')}>
                                             {listParent?.map((item, index) => {
                                                 return (
-                                                    <option key={index} value={item.id}>
+                                                    <option key={index} value={+item.id}>
                                                         {item.title}
                                                     </option>
                                                 );

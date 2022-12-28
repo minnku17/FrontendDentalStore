@@ -22,8 +22,13 @@ function DatatableCategory() {
 
     let [category, setCategory] = useState(0);
     let [listParent, setListParent] = useState();
+    let [loading, setLoading] = useState(false);
+    let [loadingDelete, setLoadingDelete] = useState(false);
+
     const data = useMovieData();
     useEffect(() => {
+        setLoading(true);
+
         if (allCategory) {
             let allUser = allCategory.map((item) => {
                 return {
@@ -36,7 +41,7 @@ function DatatableCategory() {
                     status: item.status,
                 };
             });
-
+            setLoading(false);
             setRows(allUser);
         }
         async function fetchApi() {
@@ -143,10 +148,10 @@ function DatatableCategory() {
                     <>
                         <div className={cx('cell-action')}>
                             <div className={cx('view-button')} onClick={() => handleSubmit(params.row)}>
-                                Edit
+                                Sửa
                             </div>
                             <div className={cx('delete-button')} onClick={() => handleDelete(params.row.id)}>
-                                Delete
+                                Xóa
                             </div>
                         </div>
                     </>
@@ -163,13 +168,16 @@ function DatatableCategory() {
     };
 
     const handleDelete = async (id) => {
+        setLoadingDelete(true);
         let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
         let res = await deleteCategory(dispatch, axiosJWT, id, user?.accessToken);
 
         if (res.errCode === 0) {
             toast.success(res.errMessage);
             await getAllCategoryAdmin(user?.accessToken, dispatch, axiosJWT);
+            setLoadingDelete(false);
         } else {
+            setLoadingDelete(false);
             toast.error(res.errMessage);
         }
     };
@@ -191,14 +199,19 @@ function DatatableCategory() {
                         Add New Category
                     </div>
                 </div>
-                <DataGrid
-                    className={cx('customTable')}
-                    {...data}
-                    rows={rows}
-                    columns={columns}
-                    pageSize={9}
-                    rowsPerPageOptions={[9]}
-                />
+                {loadingDelete === true && <div class={cx('spinner-4')}></div>}
+                {loading === true ? (
+                    <div class={cx('spinner-3')}></div>
+                ) : (
+                    <DataGrid
+                        className={cx('customTable')}
+                        {...data}
+                        rows={rows}
+                        columns={columns}
+                        pageSize={9}
+                        rowsPerPageOptions={[9]}
+                    />
+                )}
                 <ModalCategory data={category} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
             </div>
         </>
