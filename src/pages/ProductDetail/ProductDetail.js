@@ -26,6 +26,7 @@ import { toast } from 'react-toastify';
 import config from '~/config';
 import ModalReviews from '~/Component/Modal/ModalReview';
 import { handleAverage, handleStarAverage } from '~/utils/Star';
+import routes from '~/config/routes';
 const cx = className.bind(styles);
 
 function a11yProps(index) {
@@ -299,7 +300,7 @@ function ProductDetail() {
     return (
         <>
             <div className={cx('wrapper')}>
-                <Link to="#">
+                <Link to={config.routes.home}>
                     <div className={cx('category')}>Trang chủ</div>
                 </Link>
                 <div className={cx('product-main-content')}>
@@ -312,144 +313,147 @@ function ProductDetail() {
                             )}
                         </div>
                     </div>
-                    <div className={cx('content-right')}>
-                        <div className={cx('title')}>{`${state.title} - ${state.brand} - ${state.unit}`}</div>
-                        <div className={cx('brand')}>
-                            Xuất xứ:
-                            <Link to={`/category/${id}`}>
-                                <span>{` ${state.brand} `}</span>
-                            </Link>
-                        </div>
-                        <div className={cx('rate-all')}>
-                            <div className={cx('rating')}>{handleStarAverage(handleAverage(comment))}</div>
-                            <div className={cx('rate-number')}>{`${state.allReviews.length} đánh giá`}</div>
-                            <span> | </span>
-                            <div className={cx('sold')}>{`Đã bán ${state.sold ? state.sold : 0}`}</div>
-                        </div>
-                        <div className={cx('line')}></div>
-                        <div className={cx('price-rate')}>
-                            <div className={cx('price')}>
-                                <div className={cx('price-now')}>
-                                    <NumericFormat
-                                        className="currency"
-                                        type="text"
-                                        value={state.priceSale}
-                                        displayType="text"
-                                        thousandSeparator={true}
-                                        suffix={'đ'}
-                                    />
-                                </div>
-                                <div className={cx('price-old')}>
-                                    <span className={cx('price-label')}>{`-${state.discount}%`}</span>
-                                    <div className={cx('price-old-l')}>
+                    {loading === true && <div className={cx('continuous-1')}></div>}
+                    {loading === false && (
+                        <div className={cx('content-right')}>
+                            <div className={cx('title')}>{`${state.title} - ${state.brand} - ${state.unit}`}</div>
+                            <div className={cx('brand')}>
+                                Xuất xứ:
+                                <Link to={`/category/${id}`}>
+                                    <span>{` ${state.brand} `}</span>
+                                </Link>
+                            </div>
+                            <div className={cx('rate-all')}>
+                                <div className={cx('rating')}>{handleStarAverage(handleAverage(comment))}</div>
+                                <div className={cx('rate-number')}>{`${state.allReviews.length} đánh giá`}</div>
+                                <span> | </span>
+                                <div className={cx('sold')}>{`Đã bán ${state.sold ? state.sold : 0}`}</div>
+                            </div>
+                            <div className={cx('line')}></div>
+                            <div className={cx('price-rate')}>
+                                <div className={cx('price')}>
+                                    <div className={cx('price-now')}>
                                         <NumericFormat
                                             className="currency"
                                             type="text"
-                                            value={state.price}
+                                            value={state.priceSale}
                                             displayType="text"
                                             thousandSeparator={true}
                                             suffix={'đ'}
                                         />
                                     </div>
-                                </div>
-                            </div>
-                            <div className={cx('rate')}>
-                                <span className={cx('title')}>Bạn thấy giá này?</span>
-                                <div className={cx('like')}>
-                                    <ThumbUpOffAltIcon className={cx('icon-like')} />
-                                    <span> Hợp lý</span>
-                                </div>
-                                <div className={cx('dislike')}>
-                                    <ThumbDownOffAltIcon className={cx('icon-dislike')} />
-                                    <span> Cao</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={cx('line')}></div>
-                        <div className={cx('wrapper-gift')}>
-                            <div className={cx('gift')}>
-                                <LocalShippingIcon className={cx('icon')} />
-                                <span className={cx('title')}>Cho đơn hàng từ 2.000.000đ</span>
-                            </div>
-                            {gifts && gifts.length > 0 ? (
-                                gifts.map((item, index) => {
-                                    return (
-                                        <div key={index} className={cx('gift')}>
-                                            <CheckCircleIcon className={cx('icon')} />
-                                            <span className={cx('title')}>{item.title}</span>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <></>
-                            )}
-                        </div>
-                        <div className={cx('table-price')}>
-                            <div className={cx('table-wrapper')}>
-                                <div>
-                                    <div className={cx('tr-title')}>
-                                        <div className={cx('name-product')}>Tên sản phẩm</div>
-                                        <div className={cx('unit-product')}>Đơn vị</div>
-                                        <div className={cx('price-product')}>Giá</div>
-                                        <div className={cx('quality-product')}>Số lượng</div>
-                                    </div>
-                                    <div className={cx('tr-value')}>
-                                        <div className={cx('name-product')}>{state.title}</div>
-                                        <div className={cx('unit-product')}>{state.unit}</div>
-                                        <div className={cx('price-product')}>
+                                    <div className={cx('price-old')}>
+                                        <span className={cx('price-label')}>{`-${state.discount}%`}</span>
+                                        <div className={cx('price-old-l')}>
                                             <NumericFormat
                                                 className="currency"
                                                 type="text"
-                                                value={state.priceSale}
+                                                value={state.price}
                                                 displayType="text"
                                                 thousandSeparator={true}
                                                 suffix={'đ'}
                                             />
                                         </div>
-                                        <div className={cx('quality-product')}>
-                                            <button onClick={() => handleDecrease()}>
-                                                <RemoveIcon />
-                                            </button>
-                                            <input value={quality} />
-                                            <button onClick={() => handleIncrease()}>
-                                                <AddIcon />
-                                            </button>
-                                        </div>
+                                    </div>
+                                </div>
+                                <div className={cx('rate')}>
+                                    <span className={cx('title')}>Bạn thấy giá này?</span>
+                                    <div className={cx('like')}>
+                                        <ThumbUpOffAltIcon className={cx('icon-like')} />
+                                        <span> Hợp lý</span>
+                                    </div>
+                                    <div className={cx('dislike')}>
+                                        <ThumbDownOffAltIcon className={cx('icon-dislike')} />
+                                        <span> Cao</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className={cx('price-total')}>
-                                <p>
-                                    Tổng tiền:{' '}
-                                    <span className={cx('total')}>
-                                        {
-                                            <NumericFormat
-                                                className="currency"
-                                                type="text"
-                                                value={total}
-                                                displayType="text"
-                                                thousandSeparator={true}
-                                                suffix={'đ'}
-                                            />
-                                        }
-                                    </span>
-                                </p>
-                                <p>
-                                    Số lượng: <span>{quality}</span>
-                                </p>
+                            <div className={cx('line')}></div>
+                            <div className={cx('wrapper-gift')}>
+                                <div className={cx('gift')}>
+                                    <LocalShippingIcon className={cx('icon')} />
+                                    <span className={cx('title')}>Cho đơn hàng từ 2.000.000đ</span>
+                                </div>
+                                {gifts && gifts.length > 0 ? (
+                                    gifts.map((item, index) => {
+                                        return (
+                                            <div key={index} className={cx('gift')}>
+                                                <CheckCircleIcon className={cx('icon')} />
+                                                <span className={cx('title')}>{item.title}</span>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <></>
+                                )}
+                            </div>
+                            <div className={cx('table-price')}>
+                                <div className={cx('table-wrapper')}>
+                                    <div>
+                                        <div className={cx('tr-title')}>
+                                            <div className={cx('name-product')}>Tên sản phẩm</div>
+                                            <div className={cx('unit-product')}>Đơn vị</div>
+                                            <div className={cx('price-product')}>Giá</div>
+                                            <div className={cx('quality-product')}>Số lượng</div>
+                                        </div>
+                                        <div className={cx('tr-value')}>
+                                            <div className={cx('name-product')}>{state.title}</div>
+                                            <div className={cx('unit-product')}>{state.unit}</div>
+                                            <div className={cx('price-product')}>
+                                                <NumericFormat
+                                                    className="currency"
+                                                    type="text"
+                                                    value={state.priceSale}
+                                                    displayType="text"
+                                                    thousandSeparator={true}
+                                                    suffix={'đ'}
+                                                />
+                                            </div>
+                                            <div className={cx('quality-product')}>
+                                                <button onClick={() => handleDecrease()}>
+                                                    <RemoveIcon />
+                                                </button>
+                                                <input value={quality} />
+                                                <button onClick={() => handleIncrease()}>
+                                                    <AddIcon />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={cx('price-total')}>
+                                    <p>
+                                        Tổng tiền:{' '}
+                                        <span className={cx('total')}>
+                                            {
+                                                <NumericFormat
+                                                    className="currency"
+                                                    type="text"
+                                                    value={total}
+                                                    displayType="text"
+                                                    thousandSeparator={true}
+                                                    suffix={'đ'}
+                                                />
+                                            }
+                                        </span>
+                                    </p>
+                                    <p>
+                                        Số lượng: <span>{quality}</span>
+                                    </p>
 
-                                <button onClick={() => handleAddProductToCart()}>
-                                    {loadingAddCart === true ? (
-                                        <div className={cx('spinner-3')}></div>
-                                    ) : (
-                                        <>
-                                            <ShoppingCartIcon /> <span>thêm vào giỏ hàng</span>
-                                        </>
-                                    )}
-                                </button>
+                                    <button onClick={() => handleAddProductToCart()}>
+                                        {loadingAddCart === true ? (
+                                            <div className={cx('spinner-3')}></div>
+                                        ) : (
+                                            <>
+                                                <ShoppingCartIcon /> <span>thêm vào giỏ hàng</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
                 <SaleCarousel data={allProduct} />
                 <div className={cx('description')}>

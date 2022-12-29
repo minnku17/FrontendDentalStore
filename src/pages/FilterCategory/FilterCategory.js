@@ -102,7 +102,11 @@ function FilterCategory() {
             const products = await getProductFilter(data);
             if (products && products.errCode === 0) {
                 setLoading(false);
-
+                if (products.data) {
+                    setListProduct(products.data);
+                } else {
+                    setListProduct([]);
+                }
                 setListProduct(products.data);
             } else {
                 setLoading(false);
@@ -394,8 +398,10 @@ function FilterCategory() {
                             </div>
                         ) : (
                             <div className={cx('main-content')}>
-                                {!listProduct && <div className={cx('no-product')}>Không có sản phẩm</div>}
-                                {listProduct?.length === 0 && <div className={cx('no-product')}>Không có sản phẩm</div>}
+                                {!listProduct && loading === false && (
+                                    <div className={cx('no-product')}>Không có sản phẩm</div>
+                                )}
+                                {/* {listProduct?.length === 0 && <div className={cx('no-product')}>Không có sản phẩm</div>} */}
                                 {listProduct &&
                                     listProduct.length > 0 &&
                                     listProduct.map((item, index) => {

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import className from 'classnames/bind';
 import styles from '../../DefaultLayout/DefaultLayout.module.scss';
-
+import './HeaderCustomer.scss';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +24,8 @@ function HeaderCustomer() {
     let [mainBanner, setMainBanners] = useState('');
     let [bannerLong, setBannerLong] = useState('');
 
+    let [loading, setLoading] = useState(false);
+
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
@@ -45,8 +47,11 @@ function HeaderCustomer() {
     }, []);
 
     const fetchBanner = async () => {
+        setLoading(true);
         const res = await getAllBanner();
         if (res.data && res.data.length > 0) {
+            setLoading(false);
+
             setMainBanners(res.data[0].Image.photo);
             setBannerFour(
                 res.data.filter((item, index) => {
@@ -74,13 +79,8 @@ function HeaderCustomer() {
             <div className="container flex flex-col gap-4 items-center pt-[76px]">
                 <div className=" mx-auto h-fit grid grid-cols-12 gap-3 ">
                     <div className="hidden px-8 rounded-lg flex-initial col-span-12 sm:h-[200px] md:h-fit md:overflow-auto md:mt-5 md:block md:col-span-3 shadow-md md:px-1 lg:px-0">
+                        {!listParent && <div className="continuous-3"></div>}
                         <aside className="flex flex-col sm:h-[202px] lg:h-[280px] lg:py-[3px] md:py-[3px] xl:h-full p-5  justify-around">
-                            {!listParent && (
-                                <div className="h-[280px] flex flex-col items-center justify-center">
-                                    <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"></svg>
-                                    Đang tải...
-                                </div>
-                            )}
                             {listParent?.map((item, index) => {
                                 return (
                                     <div
@@ -99,11 +99,15 @@ function HeaderCustomer() {
                         </aside>
                     </div>
                     <div className="flex-initial col-span-12 py-4  md:col-span-5 ">
-                        <img
-                            className="bg-no-repeat rounded-lg"
-                            src={mainBanner ? mainBanner : images.banner}
-                            alt="images"
-                        />
+                        {mainBanner ? (
+                            <img
+                                className="bg-no-repeat rounded-lg"
+                                src={mainBanner ? mainBanner : images.banner}
+                                alt="images"
+                            />
+                        ) : (
+                            <div className="continuous-2"></div>
+                        )}
                     </div>
                     <div className="hidden  flex-initial col-span-12  md:col-span-4  md:grid md:grid-cols-2 gap-1">
                         {bannerFour && bannerFour.length === 4 ? (
@@ -116,10 +120,10 @@ function HeaderCustomer() {
                             })
                         ) : (
                             <>
-                                <img src={images.banner1} className="w-full" alt="" />
-                                <img src={images.banner2} className="w-full" alt="" />
-                                <img src={images.banner3} className="w-full" alt="" />
-                                <img src={images.banner4} className="w-full" alt="" />
+                                <div className="continuous-1"></div>
+                                <div className="continuous-1"></div>
+                                <div className="continuous-1"></div>
+                                <div className="continuous-1"></div>
                             </>
                         )}
                     </div>
