@@ -68,9 +68,8 @@ function HeaderCustomer() {
     return (
         <>
             {/* <div className={cx('wrapper')}> */}
-            <div className="container fixed bg-[#216daa] z-50">
-                <Header />
-            </div>
+
+            <Header />
             {/* </div> */}
             <div className="container flex flex-col gap-4 items-center pt-[76px]">
                 <div className=" mx-auto h-fit grid grid-cols-12 gap-3 ">
