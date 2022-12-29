@@ -9,9 +9,6 @@ import images from '~/assets/images';
 
 import styles from './ProductDetail.module.scss';
 import ImageGallery from 'react-image-gallery';
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
@@ -53,6 +50,8 @@ function ProductDetail() {
     let [arrCart, setArrCart] = useState([]);
     let [imageProduct, setImageProduct] = useState([]);
     let [quality, setQuality] = useState(0);
+    let [loading, setLoading] = useState(false);
+    let [loadingAddCart, setLoadingAddCart] = useState(false);
 
     const [state, setState] = useState({
         title: '',
@@ -96,6 +95,7 @@ function ProductDetail() {
     }, []);
     async function fetchApiProduct() {
         window.scrollTo(0, 0);
+        setLoading(true);
 
         let res = await getProductInfo(id);
         document.title = `${res.data.dataProduct.title} | Sàn Nha Khoa Lớn Nhất VN`;
@@ -112,6 +112,8 @@ function ProductDetail() {
                 return arrReviews;
             });
         }
+        setLoading(false);
+
         if (dataProduct.Images) {
             let arr = [];
 
@@ -200,73 +202,10 @@ function ProductDetail() {
         type: state.type,
         unit: state.unit,
     };
-    // const handleAverage = () => {
-    //     if (comment && comment.length > 0) {
-    //         let arr = [];
-    //         comment.forEach((item) => {
-    //             arr.push(item.rate);
-
-    //             return arr;
-    //         });
-    //         let sumPoint = arr.reduce((arr, item) => {
-    //             return arr + item;
-    //         });
-    //         return (sumPoint / comment.length).toFixed(1);
-    //     } else {
-    //         return 0;
-    //     }
-    // };
-
-    // const handleStarAverage = (star) => {
-    //     const starS = star;
-    //     const starRound = Math.round(starS);
-    //     let arrStar = [];
-    //     const handleStar = (starRound, starS) => {
-    //         let arr = [];
-    //         for (let i = 1; i <= starRound; i++) {
-    //             arr.push(<StarIcon />);
-    //         }
-    //         if (starRound % starS !== 0) {
-    //             arr.splice(-1, 1, <StarHalfIcon />);
-    //         }
-    //         for (let j = starRound + 1; j < 6; j++) {
-    //             arr.push(<StarBorderIcon />);
-    //         }
-    //         return arr;
-    //     };
-    //     if (starS) {
-    //         switch (starRound) {
-    //             case 1:
-    //                 for (let i = 1; i <= starRound; i++) {
-    //                     arrStar.push(<StarIcon />);
-    //                 }
-    //                 if (starS < 1) {
-    //                     arrStar.splice(0, 1, <StarHalfIcon />);
-    //                 }
-    //                 for (let j = starRound + 1; j < 6; j++) {
-    //                     arrStar.push(<StarBorderIcon />);
-    //                 }
-    //                 break;
-    //             case 2:
-    //                 arrStar = [...handleStar(starRound, starS)];
-    //                 break;
-    //             case 3:
-    //                 arrStar = [...handleStar(starRound, starS)];
-    //                 break;
-    //             case 4:
-    //                 arrStar = [...handleStar(starRound, starS)];
-    //                 break;
-    //             case 5:
-    //                 arrStar = [...handleStar(starRound, starS)];
-    //                 break;
-    //             default:
-    //         }
-    //     }
-    //     return arrStar;
-    // };
 
     const handleAddProductToCart = async () => {
         if (quality === 0) return toast.error('Vui lòng chọn số lượng');
+        setLoadingAddCart(true);
 
         if (currentUser) {
             let data = {
@@ -293,9 +232,13 @@ function ProductDetail() {
 
             let res = await addProductToCart(itemData);
             if (res.errCode === 1) {
+                setLoadingAddCart(false);
+
                 toast.warning(res.errMessage);
             } else {
                 if (arrCart && arrCart.length > 0) {
+                    setLoadingAddCart(false);
+
                     let arrItem = [...cartRedux];
                     console.log(arrItem);
                     const check = arrItem.find((item) => item.id === idProduct);
@@ -319,6 +262,8 @@ function ProductDetail() {
 
                     return;
                 } else {
+                    setLoadingAddCart(false);
+
                     arr.push(data);
                     if (res.errCode === 1) {
                         toast.warning(res.errMessage);
@@ -360,7 +305,11 @@ function ProductDetail() {
                 <div className={cx('product-main-content')}>
                     <div className={cx('content-left')}>
                         <div className={cx('product-image')}>
-                            <ImageGallery items={imageProduct} />
+                            {loading === true ? (
+                                <div className={cx('spinner-7')}></div>
+                            ) : (
+                                <ImageGallery items={imageProduct} />
+                            )}
                         </div>
                     </div>
                     <div className={cx('content-right')}>
@@ -488,8 +437,15 @@ function ProductDetail() {
                                 <p>
                                     Số lượng: <span>{quality}</span>
                                 </p>
+
                                 <button onClick={() => handleAddProductToCart()}>
-                                    <ShoppingCartIcon /> <span>thêm vào giỏ hàng</span>
+                                    {loadingAddCart === true ? (
+                                        <div className={cx('spinner-3')}></div>
+                                    ) : (
+                                        <>
+                                            <ShoppingCartIcon /> <span>thêm vào giỏ hàng</span>
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>

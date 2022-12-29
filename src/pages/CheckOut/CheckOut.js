@@ -34,6 +34,7 @@ function CheckOut() {
     let [message, setMessage] = useState('');
     let [showMessage, setShowMessage] = useState(false);
     let [couponResult, setCouponResult] = useState();
+    let [loadingSubmit, setLoadingSubmit] = useState(false);
 
     let [state, setState] = useState({
         firstName: '',
@@ -268,6 +269,7 @@ function CheckOut() {
     console.log(couponResult);
 
     const handleSubmit = async () => {
+        setLoadingSubmit(true);
         if (currentUser) {
             let arrProduct = [];
             let order_number = `NK${Math.floor(Math.random() * 1000000 + 1)}NMN`;
@@ -299,11 +301,15 @@ function CheckOut() {
             };
             let res = await createOrder(data);
             if (res.errCode === 0) {
+                setLoadingSubmit(false);
+
                 await deleteCartRedux(dispatch);
                 toast.success(res.errMessage);
                 navigate(config.routes.home);
             }
         } else {
+            setLoadingSubmit(false);
+
             navigate(config.routes.customer_login);
         }
     };
@@ -506,7 +512,9 @@ function CheckOut() {
                                 placeholder="Ghi chú đơn hàng"
                             />
                             <div className={cx('button')}>
-                                <button onClick={() => handleSubmit()}>Đặt mua</button>
+                                <button onClick={() => handleSubmit()}>
+                                    {loadingSubmit === true ? <div className={cx('spinner-3')}></div> : 'đặt mua'}
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -24,9 +24,27 @@
             .product-image {
                 height: 525px;
                 width: 100%;
+                position: relative;
 
                 .image {
                     border-radius: 10px;
+                }
+                .spinner-7 {
+                    position: absolute;
+                    top: 40%;
+                    left: 45%;
+                    width: 50px;
+                    aspect-ratio: 1;
+                    --_c: radial-gradient(farthest-side, #216daa 92%, #0000);
+                    background: var(--_c) top, var(--_c) left, var(--_c) right, var(--_c) bottom;
+                    background-size: 12px 12px;
+                    background-repeat: no-repeat;
+                    animation: s7 1s infinite;
+                }
+                @keyframes s7 {
+                    to {
+                        transform: rotate(0.5turn);
+                    }
                 }
             }
         }
@@ -285,6 +303,29 @@
                         padding: 12px 22px;
                         text-transform: uppercase;
                         line-height: 1.27;
+
+                        .spinner-3 {
+                            margin-left: auto;
+                            margin-right: auto;
+
+                            text-align: center;
+                            width: 18px;
+                            padding: 3px;
+                            aspect-ratio: 1;
+                            border-radius: 50%;
+                            background: #fff;
+                            --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+                            -webkit-mask: var(--_m);
+                            mask: var(--_m);
+                            -webkit-mask-composite: source-out;
+                            mask-composite: subtract;
+                            animation: s3 1s infinite linear;
+                        }
+                        @keyframes s3 {
+                            to {
+                                transform: rotate(1turn);
+                            }
+                        }
                     }
                 }
             }

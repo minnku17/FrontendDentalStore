@@ -12,6 +12,7 @@ const cx = className.bind(styles);
 function LoginAdmin() {
     let [email, setEmail] = useState('');
     let [password, setPassword] = useState('');
+    let [loading, setLoading] = useState(false);
 
     let [message, setMessage] = useState('');
 
@@ -27,26 +28,32 @@ function LoginAdmin() {
         }
     };
     const handleSubmit = async (e) => {
+        setLoading(true);
         e.preventDefault();
 
         let res = await loginUser(email, password, dispatch, navigate);
-        console.log('check res from login:>>>', res);
 
         if (res && res.errCode === 3) {
+            setLoading(false);
+
             setMessage(res.errMessage);
         } else if (res && res.errCode === 1) {
             setMessage(res.errMessage);
         } else if (res && res.errCode === 0 && res.user.roleId === 'Doctor') {
+            setLoading(false);
+
             navigate(config.routes.dashboard);
         } else if (res && res.errCode === 0 && res.user.roleId === 'Admin') {
+            setLoading(false);
+
             navigate(config.routes.dashboard);
         }
 
         if (!res) {
-            setMessage('An error occurred, please try again laterhaha!!!');
-        }
+            setLoading(false);
 
-        console.log('check res from login:>>>', res);
+            setMessage('Hệ thống đã xảy ra lỗi, vui lòng thử lại sau!!!');
+        }
     };
     return (
         <>
@@ -81,7 +88,13 @@ function LoginAdmin() {
                         ) : (
                             ''
                         )}
-                        <input type="submit" onClick={(e) => handleSubmit(e)} value="Login" />
+                        {loading === true ? (
+                            <div className={cx('login')}>
+                                <div class={cx('spinner-3')}></div>
+                            </div>
+                        ) : (
+                            <input type="submit" onClick={(e) => handleSubmit(e)} value="Login" />
+                        )}
                     </form>
                 </div>
             </div>

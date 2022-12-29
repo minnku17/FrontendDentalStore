@@ -5,16 +5,19 @@ import CommonUtils from '~/utils/CommonUtlis';
 import { getAllBanner, updateBanner } from '~/services';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import './Banner.scss';
 
 function Banner() {
     let [bannerFour, setBannerFour] = useState([]);
     let [mainBanner, setMainBanners] = useState('');
     let [bannerLong, setBannerLong] = useState('');
+    let [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchApi();
     }, []);
     const fetchApi = async () => {
+        setLoading(true);
         const res = await getAllBanner();
         if (res.data && res.data.length > 0) {
             setMainBanners(res.data[0].Image.photo);
@@ -24,14 +27,10 @@ function Banner() {
                 }),
             );
             setBannerLong(res.data[5].Image.photo);
+            setLoading(false);
         }
     };
-
-    console.log('checkkk ', bannerFour);
-
     const handleOnchangeImg = async (e, id) => {
-        console.log('check res', id);
-
         let data = e.target.files;
         let files = data[0];
 
@@ -49,77 +48,83 @@ function Banner() {
         }
     };
     return (
-        <div className="flex flex-col gap-4 p-2">
-            <div className="flex flex-col gap-5 my-auto mx-auto border rounded-lg w-fit p-5">
-                <h1 className="text-center font-bold italic ">
-                    Cách chỉnh: hãy bấm vào nút <span className="text-red-500">Choose File</span> để thay đổi ảnh!
-                </h1>
+        <div className="flex flex-col gap-4 p-2 wrapper relative">
+            {loading === true ? (
+                <div class="spinner-3"></div>
+            ) : (
+                <div className="flex flex-col gap-5 my-auto mx-auto border rounded-lg w-fit p-5">
+                    <h1 className="text-center font-bold italic ">
+                        Cách chỉnh: hãy bấm vào nút <span className="text-red-500">Choose File</span> để thay đổi ảnh!
+                    </h1>
 
-                <div className="flex items-center justify-center gap-3">
-                    <div className="w-[509px] h-[341px]">
-                        <img className="rounded-lg" src={mainBanner !== null ? mainBanner : images.banner} alt="" />
+                    <div className="flex items-center justify-center gap-3">
+                        <div className="w-[509px] h-[341px] relative">
+                            <img className="rounded-lg" src={mainBanner !== null ? mainBanner : images.banner} alt="" />
+
+                            <input
+                                className="text-[12px] w-[173px] border-none"
+                                onChange={(e) => handleOnchangeImg(e, 11)}
+                                type="file"
+                                id="file"
+                                style={{ display: 'block' }}
+                            />
+                        </div>
+                        <div className="w-[406px] h-[380px] flex flex-wrap gap-1">
+                            {bannerFour && bannerFour.length === 4 ? (
+                                bannerFour.map((item, index) => {
+                                    let id = item.Image.id;
+
+                                    return (
+                                        <div key={index} className="">
+                                            <img
+                                                className="w-[201px] h-[180px]"
+                                                src={item.Image.photo !== null ? item.Image.photo : images.banner1}
+                                                alt=""
+                                            />
+
+                                            {/* <label className="" htmlFor="file">
+                                            Image: <DriveFolderUploadOutlined />
+                                        </label> */}
+                                            <input
+                                                className="text-[12px] w-[173px] border-none"
+                                                onChange={(e) => handleOnchangeImg(e, id)}
+                                                type="file"
+                                                id="file"
+                                                style={{ display: 'block' }}
+                                            />
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <>
+                                    <div>
+                                        <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
+                                    </div>
+                                    <div>
+                                        <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
+                                    </div>
+                                    <div>
+                                        <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
+                                    </div>
+                                    <div>
+                                        <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    <div className="w-full mt-2">
+                        <img className="rounded-lg" src={bannerLong ? bannerLong : images.bannerSale} alt="" />
                         <input
                             className="text-[12px] w-[173px] border-none"
-                            onChange={(e) => handleOnchangeImg(e, 11)}
+                            onChange={(e) => handleOnchangeImg(e, 8)}
                             type="file"
                             id="file"
                             style={{ display: 'block' }}
                         />
                     </div>
-                    <div className="w-[406px] h-[380px] flex flex-wrap gap-1">
-                        {bannerFour && bannerFour.length === 4 ? (
-                            bannerFour.map((item, index) => {
-                                let id = item.Image.id;
-
-                                return (
-                                    <div key={index} className="">
-                                        <img
-                                            className="w-[201px] h-[180px]"
-                                            src={item.Image.photo !== null ? item.Image.photo : images.banner1}
-                                            alt=""
-                                        />
-                                        {/* <label className="" htmlFor="file">
-                                            Image: <DriveFolderUploadOutlined />
-                                        </label> */}
-                                        <input
-                                            className="text-[12px] w-[173px] border-none"
-                                            onChange={(e) => handleOnchangeImg(e, id)}
-                                            type="file"
-                                            id="file"
-                                            style={{ display: 'block' }}
-                                        />
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <>
-                                <div>
-                                    <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
-                                </div>
-                                <div>
-                                    <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
-                                </div>
-                                <div>
-                                    <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
-                                </div>
-                                <div>
-                                    <img className="w-[201px] h-[180px]" src={images.banner1} alt="" />
-                                </div>
-                            </>
-                        )}
-                    </div>
                 </div>
-                <div className="w-full mt-2">
-                    <img className="rounded-lg" src={bannerLong ? bannerLong : images.bannerSale} alt="" />
-                    <input
-                        className="text-[12px] w-[173px] border-none"
-                        onChange={(e) => handleOnchangeImg(e, 186)}
-                        type="file"
-                        id="file"
-                        style={{ display: 'block' }}
-                    />
-                </div>
-            </div>
+            )}
         </div>
     );
 }

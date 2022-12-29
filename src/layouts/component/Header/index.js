@@ -77,12 +77,11 @@ function Header() {
 
         const fetchApi = async () => {
             setLoading(true);
-            await setTimeout(async () => {
-                const result = await searchProduct(dispatch, debounced);
-                setSearchResult(result);
-                setShowResult(true);
-                setLoading(false);
-            }, 1000);
+
+            const result = await searchProduct(dispatch, debounced);
+            setSearchResult(result);
+            setShowResult(true);
+            setLoading(false);
         };
 
         fetchApi();

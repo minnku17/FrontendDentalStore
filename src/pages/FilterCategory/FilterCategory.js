@@ -58,6 +58,7 @@ function FilterCategory() {
     let [listCategory, setListCategory] = useState([]);
     let [listBrand, setLisBrand] = useState([]);
     let [listProduct, setListProduct] = useState([]);
+    let [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -89,6 +90,7 @@ function FilterCategory() {
     }, []);
 
     useEffect(() => {
+        setLoading(true);
         let data = {};
         data.action = selected;
         data.id = arrFilterCat ? arrFilterCat.id : null;
@@ -99,8 +101,12 @@ function FilterCategory() {
         const fetchApi = async () => {
             const products = await getProductFilter(data);
             if (products && products.errCode === 0) {
+                setLoading(false);
+
                 setListProduct(products.data);
             } else {
+                setLoading(false);
+
                 setListProduct([]);
             }
         };
@@ -382,82 +388,89 @@ function FilterCategory() {
                                 <span className={cx('number-page')}>1/1</span>
                             </div>
                         </div>
-                        <div className={cx('main-content')}>
-                            {/* <div className={cx('wrapper')}> */}
-                            {listProduct &&
-                                listProduct.length > 0 &&
-                                listProduct.map((item, index) => {
-                                    return (
-                                        <div key={index} onClick={() => viewDetailProduct(item.id)}>
-                                            <div className={cx('wrapper')}>
-                                                <div className={cx('top')}>
-                                                    <img
-                                                        src={
-                                                            item.Images[0].photo
-                                                                ? item.Images[0].photo
-                                                                : images.product1
-                                                        }
-                                                        alt=""
-                                                    />
+                        {loading === true ? (
+                            <div className={cx('wrapper-loading')}>
+                                <div className={cx('wobbling-4')}></div>
+                            </div>
+                        ) : (
+                            <div className={cx('main-content')}>
+                                {!listProduct && <div className={cx('no-product')}>Không có sản phẩm</div>}
+                                {listProduct?.length === 0 && <div className={cx('no-product')}>Không có sản phẩm</div>}
+                                {listProduct &&
+                                    listProduct.length > 0 &&
+                                    listProduct.map((item, index) => {
+                                        return (
+                                            <div key={index} onClick={() => viewDetailProduct(item.id)}>
+                                                <div className={cx('wrapper')}>
+                                                    <div className={cx('top')}>
+                                                        <img
+                                                            src={
+                                                                item.Images[0].photo
+                                                                    ? item.Images[0].photo
+                                                                    : images.product1
+                                                            }
+                                                            alt=""
+                                                        />
 
-                                                    {item.discount > 0 ? (
-                                                        <div className={cx('sale')}>{`-${item.discount}%`}</div>
-                                                    ) : (
-                                                        <div
-                                                            style={{ display: 'none' }}
-                                                            className={cx('sale')}
-                                                        >{`-${item.discount}%`}</div>
-                                                    )}
-                                                    <span className={cx('unit')}>bộ</span>
-                                                    <div className={cx('event')}>
-                                                        <img src={images.eventsale} alt="" />
+                                                        {item.discount > 0 ? (
+                                                            <div className={cx('sale')}>{`-${item.discount}%`}</div>
+                                                        ) : (
+                                                            <div
+                                                                style={{ display: 'none' }}
+                                                                className={cx('sale')}
+                                                            >{`-${item.discount}%`}</div>
+                                                        )}
+                                                        <span className={cx('unit')}>bộ</span>
+                                                        <div className={cx('event')}>
+                                                            <img src={images.eventsale} alt="" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className={cx('bottom')}>
+                                                        <p>{item.title}</p>
+                                                        <div className={cx('wrapper-price')}>
+                                                            <div className={cx('price')}>
+                                                                <NumericFormat
+                                                                    className="currency"
+                                                                    type="text"
+                                                                    value={item.price * ((100 - item.discount) / 100)}
+                                                                    displayType="text"
+                                                                    thousandSeparator={true}
+                                                                    suffix={'đ'}
+                                                                />
+                                                            </div>
+                                                            <div className={cx('old-price')}>
+                                                                <NumericFormat
+                                                                    className="currency"
+                                                                    type="text"
+                                                                    value={item.price}
+                                                                    displayType="text"
+                                                                    thousandSeparator={true}
+                                                                    suffix={'đ'}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className={cx('wrapper-brand')}>
+                                                            <div className={cx('brand')}>{item?.Brand.title}</div>
+                                                            <div className={cx('sold')}>
+                                                                Đã bán: {item.sold ? item.sold : 0}
+                                                            </div>
+                                                        </div>
+                                                        <div className={cx('gift')}>
+                                                            <CardGiftcardIcon className={cx('icon')} />
+                                                            <span>
+                                                                Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling + Trâm
+                                                                máy - PROTAPER + Côn Protaper Gapadent (SL có hạn)
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                <div className={cx('bottom')}>
-                                                    <p>{item.title}</p>
-                                                    <div className={cx('wrapper-price')}>
-                                                        <div className={cx('price')}>
-                                                            <NumericFormat
-                                                                className="currency"
-                                                                type="text"
-                                                                value={item.price * ((100 - item.discount) / 100)}
-                                                                displayType="text"
-                                                                thousandSeparator={true}
-                                                                suffix={'đ'}
-                                                            />
-                                                        </div>
-                                                        <div className={cx('old-price')}>
-                                                            <NumericFormat
-                                                                className="currency"
-                                                                type="text"
-                                                                value={item.price}
-                                                                displayType="text"
-                                                                thousandSeparator={true}
-                                                                suffix={'đ'}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className={cx('wrapper-brand')}>
-                                                        <div className={cx('brand')}>{item?.Brand.title}</div>
-                                                        <div className={cx('sold')}>
-                                                            Đã bán: {item.sold ? item.sold : 0}
-                                                        </div>
-                                                    </div>
-                                                    <div className={cx('gift')}>
-                                                        <CardGiftcardIcon className={cx('icon')} />
-                                                        <span>
-                                                            Mua 1 tặng Tay khoan nhanh đèn Led đuôi Coupling + Trâm máy
-                                                            - PROTAPER + Côn Protaper Gapadent (SL có hạn)
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                                {/* </div> */}
                                             </div>
-                                            {/* </div> */}
-                                        </div>
-                                    );
-                                })}
-                        </div>
+                                        );
+                                    })}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

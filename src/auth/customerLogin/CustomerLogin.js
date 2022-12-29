@@ -32,6 +32,7 @@ function CustomerLogin() {
     let [passwordSignup, setPasswordSignup] = useState('');
     let [comfirmPassword, setComfirmPassword] = useState('');
     let [showPassConfirm, setShowPassConfirm] = useState(false);
+    let [loading, setLoading] = useState(false);
 
     const checkValidate = (obj) => {
         let isValid = true;
@@ -49,6 +50,7 @@ function CustomerLogin() {
     };
 
     const onSubmit = async (data) => {
+        setLoading(true);
         let obj = {};
         obj.firstName = data.firstName;
         obj.lastName = data.lastName;
@@ -60,25 +62,40 @@ function CustomerLogin() {
 
         let check = checkValidate(obj);
 
-        if (check === false) return;
+        if (check === false) {
+            setLoading(false);
+
+            return;
+        }
 
         if (passwordSignup !== comfirmPassword) return toast.warning('Mật khẩu nhập lại không khớp mật khẩu!!!');
 
         let res = await createNewCustomer(dispatch, obj);
         if (res.errCode === 0) {
+            setLoading(false);
             toast.success('Tạo tài khoản thành công!!!');
             setToggleForm(!toggleForm);
         }
-        console.log(res);
     };
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (!email) return toast.warning('Vui lòng nhập email!!!');
-        if (!password) return toast.warning('Vui lòng nhập password!!!');
-
+        setLoading(true);
+        if (!email) {
+            setLoading(false);
+            return toast.warning('Vui lòng nhập email!!!');
+        }
+        if (!password) {
+            setLoading(false);
+            return toast.warning('Vui lòng nhập password!!!');
+        }
         const res = await loginCus(dispatch, email, password, navigate);
         if (res.errCode === 1) {
+            setLoading(false);
+            toast.warning('Sai email hoặc mật khẩu!!!, vui lòng nhập lại.');
+        }
+        if (res.errCode === 3) {
+            setLoading(false);
             toast.warning('Sai email hoặc mật khẩu!!!, vui lòng nhập lại.');
         }
     };
@@ -136,7 +153,7 @@ function CustomerLogin() {
                                     </div>
                                     <div className={cx('field')}>
                                         <button onClick={(e) => handleLogin(e)} className={cx('btnSave')}>
-                                            Login
+                                            {loading === true ? <div className={cx('spinner-3')}></div> : 'Đăng nhập'}
                                         </button>
                                     </div>
                                     <div className={cx('form-link')}>
@@ -192,7 +209,7 @@ function CustomerLogin() {
 
                                     <div className={cx('field')}>
                                         <button className={cx('btnSave')} type="submit">
-                                            Đăng ký
+                                            {loading === true ? <div className={cx('spinner-3')}></div> : 'Đăng ký'}
                                         </button>
 
                                         {errors.exampleRequired && <p>This field is required</p>}

@@ -76,6 +76,12 @@ function HeaderCustomer() {
                 <div className=" mx-auto h-fit grid grid-cols-12 gap-3 ">
                     <div className="hidden px-8 rounded-lg flex-initial col-span-12 sm:h-[200px] md:h-fit md:overflow-auto md:mt-5 md:block md:col-span-3 shadow-md md:px-1 lg:px-0">
                         <aside className="flex flex-col sm:h-[202px] lg:h-[280px] lg:py-[3px] md:py-[3px] xl:h-full p-5  justify-around">
+                            {!listParent && (
+                                <div className="h-[280px] flex flex-col items-center justify-center">
+                                    <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"></svg>
+                                    Đang tải...
+                                </div>
+                            )}
                             {listParent?.map((item, index) => {
                                 return (
                                     <div
