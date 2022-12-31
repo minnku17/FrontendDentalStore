@@ -20,13 +20,18 @@ function Featured() {
     let [totalWeek, setTotalWeek] = useState('');
     let [percent, setPercent] = useState('');
 
+    let [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const fetchApi = async () => {
+            setLoading(true);
             const res = await getTurnover(date);
             const week = await getTurnoverWeek();
             let arr = [];
             let arrWeek = [];
             if (res.errCode === 0) {
+                setLoading(false);
+
                 res.data.forEach((item) => {
                     arr.push(item.sub_total);
 
@@ -64,7 +69,6 @@ function Featured() {
     }, []);
 
     const handleGetTurnover = async (e) => {
-        console.log(typeof e.target.value);
         setDate(e.target.value);
 
         const res = await getTurnover(e.target.value);
@@ -98,22 +102,7 @@ function Featured() {
                 <div className={cx('featuredChart')}>
                     <CircularProgressbar
                         styles={buildStyles({
-                            // Rotation of path and trail, in number of turns (0-1)
-                            // rotation: 0.25,
-
-                            // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                            // strokeLinecap: 'butt',
-
-                            // Text size
                             textSize: '16px',
-
-                            // How long animation takes to go from one percentage to another, in seconds
-                            // pathTransitionDuration: 0.5,
-
-                            // Can specify path transition in more detail, or remove it entirely
-                            // pathTransition: 'none',
-
-                            // Colors
                             pathColor:
                                 percent <= 25
                                     ? `rgba(199, 62, 62, ${percent})`
@@ -134,16 +123,20 @@ function Featured() {
                 <p className={cx('title')}>{`Tổng doanh thu ${
                     date === currentDate ? 'hôm nay' : moment(date).format('dddd - DD/MM/YYYY')
                 }`}</p>
-                <p className={cx('amount')}>
-                    <NumericFormat
-                        className="currency"
-                        type="text"
-                        value={totalDay}
-                        displayType="text"
-                        thousandSeparator={true}
-                        suffix={'đ'}
-                    />
-                </p>
+                {loading === true ? (
+                    <div className={cx('continuous-totalweek')}></div>
+                ) : (
+                    <p className={cx('amount')}>
+                        <NumericFormat
+                            className="currency"
+                            type="text"
+                            value={totalDay}
+                            displayType="text"
+                            thousandSeparator={true}
+                            suffix={'đ'}
+                        />
+                    </p>
+                )}
                 <p className={cx('desc')}>
                     Doanh thu từ các đơn hàng trước đó, các đơn hàng gần đây có thể chưa được tính vào!
                 </p>
@@ -169,16 +162,20 @@ function Featured() {
                         <div className={cx('itemTitle')}>7 ngày trước</div>
                         <div className={cx('itemResult')}>
                             <KeyboardArrowDownOutlined fontSize="medium" />
-                            <div className={cx('resultAmount')}>
-                                <NumericFormat
-                                    className="currency"
-                                    type="text"
-                                    value={totalWeek}
-                                    displayType="text"
-                                    thousandSeparator={true}
-                                    suffix={'đ'}
-                                />
-                            </div>
+                            {loading === true ? (
+                                <div className={cx('continuous-totalweek')}></div>
+                            ) : (
+                                <div className={cx('resultAmount')}>
+                                    <NumericFormat
+                                        className="currency"
+                                        type="text"
+                                        value={totalWeek}
+                                        displayType="text"
+                                        thousandSeparator={true}
+                                        suffix={'đ'}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className={cx('item')}>

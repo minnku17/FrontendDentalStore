@@ -521,7 +521,7 @@ function Header() {
                                 )}
                                 onClickOutside={handleHideResult}
                             >
-                                <div className={cx('cart')}>
+                                <div onClick={() => navigate(config.routes.check_out)} className={cx('cart')}>
                                     <ShoppingCartIcon className={cx('cart-icon')} />
                                     <div className={cx('notifi')}>
                                         {listProduct && listProduct.length > 0 ? listProduct.length : 0}

@@ -146,9 +146,9 @@ function DatatableBrands() {
         <>
             <div className={cx('datatable')}>
                 <div className={cx('datatable-title')}>
-                    List Brands
+                    Danh sách thương hiệu
                     <div className={cx('link')} onClick={() => OpenModal()}>
-                        Add New Brand
+                        Thêm thương hiệu mới
                     </div>
                 </div>
                 {loadingDelete === true && <div class={cx('spinner-4')}></div>}

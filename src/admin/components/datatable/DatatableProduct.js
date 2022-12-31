@@ -28,14 +28,18 @@ function DatatableProduct() {
     const [idUser, setIdUser] = useState();
     const data = useMovieData();
 
+    let [loading, setLoading] = useState(false);
+
     useEffect(() => {
         if (!user) {
             navigate(config.routes.loginAdmin);
         }
         const fetch = async () => {
+            setLoading(true);
             let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
 
             await getAllProduct(user?.accessToken, dispatch, axiosJWT, navigate);
+            setLoading(false);
         };
         fetch();
     }, [user]);
@@ -161,20 +165,24 @@ function DatatableProduct() {
         <>
             <div className={cx('datatable')}>
                 <div className={cx('datatable-title')}>
-                    List Products
+                    Danh sách sản phẩm
                     <Link to={config.routes.create_product} className={cx('link')}>
-                        Add New Product
+                        Thêm mới sản phẩm
                     </Link>
                 </div>
-                <DataGrid
-                    className={cx('customTable')}
-                    onRowClick={handleRowClick}
-                    {...data}
-                    rows={rows}
-                    columns={columns}
-                    pageSize={9}
-                    rowsPerPageOptions={[9]}
-                />
+                {loading === true ? (
+                    <div class={cx('spinner-3')}></div>
+                ) : (
+                    <DataGrid
+                        className={cx('customTable')}
+                        onRowClick={handleRowClick}
+                        {...data}
+                        rows={rows}
+                        columns={columns}
+                        pageSize={9}
+                        rowsPerPageOptions={[9]}
+                    />
+                )}
             </div>
         </>
     );

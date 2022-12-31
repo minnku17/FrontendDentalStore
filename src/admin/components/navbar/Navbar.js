@@ -18,7 +18,9 @@ import Tippy from '@tippyjs/react/headless';
 
 const cx = classNames.bind(styles);
 function NavBar() {
-    const user = useSelector((state) => state.auth.login.currentUser?.user.Image);
+    const user = useSelector((state) => state.auth.login.currentUser?.user);
+
+    console.log('check ', user);
 
     return (
         <>
@@ -31,30 +33,9 @@ function NavBar() {
                     <div className={cx('items')}>
                         <div className={cx('item')}>
                             <PeopleAltOutlined className={cx('icon')} />
-                            <span>Role: {user?.roleId}</span>
-                        </div>
-                        <div className={cx('item')}>
-                            <LanguageOutlined className={cx('icon')} />
-                            English
+                            <span>Xin chào: {`${user?.lastName} ${user.firstName}`}</span>
                         </div>
 
-                        <div className={cx('item')}>
-                            <DarkModeOutlined className={cx('icon')} />
-                        </div>
-                        <div className={cx('item')}>
-                            <FullscreenExitOutlined className={cx('icon')} />
-                        </div>
-                        <div className={cx('item')}>
-                            <NotificationAddOutlined className={cx('icon')} />
-                            <div className={cx('counter')}>1</div>
-                        </div>
-                        <div className={cx('item')}>
-                            <ChatBubbleOutlineOutlined className={cx('icon')} />
-                            <div className={cx('counter')}>1</div>
-                        </div>
-                        <div className={cx('item')}>
-                            <ListOutlined className={cx('icon')} />
-                        </div>
                         <div className={cx('item')}>
                             <Tippy
                                 render={(attrs) => (

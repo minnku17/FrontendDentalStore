@@ -7,8 +7,7 @@ import { toast } from 'react-toastify';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { getAllCoupon, getAllGift, handleDeleteCoupon, handleDeleteGift } from '~/services';
-import ModalCoupon from '../Modal/ModalCoupon';
+import { getAllGift, handleDeleteGift } from '~/services';
 import { axiosMiddle } from '~/services/axiosJWT';
 import ModalGift from '../Modal/ModalGift';
 
@@ -20,6 +19,7 @@ function DatatableGift() {
     let [rows, setRows] = useState([]);
     let [checkBoxSelection, setCheckBoxSelection] = useState(false);
     let [isOpen, setIsOpen] = useState(false);
+    let [loading, setLoading] = useState(false);
 
     const [idUser, setIdUser] = useState();
     const data = useMovieData();
@@ -32,10 +32,12 @@ function DatatableGift() {
         fetchApi();
     }, [isOpen]);
     const fetchApi = async () => {
+        setLoading(true);
         const res = await getAllGift();
-        console.log('check res', res);
         let arr = [];
         if (res.errCode === 0 && res.data.length > 0) {
+            setLoading(false);
+
             res.data.forEach((item) => {
                 let obj = {};
                 obj.id = item.id;
@@ -46,6 +48,8 @@ function DatatableGift() {
             });
             setRows(arr);
         } else {
+            setLoading(false);
+
             setRows([]);
         }
     };
@@ -56,7 +60,7 @@ function DatatableGift() {
         {
             field: 'title',
             headerName: 'Tên',
-            width: 200,
+            width: 400,
         },
 
         {
@@ -134,15 +138,19 @@ function DatatableGift() {
                         Thêm quà tặng
                     </div>
                 </div>
-                <DataGrid
-                    className={cx('customTable')}
-                    onRowClick={handleRowClick}
-                    {...data}
-                    rows={rows}
-                    columns={columns}
-                    pageSize={9}
-                    rowsPerPageOptions={[9]}
-                />
+                {loading === true ? (
+                    <div class={cx('spinner-3')}></div>
+                ) : (
+                    <DataGrid
+                        className={cx('customTable')}
+                        onRowClick={handleRowClick}
+                        {...data}
+                        rows={rows}
+                        columns={columns}
+                        pageSize={9}
+                        rowsPerPageOptions={[9]}
+                    />
+                )}
                 <ModalGift data={dataCoupon} isOpen={isOpen} FuncToggleModal={() => toggleModal()} />
             </div>
         </>

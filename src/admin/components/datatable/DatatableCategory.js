@@ -55,7 +55,7 @@ function DatatableCategory() {
         { field: 'id', headerName: 'ID', width: 70 },
         {
             field: 'title',
-            headerName: 'Title',
+            headerName: 'Tên',
             width: 230,
             renderCell: (params) => {
                 return (
@@ -74,7 +74,7 @@ function DatatableCategory() {
         },
         {
             field: 'summary',
-            headerName: 'Summary',
+            headerName: 'Mô tả',
             width: 250,
         },
         {
@@ -123,16 +123,16 @@ function DatatableCategory() {
         },
         {
             field: 'status',
-            headerName: 'Status',
+            headerName: 'Trạng thái',
             width: 170,
             renderCell: (params) => {
                 return (
                     <>
                         <div className={cx('status')}>
                             {params.row.status === true ? (
-                                <div className={cx('active')}>Active</div>
+                                <div className={cx('active')}>Đang bật</div>
                             ) : (
-                                <div className={cx('disable')}>Disable</div>
+                                <div className={cx('disable')}>Đang tắt</div>
                             )}
                         </div>
                     </>
@@ -194,9 +194,9 @@ function DatatableCategory() {
         <>
             <div className={cx('datatable')}>
                 <div className={cx('datatable-title')}>
-                    List Category
+                    Danh sách danh mục
                     <div className={cx('link')} onClick={() => OpenModal()}>
-                        Add New Category
+                        Thêm mới danh mục
                     </div>
                 </div>
                 {loadingDelete === true && <div class={cx('spinner-4')}></div>}

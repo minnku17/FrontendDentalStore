@@ -52,7 +52,7 @@ function Widget({ type }) {
     switch (type) {
         case 'user':
             data = {
-                title: 'USERS',
+                title: 'NGƯỜI DÙNG',
                 isMoney: false,
                 link: <Link to={config.routes.users}>Xem tất cả</Link>,
                 icon: (
@@ -113,7 +113,7 @@ function Widget({ type }) {
                     {type === 'user' &&
                         (allUsers && allUsers.length > 0 ? (
                             <span className={cx('counter')}>
-                                {data.isMoney && '$'} {data.title === 'USERS' ? allUsers?.length : amount}
+                                {data.isMoney && '$'} {data.title === 'NGƯỜI DÙNG' ? allUsers?.length : amount}
                             </span>
                         ) : (
                             <div className={cx('continuous-1')}></div>

@@ -23,13 +23,18 @@ function DatatableOrder(action) {
     const navigate = useNavigate();
 
     let [rows, setRows] = useState([]);
+    let [loading, setLoading] = useState(false);
+
     const data = useMovieData();
     useEffect(() => {
         async function fetchApi() {
+            setLoading(true);
             let axiosJWT = await axiosMiddle(jwt_decode, user?.accessToken, user, dispatch);
 
             let res = await getAllOrderNewAdmin(dispatch, axiosJWT, action, user?.accessToken);
             if (res && res.errCode === 0) {
+                setLoading(false);
+
                 let arr = [];
                 if (res.data.length > 0) {
                     res?.data.map((item) => {
@@ -146,14 +151,18 @@ function DatatableOrder(action) {
     return (
         <>
             <div className={cx('datatable')}>
-                <DataGrid
-                    className={cx('customTable')}
-                    {...data}
-                    rows={rows}
-                    columns={columns}
-                    pageSize={9}
-                    rowsPerPageOptions={[9]}
-                />
+                {loading === true ? (
+                    <div class={cx('spinner-3')}></div>
+                ) : (
+                    <DataGrid
+                        className={cx('customTable')}
+                        {...data}
+                        rows={rows}
+                        columns={columns}
+                        pageSize={9}
+                        rowsPerPageOptions={[9]}
+                    />
+                )}
             </div>
         </>
     );
