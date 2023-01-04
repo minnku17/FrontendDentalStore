@@ -75,6 +75,14 @@ function CustomerLogin() {
             setLoading(false);
             toast.success('Tạo tài khoản thành công!!!');
             setToggleForm(!toggleForm);
+        } else if (res.errCode === 1) {
+            setLoading(false);
+
+            toast.warning('Email đã tồn tại!!!');
+        } else {
+            setLoading(false);
+
+            toast.error('Hệ thống đã xảy ra lỗi vui lòng thử lại sau!!!');
         }
     };
 

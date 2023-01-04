@@ -201,7 +201,7 @@ export const handleEditUser = async (data, accessToken, dispatch, axiosJWT) => {
 export const deleteUserById = async (id, accessToken, dispatch, axiosJWT) => {
     dispatch(deleteUserStart());
     try {
-        const res = await axiosJWT.delete(`http://localhost:3030/api/deleteUser?id=${id}`, {
+        const res = await axiosJWT.delete(`${process.env.REACT_APP_BACKEND_URL}/api/deleteUser?id=${id}`, {
             headers: { token: `Bearer ${accessToken}` },
         });
         if (res.data.errCode === 0) {
@@ -223,7 +223,7 @@ export const deleteUserById = async (id, accessToken, dispatch, axiosJWT) => {
 export const createNewUser = async (data, accessToken, dispatch, axiosJWT) => {
     dispatch(createUserStart());
     try {
-        const res = await axiosJWT.post('http://localhost:3030/api/register', data, {
+        const res = await axiosJWT.post(`${process.env.REACT_APP_BACKEND_URL}/api/register`, data, {
             headers: { token: `Bearer ${accessToken}` },
         });
         if (res.data.errCode === 0) {

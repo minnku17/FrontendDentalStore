@@ -31,6 +31,7 @@ function Banner() {
         }
     };
     const handleOnchangeImg = async (e, id) => {
+        console.log('check id', id);
         let data = e.target.files;
         let files = data[0];
 
@@ -63,7 +64,7 @@ function Banner() {
 
                             <input
                                 className="text-[12px] w-[173px] border-none"
-                                onChange={(e) => handleOnchangeImg(e, 11)}
+                                onChange={(e) => handleOnchangeImg(e, 12)}
                                 type="file"
                                 id="file"
                                 style={{ display: 'block' }}
@@ -117,7 +118,7 @@ function Banner() {
                         <img className="rounded-lg" src={bannerLong ? bannerLong : images.bannerSale} alt="" />
                         <input
                             className="text-[12px] w-[173px] border-none"
-                            onChange={(e) => handleOnchangeImg(e, 8)}
+                            onChange={(e) => handleOnchangeImg(e, 13)}
                             type="file"
                             id="file"
                             style={{ display: 'block' }}

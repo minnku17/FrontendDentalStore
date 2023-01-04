@@ -241,7 +241,6 @@ function ProductDetail() {
                     setLoadingAddCart(false);
 
                     let arrItem = [...cartRedux];
-                    console.log(arrItem);
                     const check = arrItem.find((item) => item.id === idProduct);
                     if (check) {
                         arrItem.forEach(async (item, index) => {

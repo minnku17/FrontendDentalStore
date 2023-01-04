@@ -40,6 +40,10 @@ function OrderHistory() {
         navigate(`/product-detail/${id}`);
     };
 
+    const handleViewOrderDetail = (data) =>{
+
+    }
+
     return (
         <>
             <div className="flex flex-col h-fit gap-3 justify-around mt-6 mb-6">
@@ -59,13 +63,21 @@ function OrderHistory() {
                                             <div className="flex items-center">
                                                 <StorefrontIcon /> <span>{`Mã đơn hàng: ${item.order_number}`}</span>
                                             </div>
-                                            <span className="rounded-lg bg-gray-200 px-2 py-1">
-                                                {item.status === 'new'
-                                                    ? 'Đơn hàng mới'
-                                                    : item.status === 'process'
-                                                    ? 'Đang chuẩn bị hàng'
-                                                    : 'Vận chuyển'}
-                                            </span>
+                                            <div className="flex gap-3 items-center ">
+                                                <span
+                                                    onClick={() => console.log('checkkk', item)}
+                                                    className="border border-sky-500 rounded-lg px-2 cursor-pointer hover:text-stone-400 hover:bg-red-200"
+                                                >
+                                                    Xem chi tiết đơn hàng
+                                                </span>
+                                                <span className="rounded-lg bg-gray-200 px-2 py-1">
+                                                    {item.status === 'new'
+                                                        ? 'Đơn hàng mới'
+                                                        : item.status === 'process'
+                                                        ? 'Đang chuẩn bị hàng'
+                                                        : 'Vận chuyển'}
+                                                </span>
+                                            </div>
                                         </div>
                                         {item.ProductOrders.map((jitem, jindex) => {
                                             return (
