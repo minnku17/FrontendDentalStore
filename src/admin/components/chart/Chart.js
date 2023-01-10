@@ -103,7 +103,6 @@ function Chart() {
         return null;
     };
 
-    console.log('check res', week);
     return (
         <div className="chart">
             <div style={{ width: '100%' }}>

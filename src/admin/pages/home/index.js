@@ -13,6 +13,7 @@ import config from '~/config';
 import { axiosMiddle } from '~/services/axiosJWT';
 import Featured from '~/admin/components/featured/Featured';
 import Chart from '~/admin/components/chart/Chart';
+import ChartOrder from '~/admin/components/chartOrder/ChartOrder';
 
 const cx = classNames.bind(styles);
 
@@ -43,15 +44,20 @@ function Dashboard() {
         <>
             {user && user.user.roleId === 'Admin' && (
                 <>
-                    <div className={cx('widgets')}>
-                        <Widget type="user" />
-                        <Widget type="order" />
-                        <Widget type="earning" />
-                        <Widget type="balance" />
-                    </div>
-                    <div className={cx('charts')}>
-                        <Featured />
-                        <Chart />
+                    <div className="flex flex-col">
+                        <div className={cx('widgets')}>
+                            <Widget type="user" />
+                            <Widget type="order" />
+                            <Widget type="earning" />
+                            <Widget type="balance" />
+                        </div>
+                        <div className={cx('charts')}>
+                            <Featured />
+                            <Chart />
+                        </div>
+                        <div className="flex justify-center items-center">
+                            <ChartOrder />
+                        </div>
                     </div>
                 </>
             )}

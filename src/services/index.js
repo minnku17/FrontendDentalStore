@@ -216,6 +216,15 @@ export const getTurnoverWeek = async () => {
     }
 };
 
+export const getProductOrder = async () => {
+    try {
+        const res = await request.get(`/api/getProductOrder`);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const getProductFilter = async (data) => {
     try {
         if (data.id && !data.brand_id) {
