@@ -31,19 +31,22 @@ function HeaderCustomer() {
     const navigate = useNavigate();
     const [allProduct, setAllProduct] = useState();
     useEffect(() => {
+        fetchBanner();
+    }, []);
+    useEffect(() => {
         window.scrollTo(0, 0);
         document.title = `Nhà Cung Cấp Thiết Bị Vật Liệu Phòng Khám Nha Khoa Giá Sỉ, Rẻ Hcm`;
 
         async function fetchApi() {
             let res = await getListParentCategory(dispatch);
+
             let sss = await getAllProductLittleInfo(dispatch);
             setAllProduct(sss);
-            if (res) {
-                setListParent(res.data);
-            }
+
+            setListParent(res.errCode === 0 && res.data && res.data.length > 0 ? res.data : []);
+            console.log('check ', res);
         }
         fetchApi();
-        fetchBanner();
     }, []);
 
     const fetchBanner = async () => {

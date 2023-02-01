@@ -64,7 +64,7 @@ function Banner() {
 
                             <input
                                 className="text-[12px] w-[173px] border-none"
-                                onChange={(e) => handleOnchangeImg(e, 12)}
+                                onChange={(e) => handleOnchangeImg(e, 1)}
                                 type="file"
                                 id="file"
                                 style={{ display: 'block' }}
@@ -118,7 +118,7 @@ function Banner() {
                         <img className="rounded-lg" src={bannerLong ? bannerLong : images.bannerSale} alt="" />
                         <input
                             className="text-[12px] w-[173px] border-none"
-                            onChange={(e) => handleOnchangeImg(e, 13)}
+                            onChange={(e) => handleOnchangeImg(e, 6)}
                             type="file"
                             id="file"
                             style={{ display: 'block' }}
