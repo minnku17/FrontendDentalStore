@@ -33,7 +33,10 @@ function NavBar() {
                     <div className={cx('items')}>
                         <div className={cx('item')}>
                             <PeopleAltOutlined className={cx('icon')} />
-                            <span>Xin chào: {`${user?.lastName} ${user.firstName}`}</span>
+                            <span>
+                                Xin chào:{' '}
+                                {`${user?.lastName ? user?.lastName : ''} ${user?.firstName ? user?.firstName : ''}`}
+                            </span>
                         </div>
 
                         <div className={cx('item')}>
