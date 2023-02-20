@@ -36,13 +36,13 @@ function Dashboard() {
         fetchAllUser();
         if (!user) {
             navigate(config.routes.loginAdmin);
-        } else if (user.user.roleId !== 'Admin' && user.user.roleId !== 'Doctor') {
+        } else if (user.user?.roleId !== 'Admin' && user.user.roleId !== 'Doctor') {
             navigate(config.routes.profile);
         }
     }, []);
     return (
         <>
-            {user && user.user.roleId === 'Admin' && (
+            {user && user.user?.roleId === 'Admin' && (
                 <>
                     <div className="flex flex-col">
                         <div className={cx('widgets')}>

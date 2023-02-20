@@ -28,12 +28,15 @@ function Banner() {
             );
             setBannerLong(res.data[5].Image.photo);
             setLoading(false);
+        } else {
+            setLoading(false);
         }
     };
     const handleOnchangeImg = async (e, id) => {
-        console.log('check id', id);
         let data = e.target.files;
         let files = data[0];
+
+        console.log('check id', id);
 
         if (typeof id === 'number') {
             let base64 = await CommonUtils.getBase64(files);
@@ -73,7 +76,7 @@ function Banner() {
                         <div className="w-[406px] h-[380px] flex flex-wrap gap-1">
                             {bannerFour && bannerFour.length === 4 ? (
                                 bannerFour.map((item, index) => {
-                                    let id = item.Image.id;
+                                    let id = item.id;
 
                                     return (
                                         <div key={index} className="">

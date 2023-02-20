@@ -22,7 +22,7 @@ const cx = classNames.bind(styles);
 function SideBar() {
     const user = useSelector((state) => state.auth.login?.currentUser);
 
-    const idUser = user?.user.id;
+    const idUser = user?.user?.id;
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -48,7 +48,7 @@ function SideBar() {
                 <hr />
                 <div className={cx('center')}>
                     <ul>
-                        {user && user.user.roleId === 'Admin' && (
+                        {user && user.user?.roleId === 'Admin' && (
                             <>
                                 <p className={cx('title')}>CHÍNH</p>
                                 <Link to={config.routes.dashboard}>
