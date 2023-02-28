@@ -1,70 +1,51 @@
-# Getting Started with Create React App
+# Dental Store
+## Information
+  Repositories frontend: <a href="https://github.com/minnku17/FrontendDentalStore" target="_blank">FrontendDentalStore</a> </br>
+  Deploy to vercel: <a href="https://frontend-dental-store.vercel.app/" target="_blank">Dental Store</a><span> | </span><a href="https://frontend-dental-store.vercel.app/login-admin" target="_blank">Dashboard Admin</a><span>(email: admin@gmail.com | pass: 12345)</span></br>
+  Repositories backend: <a href="https://github.com/minnku17/BackendDentalStore" target="_blank">BackendDentalStore</a> </br>
+  Deploy to render: <a href="https://dental-store-be.onrender.com" target="_blank">Backend Dental Store Company</a></br>
+  
+  Remote database, deploy to aws ec2:
+  ```
+    DB_SSL=false
+    DB_HOST=18.142.43.222
+    DB_DATABASE_NAME=dentalstore
+    DB_USERNAME=myDB
+    DB_PASSWORD=12345
+    DB_PORT=3306
+    DB_DIALECT=mysql
+  ```
+### `User Interface`
+  ```
+  If the deploy cannot call the API, it may be because the server at the render has stopped the server, 
+  I have a demo video, please watch it for me.
+  ```
+  <a href="https://drive.google.com/file/d/1kywr2jppIMh5RxDx6XQCQZHbiOuDAMMJ/view?usp=sharing" target="_blank">Demo webiste</a>
+### `User Interface`
+# Admin Page
+ <img src="images/admin1.png" alt="Layout Test" />
+ <img src="images/admin2.png" alt="Layout Test" />
+ <img src="images/banner.png" alt="Layout Test" />
+ <img src="images/admin3.png" alt="Layout Test" />
+ <img src="images/admin4.png" alt="Layout Test" />
+ <img src="images/admin5.png" alt="Layout Test" />
+ 
+### `Customer`
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ <img src="images/customer1.png" alt="Layout Test" />
+ <img src="images/customer2.png" alt="Layout Test" />
+ <img src="images/customer3.png" alt="Layout Test" />
+ <img src="images/filter.png" alt="Layout Test" />
+ <img src="images/product.png" alt="Layout Test" />
+ <img src="images/product2.png" alt="Layout Test" />
+ <img src="images/product3.png" alt="Layout Test" />
+ <img src="images/checkout.png" alt="Layout Test" />
+ <img src="images/history.png" alt="Layout Test" />
 
-## Available Scripts
+ 
+ ### `Thanks for watching`
+ ```
+  Thank you for viewing my project.
+ ```
 
-In the project directory, you can run:
 
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
